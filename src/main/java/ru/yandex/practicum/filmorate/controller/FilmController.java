@@ -1,45 +1,57 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.dto.DtoFilm;
+import ru.yandex.practicum.filmorate.exceptions.InvalidFilmException;
+import ru.yandex.practicum.filmorate.exceptions.UserAlreadyExistException;
+import ru.yandex.practicum.filmorate.mapper.FilmDtoMapper;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/films")
 public class FilmController {
-    private final List<Film> filmsList = new ArrayList<>();
+    private final Map<Integer, Film> filmsList = new HashMap<>();
 
     @GetMapping
     public List<Film> getUsersPage() {
-        return filmsList;
+        return new ArrayList<>(filmsList.values());
     }
 
     @PostMapping
-    public Film create(@RequestBody Film film) {
-        if (film == null || film.getName() == null) {
+    public Film create(@RequestBody DtoFilm dtoFilm) {
+        if (dtoFilm == null || dtoFilm.getName() == null) {
             throw new InvalidFilmException("Error: Film name is null.");
         }
-        if (filmsList.contains(film)) {
+        Film film = FilmDtoMapper.dtoToFilm(dtoFilm);
+        if (filmsList.containsValue(film)) {
             throw new UserAlreadyExistException("Error: Film is exists");
         } else {
-            filmsList.add(film);
+            int id = filmsList.size();
+            film.setId(id);
+            filmsList.put(id, film);
         }
-        return filmsList.get(filmsList.indexOf(film));
+        return film;
     }
 
     @PutMapping
-    public Film update(@RequestBody Film film) throws InvalidFilmException {
-        if (film == null || film.getName() == null) {
+    public Film update(@RequestBody DtoFilm dtoFilm) throws InvalidFilmException {
+        if (dtoFilm == null || dtoFilm.getName() == null) {
             throw new InvalidFilmException("Error: Film name is null.");
         }
-        if (filmsList.contains(film)) {
-            filmsList.set(filmsList.indexOf(film), film);
+
+        Film film = FilmDtoMapper.dtoToFilm(dtoFilm);
+        int id = filmsList.size();
+        if (!filmsList.containsValue(film)) {
+            film.setId(id);
         } else {
-            filmsList.add(film);
+            id = film.getId();
         }
-        return filmsList.get(filmsList.indexOf(film));
+        filmsList.put(id, film);
+        return film;
     }
 }
