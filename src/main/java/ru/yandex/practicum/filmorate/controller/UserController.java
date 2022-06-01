@@ -1,46 +1,57 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.dto.DtoUser;
 import ru.yandex.practicum.filmorate.exceptions.InvalidEmailException;
 import ru.yandex.practicum.filmorate.exceptions.UserAlreadyExistException;
+import ru.yandex.practicum.filmorate.mapper.DtoMapper;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/users")
 public class UserController {
-    private final List<User> usersList = new ArrayList<>();
+    private final Map<Integer, User> usersList = new HashMap<>();
 
     @GetMapping
     public List<User> getUsersPage() {
-        return usersList;
+        return new ArrayList<>(usersList.values());
     }
 
     @PostMapping
-    public User create(@RequestBody User user) throws InvalidEmailException, UserAlreadyExistException {
-        if (user == null || user.getEmail() == null) {
+    public User create(@RequestBody DtoUser dtoUser) throws InvalidEmailException, UserAlreadyExistException {
+        if (dtoUser == null || dtoUser.getEmail() == null) {
             throw new InvalidEmailException("Error: E-mail is null.");
         }
-        if (usersList.contains(user)) {
+        User user = DtoMapper.dtoToUser(dtoUser);
+
+        if (usersList.containsValue(user)) {
             throw new UserAlreadyExistException("Error: User is exists");
         } else {
-            usersList.add(user);
+            int id = usersList.size() + 1;
+            user.setId(id);
+            usersList.put(id, user);
         }
-        return usersList.get(usersList.indexOf(user));
+        return user;
     }
 
     @PutMapping
-    public User update(@RequestBody User user) throws InvalidEmailException {
-        if (user == null || user.getEmail() == null) {
+    public User update(@RequestBody DtoUser dtoUser) throws InvalidEmailException {
+        if (dtoUser == null || dtoUser.getEmail() == null) {
             throw new InvalidEmailException("Error: E-mail is null.");
         }
-        if (usersList.contains(user)) {
-            usersList.set(usersList.indexOf(user), user);
+        User user = DtoMapper.dtoToUser(dtoUser);
+        int id = usersList.size();
+        if (!usersList.containsValue(user)) {
+            user.setId(id);
         } else {
-            usersList.add(user);
+            id = user.getId();
         }
-        return usersList.get(usersList.indexOf(user));
+        usersList.put(id, user);
+        return user;
     }
 }

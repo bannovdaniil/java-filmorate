@@ -8,7 +8,6 @@ import javax.validation.ConstraintValidatorContext;
 
 public class NotSpaceCheckerValidation implements ConstraintValidator<NotSpaceChecker, String> {
 
-
     @Override
     public void initialize(NotSpaceChecker constraintAnnotation) {
         ConstraintValidator.super.initialize(constraintAnnotation);

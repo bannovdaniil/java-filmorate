@@ -4,7 +4,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.dto.DtoFilm;
 import ru.yandex.practicum.filmorate.exceptions.InvalidFilmException;
 import ru.yandex.practicum.filmorate.exceptions.UserAlreadyExistException;
-import ru.yandex.practicum.filmorate.mapper.FilmDtoMapper;
+import ru.yandex.practicum.filmorate.mapper.DtoMapper;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.ArrayList;
@@ -27,11 +27,11 @@ public class FilmController {
         if (dtoFilm == null || dtoFilm.getName() == null) {
             throw new InvalidFilmException("Error: Film name is null.");
         }
-        Film film = FilmDtoMapper.dtoToFilm(dtoFilm);
+        Film film = DtoMapper.dtoToFilm(dtoFilm);
         if (filmsList.containsValue(film)) {
             throw new UserAlreadyExistException("Error: Film is exists");
         } else {
-            int id = filmsList.size();
+            int id = filmsList.size() + 1;
             film.setId(id);
             filmsList.put(id, film);
         }
@@ -44,7 +44,7 @@ public class FilmController {
             throw new InvalidFilmException("Error: Film name is null.");
         }
 
-        Film film = FilmDtoMapper.dtoToFilm(dtoFilm);
+        Film film = DtoMapper.dtoToFilm(dtoFilm);
         int id = filmsList.size();
         if (!filmsList.containsValue(film)) {
             film.setId(id);
