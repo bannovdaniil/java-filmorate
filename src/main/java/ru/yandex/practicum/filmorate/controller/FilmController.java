@@ -28,32 +28,41 @@ public class FilmController {
 
     @PostMapping
     public Film create(@Valid @RequestBody DtoFilm dtoFilm) {
+        log.info("Attempt Create Film record");
         if (dtoFilm == null || dtoFilm.getName() == null) {
+            log.error("Create Film: Invalid film name.");
             throw new InvalidFilmException("Error: Film name is null.");
         }
         Film film = DtoMapper.dtoToFilm(dtoFilm);
         if (filmsList.containsValue(film)) {
-            throw new UserAlreadyExistException("Error: Film is exists");
+            log.error("Create Film: Film already exists.");
+            throw new UserAlreadyExistException("Error: Film already exists.");
         } else {
             int id = filmsList.size() + 1;
             film.setId(id);
             filmsList.put(id, film);
         }
+        log.info("Create Film: {}", film);
+
         return film;
     }
 
     @PutMapping
     public Film update(@Valid @RequestBody DtoFilm dtoFilm) throws InvalidFilmException {
+        log.info("Attempt Update Film record");
         if (dtoFilm == null || dtoFilm.getName() == null) {
+            log.error("Update Film: Film name is null.");
             throw new InvalidFilmException("Error: Film name is null.");
         }
 
         Film film = DtoMapper.dtoToFilm(dtoFilm);
-        int id = filmsList.size() + 1;
-        if (!filmsList.containsKey(film.getId())) {
-            throw new InvalidFilmException("Error: Film name is null.");
+        int id = film.getId();
+        if (!filmsList.containsKey(id)) {
+            log.error("Update Film: Film is unknown.");
+            throw new InvalidFilmException("Error: Film is unknown.");
         }
         filmsList.put(id, film);
+        log.info("Update Film: {}", film);
 
         return film;
     }

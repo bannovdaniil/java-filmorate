@@ -37,7 +37,7 @@ public class UserController {
 
         if (usersList.containsValue(user)) {
             log.error("Create User: User already exists.");
-            throw new UserAlreadyExistException("Error: User is exists");
+            throw new UserAlreadyExistException("Error: User is already exists.");
         } else {
             int id = usersList.size() + 1;
             user.setId(id);
@@ -60,8 +60,8 @@ public class UserController {
         }
         User user = DtoMapper.dtoToUser(dtoUser);
         int id = user.getId();
-        if (!usersList.containsKey(user.getId())) {
-            log.error("Update User: User is unknown");
+        if (!usersList.containsKey(id)) {
+            log.error("Update User: User is unknown.");
             throw new UserAlreadyExistException("Error: User is unknown.");
         }
         usersList.put(id, user);
