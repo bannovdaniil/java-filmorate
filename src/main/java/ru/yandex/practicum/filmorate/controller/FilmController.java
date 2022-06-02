@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.dto.DtoFilm;
 import ru.yandex.practicum.filmorate.exceptions.InvalidFilmException;
@@ -7,11 +8,13 @@ import ru.yandex.practicum.filmorate.exceptions.UserAlreadyExistException;
 import ru.yandex.practicum.filmorate.mapper.DtoMapper;
 import ru.yandex.practicum.filmorate.model.Film;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @RestController
 @RequestMapping("/films")
 public class FilmController {
@@ -19,11 +22,12 @@ public class FilmController {
 
     @GetMapping
     public List<Film> getUsersPage() {
+        log.info("Get Film list size: {}", filmsList.size());
         return new ArrayList<>(filmsList.values());
     }
 
     @PostMapping
-    public Film create(@RequestBody DtoFilm dtoFilm) {
+    public Film create(@Valid @RequestBody DtoFilm dtoFilm) {
         if (dtoFilm == null || dtoFilm.getName() == null) {
             throw new InvalidFilmException("Error: Film name is null.");
         }
@@ -39,19 +43,18 @@ public class FilmController {
     }
 
     @PutMapping
-    public Film update(@RequestBody DtoFilm dtoFilm) throws InvalidFilmException {
+    public Film update(@Valid @RequestBody DtoFilm dtoFilm) throws InvalidFilmException {
         if (dtoFilm == null || dtoFilm.getName() == null) {
             throw new InvalidFilmException("Error: Film name is null.");
         }
 
         Film film = DtoMapper.dtoToFilm(dtoFilm);
-        int id = filmsList.size();
-        if (!filmsList.containsValue(film)) {
-            film.setId(id);
-        } else {
-            id = film.getId();
+        int id = filmsList.size() + 1;
+        if (!filmsList.containsKey(film.getId())) {
+            throw new InvalidFilmException("Error: Film name is null.");
         }
         filmsList.put(id, film);
+
         return film;
     }
 }

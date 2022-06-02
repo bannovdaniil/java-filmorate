@@ -15,6 +15,6 @@ public class NotSpaceCheckerValidation implements ConstraintValidator<NotSpaceCh
 
     @Override
     public boolean isValid(String spaceCheckString, ConstraintValidatorContext constraintValidatorContext) {
-        return spaceCheckString.matches(RegExpression.ANY_SPACE_REGEX);
+        return !spaceCheckString.matches(RegExpression.ANY_SPACE_REGEX);
     }
 }
