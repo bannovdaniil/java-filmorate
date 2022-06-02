@@ -13,7 +13,6 @@ import java.time.LocalDate;
 @Getter
 @Setter
 public class DtoFilm {
-    @Min(value = 0, message = "ID must be greater or equals 0")
     private int id;
     @NotBlank(message = "name should not be blank")
     private String name;

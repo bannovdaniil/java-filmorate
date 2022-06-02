@@ -28,23 +28,6 @@ class DtoFilmTest {
         dtoFilm.setDuration(1);
     }
 
-    @DisplayName("ID validation")
-    @ParameterizedTest
-    @CsvSource({
-            "-1, 1, ID must be greater or equals 0",
-            "0, 0, OK",
-            "1, 0, OK"
-    })
-    void checkLoginValidation(int testId, int expectSize, String expected) {
-        dtoFilm.setId(testId);
-        Set<ConstraintViolation<DtoFilm>> violations = validator.validate(dtoFilm);
-
-        Assertions.assertEquals(expectSize, violations.size());
-        if (!violations.isEmpty()) {
-            Assertions.assertEquals(expected, violations.iterator().next().getMessage());
-        }
-    }
-
     @DisplayName("Name validation")
     @ParameterizedTest
     @CsvSource({
