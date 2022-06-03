@@ -27,7 +27,7 @@ public class FilmController {
     }
 
     @PostMapping
-    public Film create(@Valid @RequestBody DtoFilm dtoFilm) {
+    public Film create(@Valid @RequestBody DtoFilm dtoFilm) throws InvalidFilmException, UserAlreadyExistException {
         log.info("Attempt Create Film record");
         if (dtoFilm == null || dtoFilm.getName() == null) {
             log.error("Create Film: Invalid film name.");

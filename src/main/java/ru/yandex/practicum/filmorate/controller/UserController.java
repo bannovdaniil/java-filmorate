@@ -52,7 +52,7 @@ public class UserController {
     }
 
     @PutMapping
-    public User update(@RequestBody @Valid DtoUser dtoUser) throws InvalidEmailException {
+    public User update(@RequestBody @Valid DtoUser dtoUser) throws InvalidEmailException, UserAlreadyExistException {
         log.info("Attempt Update User");
         if (dtoUser == null || dtoUser.getEmail() == null) {
             log.error("Update User: Invalid Email");
