@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.dto.DtoFilm;
+import ru.yandex.practicum.filmorate.exceptions.InvalidFilmDeleteException;
 import ru.yandex.practicum.filmorate.exceptions.InvalidFilmException;
 import ru.yandex.practicum.filmorate.exceptions.UserAlreadyExistException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -37,7 +38,7 @@ public class FilmController {
     }
 
     @DeleteMapping
-    public String delete(@Valid @RequestBody DtoFilm dtoFilm) throws InvalidFilmException {
+    public String delete(@Valid @RequestBody DtoFilm dtoFilm) throws InvalidFilmDeleteException {
         filmStorage.delete(dtoFilm);
         return "delete - ok";
     }

@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.model;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.dto.DtoFilm;
+import ru.yandex.practicum.filmorate.exceptions.InvalidFilmDeleteException;
 import ru.yandex.practicum.filmorate.exceptions.InvalidFilmException;
 import ru.yandex.practicum.filmorate.exceptions.UserAlreadyExistException;
 import ru.yandex.practicum.filmorate.mapper.DtoMapper;
@@ -65,18 +66,18 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public void delete(DtoFilm dtoFilm) throws InvalidFilmException {
+    public void delete(DtoFilm dtoFilm) throws InvalidFilmDeleteException {
         log.info("Attempt Delete Film record");
         if (dtoFilm == null) {
             log.error("Delete Film: Film is null.");
-            throw new InvalidFilmException("Error: Film name is null.");
+            throw new InvalidFilmDeleteException("Error: Film name is null.");
         }
 
         Film film = DtoMapper.dtoToFilm(dtoFilm);
         int id = film.getId();
         if (!filmsList.containsKey(id)) {
             log.error("Delete Film: Film is not found.");
-            throw new InvalidFilmException("Error: Film is not found.");
+            throw new InvalidFilmDeleteException("Error: Film is not found.");
         }
         filmsList.remove(id);
         log.info("Delete Film id: {}", id);
