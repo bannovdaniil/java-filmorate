@@ -1,11 +1,20 @@
 package ru.yandex.practicum.filmorate.model;
 
-import ru.yandex.practicum.filmorate.model.User;
+import org.springframework.web.bind.annotation.RequestBody;
+import ru.yandex.practicum.filmorate.dto.DtoUser;
+import ru.yandex.practicum.filmorate.exceptions.InvalidEmailException;
+import ru.yandex.practicum.filmorate.exceptions.UserAlreadyExistException;
+import ru.yandex.practicum.filmorate.exceptions.UserDeleteException;
+
+import javax.validation.Valid;
+import java.util.List;
 
 public interface UserStorage {
-    User create(User user);
+    List<User> findAll();
 
-    User update(User user);
+    User create(DtoUser dtoUser) throws InvalidEmailException, UserAlreadyExistException;
 
-    boolean delete(User user);
+    User update(DtoUser dtoUser) throws InvalidEmailException, UserAlreadyExistException;
+
+    void delete(DtoUser dtoUser) throws UserDeleteException;
 }
