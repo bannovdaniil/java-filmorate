@@ -1,11 +1,17 @@
 package ru.yandex.practicum.filmorate.model;
 
-import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.dto.DtoFilm;
+import ru.yandex.practicum.filmorate.exceptions.InvalidFilmException;
+import ru.yandex.practicum.filmorate.exceptions.UserAlreadyExistException;
+
+import java.util.List;
 
 public interface FilmStorage {
-    Film create(Film film);
 
-    Film update(Film film);
+    List<Film> findAll();
+    Film create(DtoFilm dtoFilm) throws InvalidFilmException, UserAlreadyExistException;
 
-    boolean delete(Film film);
+    Film update(DtoFilm dtoFilm) throws InvalidFilmException;
+
+    void delete(DtoFilm dtoFilm) throws InvalidFilmException;
 }
