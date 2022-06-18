@@ -51,12 +51,15 @@ public class FilmController {
         filmService.addLike(filmId, userId);
     }
 
-    @PutMapping("/{id}/like/{userId}")
+    @DeleteMapping("/{id}/like/{userId}")
     public void removeLike(
             @PathVariable("id") Long filmId,
             @PathVariable("userId") Long userId) throws UserGetException, FilmGetException, FilmRemoveLikeException {
         filmService.removeLike(filmId, userId);
     }
 
-
+    @GetMapping("/popular")
+    public List<Film> getFilmTop(@RequestParam(defaultValue = "10", required = false) Long count) {
+        return filmService.getFilmTop(count);
+    }
 }

@@ -9,6 +9,9 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
+import java.util.*;
+import java.util.stream.Collectors;
+
 @Service
 public class FilmService {
     private final FilmStorage filmStorage;
@@ -33,9 +36,20 @@ public class FilmService {
             if (!film.removeLike(userId)) {
                 throw new FilmRemoveLikeException("Can't delete like.");
             }
-
         }
     }
 
 
+    public List<Film> getFilmTop(Long count) {
+        Map<Integer, Film> filmRates = new TreeMap<>(Collections.reverseOrder());
+        List<Film> filmList = filmStorage.findAll();
+
+        for (Film film : filmList) {
+            filmRates.put(film.getRate(), film);
+        }
+
+        return filmRates.values().stream()
+                .limit(count)
+                .collect(Collectors.toList());
+    }
 }
