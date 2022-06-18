@@ -6,6 +6,7 @@ import ru.yandex.practicum.filmorate.dto.DtoUser;
 import ru.yandex.practicum.filmorate.exceptions.InvalidEmailException;
 import ru.yandex.practicum.filmorate.exceptions.UserAlreadyExistException;
 import ru.yandex.practicum.filmorate.exceptions.UserDeleteException;
+import ru.yandex.practicum.filmorate.exceptions.UserGetException;
 import ru.yandex.practicum.filmorate.mapper.DtoMapper;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -70,7 +71,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public void delete(DtoUser dtoUser) throws UserDeleteException {
+    public void remove(DtoUser dtoUser) throws UserDeleteException {
         log.info("Attempt Delete User");
         if (dtoUser == null) {
             log.error("Update User: Invalid User");
@@ -84,5 +85,18 @@ public class InMemoryUserStorage implements UserStorage {
         }
         usersList.remove(id);
         log.info("Delete User: {}", user);
+    }
+
+    @Override
+    public User getUserById(Long userId) throws UserGetException {
+        if (userId == null || userId < 0) {
+            log.error("Get User: Invalid ID");
+            throw new UserGetException("Error: Invalid ID.");
+        }
+        if (!usersList.containsKey(userId)) {
+            log.error("Get User: User ID is not found.");
+            throw new UserGetException("Error: User ID is not found.");
+        }
+        return usersList.get(userId);
     }
 }

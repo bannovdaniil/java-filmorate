@@ -11,11 +11,11 @@ public class UserService {
         user.addFriend(id);
     }
 
-    public void removeFriend(User user, long id) {
-        user.removeFriend(id);
+    public boolean removeFriend(User user, long id) {
+        return user.removeFriend(id);
     }
 
-    public Set<Long> getAllFriendList(User user) {
+    public Set<Long> getFriendList(User user) {
         return user.getFriends();
     }
 }

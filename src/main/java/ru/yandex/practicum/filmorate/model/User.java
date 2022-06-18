@@ -35,10 +35,13 @@ public class User {
         return friends.contains(id);
     }
 
-    public void removeFriend(long id) {
-        if (isFriend(id)) {
+    public boolean removeFriend(long id) {
+        boolean isRemove = isFriend(id);
+        if (isRemove) {
             friends.remove(id);
+            isRemove = isFriend(id);
         }
+        return isRemove;
     }
 
     public Set<Long> getFriends() {
