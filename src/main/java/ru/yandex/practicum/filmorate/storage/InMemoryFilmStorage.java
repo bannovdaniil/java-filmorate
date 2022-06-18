@@ -17,7 +17,7 @@ import java.util.Map;
 @Slf4j
 @Component
 public class InMemoryFilmStorage implements FilmStorage {
-    private final Map<Integer, Film> filmsList = new HashMap<>();
+    private final Map<Long, Film> filmsList = new HashMap<>();
 
     @Override
     public List<Film> findAll() {
@@ -37,7 +37,7 @@ public class InMemoryFilmStorage implements FilmStorage {
             log.error("Create Film: Film already exists.");
             throw new UserAlreadyExistException("Error: Film already exists.");
         } else {
-            int id = filmsList.size() + 1;
+            long id = filmsList.size() + 1;
             film.setId(id);
             filmsList.put(id, film);
         }
@@ -55,7 +55,7 @@ public class InMemoryFilmStorage implements FilmStorage {
         }
 
         Film film = DtoMapper.dtoToFilm(dtoFilm);
-        int id = film.getId();
+        long id = film.getId();
         if (!filmsList.containsKey(id)) {
             log.error("Update Film: Film is unknown.");
             throw new InvalidFilmException("Error: Film is unknown.");
@@ -75,7 +75,7 @@ public class InMemoryFilmStorage implements FilmStorage {
         }
 
         Film film = DtoMapper.dtoToFilm(dtoFilm);
-        int id = film.getId();
+        long id = film.getId();
         if (!filmsList.containsKey(id)) {
             log.error("Delete Film: Film is not found.");
             throw new InvalidFilmDeleteException("Error: Film is not found.");

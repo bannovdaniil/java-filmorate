@@ -17,7 +17,7 @@ import java.util.Map;
 @Slf4j
 @Component
 public class InMemoryUserStorage implements UserStorage {
-    private final Map<Integer, User> usersList = new HashMap<>();
+    private final Map<Long, User> usersList = new HashMap<>();
 
     @Override
     public List<User> findAll() {
@@ -38,7 +38,7 @@ public class InMemoryUserStorage implements UserStorage {
             log.error("Create User: User already exists.");
             throw new UserAlreadyExistException("Error: User is already exists.");
         } else {
-            int id = usersList.size() + 1;
+            long id = usersList.size() + 1;
             user.setId(id);
             if (user.getName().isBlank()) {
                 user.setName(user.getLogin());
@@ -58,7 +58,7 @@ public class InMemoryUserStorage implements UserStorage {
             throw new InvalidEmailException("Error: E-mail is null.");
         }
         User user = DtoMapper.dtoToUser(dtoUser);
-        int id = user.getId();
+        long id = user.getId();
         if (!usersList.containsKey(id)) {
             log.error("Update User: User is unknown.");
             throw new UserAlreadyExistException("Error: User is unknown.");
@@ -77,7 +77,7 @@ public class InMemoryUserStorage implements UserStorage {
             throw new UserDeleteException("Error: User is null.");
         }
         User user = DtoMapper.dtoToUser(dtoUser);
-        int id = user.getId();
+        long id = user.getId();
         if (!usersList.containsKey(id)) {
             log.error("Delete User: User is not found.");
             throw new UserDeleteException("Error: User is not found.");
