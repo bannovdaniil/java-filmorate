@@ -9,7 +9,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
-import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,15 +41,12 @@ public class FilmService {
 
 
     public List<Film> getFilmTop(Long count) {
-        Map<Integer, Film> filmRates = new TreeMap<>(Collections.reverseOrder());
         List<Film> filmList = filmStorage.findAll();
 
-        for (Film film : filmList) {
-            filmRates.put(film.getRate(), film);
-        }
-
-        return filmRates.values().stream()
+        return filmList.stream()
+                .sorted((film1, film2) -> film2.getRate().compareTo(film1.getRate()))
                 .limit(count)
                 .collect(Collectors.toList());
     }
+
 }
