@@ -14,7 +14,7 @@ import java.time.LocalDate;
 @Setter
 @Validated
 public class DtoUser {
-    private int id;
+    private long id;
     @NotBlank(message = "Can not be blank")
     @Email(message = "Is not correct email")
     private String email;
