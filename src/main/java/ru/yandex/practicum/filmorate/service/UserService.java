@@ -31,7 +31,7 @@ public class UserService {
     public void removeFriend(Long userId, Long friendId) throws UserGetException, UserRemoveException {
         User user = userStorage.getUserById(userId);
         if (userStorage.getUserById(friendId) != null) {
-            if (!user.removeFriend(friendId)) {
+            if (user.removeFriend(friendId)) {
                 throw new UserRemoveException("Can't delete friend.");
             }
         }

@@ -33,7 +33,7 @@ public class FilmService {
     public void removeLike(Long filmId, Long userId) throws UserGetException, FilmGetException, FilmRemoveLikeException {
         if (userStorage.getUserById(userId) != null) {
             Film film = filmStorage.getFilmById(filmId);
-            if (!film.removeLike(userId)) {
+            if (film.removeLike(userId)) {
                 throw new FilmRemoveLikeException("Can't delete like.");
             }
         }
