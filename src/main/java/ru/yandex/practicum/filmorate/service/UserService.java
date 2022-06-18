@@ -2,8 +2,8 @@ package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exceptions.UserRemoveException;
 import ru.yandex.practicum.filmorate.exceptions.UserNotFoundException;
+import ru.yandex.practicum.filmorate.exceptions.UserRemoveException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
@@ -23,17 +23,19 @@ public class UserService {
 
     public void addFriend(Long userId, Long friendId) throws UserNotFoundException {
         User user = userStorage.getUserById(userId);
-        if (userStorage.getUserById(friendId) != null) {
-            user.addFriend(friendId);
-        }
+        User friend = userStorage.getUserById(friendId);
+        user.addFriend(friendId);
+        friend.addFriend(userId);
     }
 
     public void removeFriend(Long userId, Long friendId) throws UserNotFoundException, UserRemoveException {
         User user = userStorage.getUserById(userId);
-        if (userStorage.getUserById(friendId) != null) {
-            if (user.removeFriend(friendId)) {
-                throw new UserRemoveException("Can't delete friend.");
-            }
+        User friend = userStorage.getUserById(friendId);
+        if (user.removeFriend(friendId)) {
+            throw new UserRemoveException("Can't delete friend.");
+        }
+        if (friend.removeFriend(userId)) {
+            throw new UserRemoveException("Can't delete friend.");
         }
     }
 
