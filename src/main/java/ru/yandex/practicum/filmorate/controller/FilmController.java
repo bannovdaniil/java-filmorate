@@ -24,8 +24,13 @@ public class FilmController {
     }
 
     @GetMapping
-    public List<Film> getUsersPage() {
+    public List<Film> getFilmList() {
         return filmStorage.findAll();
+    }
+
+    @GetMapping("/{id}")
+    public Film getFilm(@PathVariable("id") Long filmId) throws FilmNotFoundException {
+        return filmStorage.getFilmById(filmId);
     }
 
     @PostMapping

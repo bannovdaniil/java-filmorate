@@ -5,8 +5,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.dto.DtoUser;
 import ru.yandex.practicum.filmorate.exceptions.InvalidEmailException;
 import ru.yandex.practicum.filmorate.exceptions.UserAlreadyExistException;
-import ru.yandex.practicum.filmorate.exceptions.UserRemoveException;
 import ru.yandex.practicum.filmorate.exceptions.UserNotFoundException;
+import ru.yandex.practicum.filmorate.exceptions.UserRemoveException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
@@ -27,8 +27,13 @@ public class UserController {
     }
 
     @GetMapping
-    public List<User> getUsersPage() {
+    public List<User> getUsersList() {
         return userStorage.findAll();
+    }
+
+    @GetMapping("/{id}")
+    public User getUser(@PathVariable("id") Long userId) throws UserNotFoundException {
+        return userStorage.getUserById(userId);
     }
 
     @PostMapping

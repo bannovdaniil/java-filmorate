@@ -2,25 +2,30 @@ package ru.yandex.practicum.filmorate.controller;
 
 
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.yandex.practicum.filmorate.exceptions.FilmNotFoundException;
-import ru.yandex.practicum.filmorate.exceptions.UserNotFoundException;
-
-import javax.validation.ValidationException;
+import ru.yandex.practicum.filmorate.exceptions.*;
 
 @RestControllerAdvice(assignableTypes = {FilmController.class, UserController.class})
 public class ErrorHandler {
     private ErrorResponse errorResponse;
 
-    @ExceptionHandler({ValidationException.class})
+    @ExceptionHandler({
+            MethodArgumentNotValidException.class
+    })
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleBadRequest(final ValidationException e) {
-        return new ErrorResponse(e.getMessage());
+    public ErrorResponse handleBadRequest(final Exception e) {
+        return new ErrorResponse("Ошибка валидации данных");
     }
 
-    @ExceptionHandler
+    @ExceptionHandler({
+            InvalidEmailException.class,
+            InvalidFilmException.class,
+            UserNotFoundException.class,
+            UserAlreadyExistException.class,
+            FilmNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleNotFound(final Exception e) {
         return new ErrorResponse(e.getMessage());
