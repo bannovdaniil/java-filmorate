@@ -3,7 +3,8 @@ package ru.yandex.practicum.filmorate.storage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.dto.DtoFilm;
-import ru.yandex.practicum.filmorate.exceptions.InvalidFilmDeleteException;
+import ru.yandex.practicum.filmorate.exceptions.FilmGetException;
+import ru.yandex.practicum.filmorate.exceptions.InvalidFilmRemoveException;
 import ru.yandex.practicum.filmorate.exceptions.InvalidFilmException;
 import ru.yandex.practicum.filmorate.exceptions.UserAlreadyExistException;
 import ru.yandex.practicum.filmorate.mapper.DtoMapper;
@@ -67,20 +68,33 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public void delete(DtoFilm dtoFilm) throws InvalidFilmDeleteException {
+    public void delete(DtoFilm dtoFilm) throws InvalidFilmRemoveException {
         log.info("Attempt Delete Film record");
         if (dtoFilm == null) {
             log.error("Delete Film: Film is null.");
-            throw new InvalidFilmDeleteException("Error: Film name is null.");
+            throw new InvalidFilmRemoveException("Error: Film name is null.");
         }
 
         Film film = DtoMapper.dtoToFilm(dtoFilm);
         long id = film.getId();
         if (!filmsList.containsKey(id)) {
             log.error("Delete Film: Film is not found.");
-            throw new InvalidFilmDeleteException("Error: Film is not found.");
+            throw new InvalidFilmRemoveException("Error: Film is not found.");
         }
         filmsList.remove(id);
         log.info("Delete Film id: {}", id);
+    }
+
+    @Override
+    public Film getFilmById(Long filmId) throws FilmGetException {
+        if (filmId == null || filmId < 0) {
+            log.error("Get Film: Invalid ID");
+            throw new FilmGetException("Error: Invalid ID.");
+        }
+        if (!filmsList.containsKey(filmId)) {
+            log.error("Get User: User ID is not found.");
+            throw new FilmGetException("Error: Film ID is not found.");
+        }
+        return filmsList.get(filmId);
     }
 }

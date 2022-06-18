@@ -3,9 +3,7 @@ package ru.yandex.practicum.filmorate.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.dto.DtoFilm;
-import ru.yandex.practicum.filmorate.exceptions.InvalidFilmDeleteException;
-import ru.yandex.practicum.filmorate.exceptions.InvalidFilmException;
-import ru.yandex.practicum.filmorate.exceptions.UserAlreadyExistException;
+import ru.yandex.practicum.filmorate.exceptions.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
@@ -41,9 +39,24 @@ public class FilmController {
     }
 
     @DeleteMapping
-    public String delete(@Valid @RequestBody DtoFilm dtoFilm) throws InvalidFilmDeleteException {
+    public String delete(@Valid @RequestBody DtoFilm dtoFilm) throws InvalidFilmRemoveException {
         filmStorage.delete(dtoFilm);
         return "delete - ok";
     }
+
+    @PutMapping("/{id}/like/{userId}")
+    public void addLike(
+            @PathVariable("id") Long filmId,
+            @PathVariable("userId") Long userId) throws UserGetException, FilmGetException {
+        filmService.addLike(filmId, userId);
+    }
+
+    @PutMapping("/{id}/like/{userId}")
+    public void removeLike(
+            @PathVariable("id") Long filmId,
+            @PathVariable("userId") Long userId) throws UserGetException, FilmGetException, FilmRemoveLikeException {
+        filmService.removeLike(filmId, userId);
+    }
+
 
 }

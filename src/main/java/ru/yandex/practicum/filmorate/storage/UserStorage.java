@@ -3,7 +3,7 @@ package ru.yandex.practicum.filmorate.storage;
 import ru.yandex.practicum.filmorate.dto.DtoUser;
 import ru.yandex.practicum.filmorate.exceptions.InvalidEmailException;
 import ru.yandex.practicum.filmorate.exceptions.UserAlreadyExistException;
-import ru.yandex.practicum.filmorate.exceptions.UserDeleteException;
+import ru.yandex.practicum.filmorate.exceptions.UserRemoveException;
 import ru.yandex.practicum.filmorate.exceptions.UserGetException;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -16,7 +16,7 @@ public interface UserStorage {
 
     User update(DtoUser dtoUser) throws InvalidEmailException, UserAlreadyExistException;
 
-    void remove(DtoUser dtoUser) throws UserDeleteException;
+    void remove(DtoUser dtoUser) throws UserRemoveException;
 
     User getUserById(Long userId) throws UserGetException;
 }

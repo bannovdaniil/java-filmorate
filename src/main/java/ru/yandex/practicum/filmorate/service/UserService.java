@@ -2,7 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exceptions.UserDeleteException;
+import ru.yandex.practicum.filmorate.exceptions.UserRemoveException;
 import ru.yandex.practicum.filmorate.exceptions.UserGetException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
@@ -28,11 +28,11 @@ public class UserService {
         }
     }
 
-    public void removeFriend(Long userId, Long friendId) throws UserGetException, UserDeleteException {
+    public void removeFriend(Long userId, Long friendId) throws UserGetException, UserRemoveException {
         User user = userStorage.getUserById(userId);
         if (userStorage.getUserById(friendId) != null) {
             if (!user.removeFriend(friendId)) {
-                throw new UserDeleteException("Can't delete friend.");
+                throw new UserRemoveException("Can't delete friend.");
             }
         }
     }

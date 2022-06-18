@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.dto.DtoUser;
 import ru.yandex.practicum.filmorate.exceptions.InvalidEmailException;
 import ru.yandex.practicum.filmorate.exceptions.UserAlreadyExistException;
-import ru.yandex.practicum.filmorate.exceptions.UserDeleteException;
+import ru.yandex.practicum.filmorate.exceptions.UserRemoveException;
 import ru.yandex.practicum.filmorate.exceptions.UserGetException;
 import ru.yandex.practicum.filmorate.mapper.DtoMapper;
 import ru.yandex.practicum.filmorate.model.User;
@@ -71,17 +71,17 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public void remove(DtoUser dtoUser) throws UserDeleteException {
+    public void remove(DtoUser dtoUser) throws UserRemoveException {
         log.info("Attempt Delete User");
         if (dtoUser == null) {
             log.error("Update User: Invalid User");
-            throw new UserDeleteException("Error: User is null.");
+            throw new UserRemoveException("Error: User is null.");
         }
         User user = DtoMapper.dtoToUser(dtoUser);
         long id = user.getId();
         if (!usersList.containsKey(id)) {
             log.error("Delete User: User is not found.");
-            throw new UserDeleteException("Error: User is not found.");
+            throw new UserRemoveException("Error: User is not found.");
         }
         usersList.remove(id);
         log.info("Delete User: {}", user);
