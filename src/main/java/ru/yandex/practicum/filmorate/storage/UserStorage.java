@@ -4,7 +4,7 @@ import ru.yandex.practicum.filmorate.dto.DtoUser;
 import ru.yandex.practicum.filmorate.exceptions.InvalidEmailException;
 import ru.yandex.practicum.filmorate.exceptions.UserAlreadyExistException;
 import ru.yandex.practicum.filmorate.exceptions.UserRemoveException;
-import ru.yandex.practicum.filmorate.exceptions.UserGetException;
+import ru.yandex.practicum.filmorate.exceptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.List;
@@ -18,5 +18,5 @@ public interface UserStorage {
 
     void remove(DtoUser dtoUser) throws UserRemoveException;
 
-    User getUserById(Long userId) throws UserGetException;
+    User getUserById(Long userId) throws UserNotFoundException;
 }

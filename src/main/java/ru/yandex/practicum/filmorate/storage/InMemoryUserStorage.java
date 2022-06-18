@@ -6,7 +6,7 @@ import ru.yandex.practicum.filmorate.dto.DtoUser;
 import ru.yandex.practicum.filmorate.exceptions.InvalidEmailException;
 import ru.yandex.practicum.filmorate.exceptions.UserAlreadyExistException;
 import ru.yandex.practicum.filmorate.exceptions.UserRemoveException;
-import ru.yandex.practicum.filmorate.exceptions.UserGetException;
+import ru.yandex.practicum.filmorate.exceptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.mapper.DtoMapper;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -88,14 +88,14 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public User getUserById(Long userId) throws UserGetException {
+    public User getUserById(Long userId) throws UserNotFoundException {
         if (userId == null || userId < 0) {
             log.error("Get User: Invalid ID");
-            throw new UserGetException("Error: Invalid ID.");
+            throw new UserNotFoundException("Error: Invalid ID.");
         }
         if (!usersList.containsKey(userId)) {
             log.error("Get User: User ID is not found.");
-            throw new UserGetException("Error: User ID is not found.");
+            throw new UserNotFoundException("Error: User ID is not found.");
         }
         return usersList.get(userId);
     }

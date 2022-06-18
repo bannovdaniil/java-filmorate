@@ -16,5 +16,5 @@ public interface FilmStorage {
 
     void delete(DtoFilm dtoFilm) throws InvalidFilmRemoveException;
 
-    Film getFilmById(Long filmId) throws FilmGetException;
+    Film getFilmById(Long filmId) throws FilmNotFoundException;
 }

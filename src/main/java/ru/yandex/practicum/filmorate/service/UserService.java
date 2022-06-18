@@ -3,7 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.UserRemoveException;
-import ru.yandex.practicum.filmorate.exceptions.UserGetException;
+import ru.yandex.practicum.filmorate.exceptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
@@ -21,14 +21,14 @@ public class UserService {
         this.userStorage = userStorage;
     }
 
-    public void addFriend(Long userId, Long friendId) throws UserGetException {
+    public void addFriend(Long userId, Long friendId) throws UserNotFoundException {
         User user = userStorage.getUserById(userId);
         if (userStorage.getUserById(friendId) != null) {
             user.addFriend(friendId);
         }
     }
 
-    public void removeFriend(Long userId, Long friendId) throws UserGetException, UserRemoveException {
+    public void removeFriend(Long userId, Long friendId) throws UserNotFoundException, UserRemoveException {
         User user = userStorage.getUserById(userId);
         if (userStorage.getUserById(friendId) != null) {
             if (user.removeFriend(friendId)) {
@@ -41,7 +41,7 @@ public class UserService {
         return user.getFriends();
     }
 
-    public List<User> getFriendList(Long userId) throws UserGetException {
+    public List<User> getFriendList(Long userId) throws UserNotFoundException {
         User user = userStorage.getUserById(userId);
         List<User> resultFriendsList = new ArrayList<>();
         Set<Long> friendsIds = getFriendIdList(user);
@@ -53,7 +53,7 @@ public class UserService {
         return resultFriendsList;
     }
 
-    public List<User> getCrossFriendList(Long userId, Long otherId) throws UserGetException {
+    public List<User> getCrossFriendList(Long userId, Long otherId) throws UserNotFoundException {
         User user = userStorage.getUserById(userId);
         User other = userStorage.getUserById(otherId);
 

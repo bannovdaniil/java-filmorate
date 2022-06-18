@@ -6,7 +6,7 @@ import ru.yandex.practicum.filmorate.dto.DtoUser;
 import ru.yandex.practicum.filmorate.exceptions.InvalidEmailException;
 import ru.yandex.practicum.filmorate.exceptions.UserAlreadyExistException;
 import ru.yandex.practicum.filmorate.exceptions.UserRemoveException;
-import ru.yandex.practicum.filmorate.exceptions.UserGetException;
+import ru.yandex.practicum.filmorate.exceptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
@@ -49,26 +49,26 @@ public class UserController {
     @PutMapping("{id}/friends/{friendId}")
     public void addFriend(
             @PathVariable("id") Long userId,
-            @PathVariable("friendId") Long friendId) throws UserGetException {
+            @PathVariable("friendId") Long friendId) throws UserNotFoundException {
         userService.addFriend(userId, friendId);
     }
 
     @DeleteMapping("{id}/friends/{friendId}")
     public void removeFriend(
             @PathVariable("id") Long userId,
-            @PathVariable("friendId") Long friendId) throws UserGetException, UserRemoveException {
+            @PathVariable("friendId") Long friendId) throws UserNotFoundException, UserRemoveException {
         userService.removeFriend(userId, friendId);
     }
 
     @GetMapping("{id}/friends")
-    public List<User> getFriendsList(@PathVariable("id") Long userId) throws UserGetException {
+    public List<User> getFriendsList(@PathVariable("id") Long userId) throws UserNotFoundException {
         return userService.getFriendList(userId);
     }
 
     @GetMapping("{id}/friends/common/{otherId}")
     public List<User> getCrossFriend(
             @PathVariable("id") Long userId,
-            @PathVariable("otherId") Long otherId) throws UserGetException {
+            @PathVariable("otherId") Long otherId) throws UserNotFoundException {
         return userService.getCrossFriendList(userId, otherId);
     }
 

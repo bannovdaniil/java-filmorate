@@ -3,7 +3,7 @@ package ru.yandex.practicum.filmorate.storage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.dto.DtoFilm;
-import ru.yandex.practicum.filmorate.exceptions.FilmGetException;
+import ru.yandex.practicum.filmorate.exceptions.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.InvalidFilmRemoveException;
 import ru.yandex.practicum.filmorate.exceptions.InvalidFilmException;
 import ru.yandex.practicum.filmorate.exceptions.UserAlreadyExistException;
@@ -86,14 +86,14 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film getFilmById(Long filmId) throws FilmGetException {
+    public Film getFilmById(Long filmId) throws FilmNotFoundException {
         if (filmId == null || filmId < 0) {
             log.error("Get Film: Invalid ID");
-            throw new FilmGetException("Error: Invalid ID.");
+            throw new FilmNotFoundException("Error: Invalid ID.");
         }
         if (!filmsList.containsKey(filmId)) {
             log.error("Get User: User ID is not found.");
-            throw new FilmGetException("Error: Film ID is not found.");
+            throw new FilmNotFoundException("Error: Film ID is not found.");
         }
         return filmsList.get(filmId);
     }

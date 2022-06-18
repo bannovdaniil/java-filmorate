@@ -47,14 +47,14 @@ public class FilmController {
     @PutMapping("/{id}/like/{userId}")
     public void addLike(
             @PathVariable("id") Long filmId,
-            @PathVariable("userId") Long userId) throws UserGetException, FilmGetException {
+            @PathVariable("userId") Long userId) throws UserNotFoundException, FilmNotFoundException {
         filmService.addLike(filmId, userId);
     }
 
     @DeleteMapping("/{id}/like/{userId}")
     public void removeLike(
             @PathVariable("id") Long filmId,
-            @PathVariable("userId") Long userId) throws UserGetException, FilmGetException, FilmRemoveLikeException {
+            @PathVariable("userId") Long userId) throws UserNotFoundException, FilmNotFoundException, FilmRemoveLikeException {
         filmService.removeLike(filmId, userId);
     }
 
