@@ -17,38 +17,36 @@ import java.util.List;
 @RestController
 @RequestMapping("/users")
 public class UserController {
-    private final UserStorage userStorage;
     private final UserService userService;
 
     @Autowired
-    public UserController(UserStorage userStorage, UserService userService) {
-        this.userStorage = userStorage;
+    public UserController(UserService userService) {
         this.userService = userService;
     }
 
     @GetMapping
     public List<User> getUsersList() {
-        return userStorage.findAll();
+        return userService.getUserStorage().findAll();
     }
 
     @GetMapping("/{id}")
     public User getUser(@PathVariable("id") Long userId) throws UserNotFoundException {
-        return userStorage.getUserById(userId);
+        return userService.getUserStorage().getUserById(userId);
     }
 
     @PostMapping
     public User createUser(@RequestBody @Valid DtoUser dtoUser) throws InvalidEmailException, UserAlreadyExistException {
-        return userStorage.create(dtoUser);
+        return userService.getUserStorage().create(dtoUser);
     }
 
     @PutMapping
     public User updateUser(@RequestBody @Valid DtoUser dtoUser) throws UserAlreadyExistException, InvalidEmailException {
-        return userStorage.update(dtoUser);
+        return userService.getUserStorage().update(dtoUser);
     }
 
     @DeleteMapping
     public void removeUser(@RequestBody @Valid DtoUser dtoUser) throws UserRemoveException {
-        userStorage.remove(dtoUser);
+        userService.getUserStorage().remove(dtoUser);
     }
 
     @PutMapping("{id}/friends/{friendId}")

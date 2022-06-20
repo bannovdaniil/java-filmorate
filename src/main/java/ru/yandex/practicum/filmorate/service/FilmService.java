@@ -49,4 +49,7 @@ public class FilmService {
                 .collect(Collectors.toList());
     }
 
+    public FilmStorage getFilmStorage() {
+        return filmStorage;
+    }
 }

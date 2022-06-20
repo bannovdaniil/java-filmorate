@@ -14,38 +14,36 @@ import java.util.List;
 @RestController
 @RequestMapping("/films")
 public class FilmController {
-    private final FilmStorage filmStorage;
     private final FilmService filmService;
 
     @Autowired
-    public FilmController(FilmStorage filmStorage, FilmService filmService) {
-        this.filmStorage = filmStorage;
+    public FilmController(FilmService filmService) {
         this.filmService = filmService;
     }
 
     @GetMapping
     public List<Film> getFilmList() {
-        return filmStorage.findAll();
+        return filmService.getFilmStorage().findAll();
     }
 
     @GetMapping("/{id}")
     public Film getFilm(@PathVariable("id") Long filmId) throws FilmNotFoundException {
-        return filmStorage.getFilmById(filmId);
+        return filmService.getFilmStorage().getFilmById(filmId);
     }
 
     @PostMapping
     public Film create(@Valid @RequestBody DtoFilm dtoFilm) throws InvalidFilmException, UserAlreadyExistException {
-        return filmStorage.create(dtoFilm);
+        return filmService.getFilmStorage().create(dtoFilm);
     }
 
     @PutMapping
     public Film update(@Valid @RequestBody DtoFilm dtoFilm) throws InvalidFilmException {
-        return filmStorage.update(dtoFilm);
+        return filmService.getFilmStorage().update(dtoFilm);
     }
 
     @DeleteMapping
     public String delete(@Valid @RequestBody DtoFilm dtoFilm) throws InvalidFilmRemoveException {
-        filmStorage.delete(dtoFilm);
+        filmService.getFilmStorage().delete(dtoFilm);
         return "delete - ok";
     }
 

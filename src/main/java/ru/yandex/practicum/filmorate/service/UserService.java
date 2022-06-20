@@ -71,4 +71,7 @@ public class UserService {
         return resultFriendsList;
     }
 
+    public UserStorage getUserStorage() {
+        return userStorage;
+    }
 }
