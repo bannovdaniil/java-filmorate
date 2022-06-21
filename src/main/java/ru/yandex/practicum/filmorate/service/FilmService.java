@@ -2,9 +2,8 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exceptions.FilmNotFoundException;
-import ru.yandex.practicum.filmorate.exceptions.FilmRemoveLikeException;
-import ru.yandex.practicum.filmorate.exceptions.UserNotFoundException;
+import ru.yandex.practicum.filmorate.dto.DtoFilm;
+import ru.yandex.practicum.filmorate.exceptions.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
@@ -17,6 +16,28 @@ import java.util.stream.Collectors;
 public class FilmService {
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
+
+    public List<Film> findAll() {
+        return filmStorage.findAll();
+    }
+
+    public Film create(DtoFilm dtoFilm) throws InvalidFilmException, UserAlreadyExistException {
+        return filmStorage.create(dtoFilm);
+    }
+
+    public Film update(DtoFilm dtoFilm) throws InvalidFilmException {
+        return filmStorage.update(dtoFilm);
+    }
+
+    public void delete(DtoFilm dtoFilm) throws InvalidFilmRemoveException {
+        filmStorage.delete(dtoFilm);
+
+    }
+
+    public Film getFilmById(Long filmId) throws FilmNotFoundException {
+        return filmStorage.getFilmById(filmId);
+    }
+
 
     public void addLike(Long filmId, Long userId) throws UserNotFoundException, FilmNotFoundException {
         if (userStorage.getUserById(userId) != null) {
@@ -34,7 +55,6 @@ public class FilmService {
         }
     }
 
-
     public List<Film> getFilmTop(Long count) {
         List<Film> filmList = filmStorage.findAll();
 
@@ -44,7 +64,4 @@ public class FilmService {
                 .collect(Collectors.toList());
     }
 
-    public FilmStorage getFilmStorage() {
-        return filmStorage;
-    }
 }

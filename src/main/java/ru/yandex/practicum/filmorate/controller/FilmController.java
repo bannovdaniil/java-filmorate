@@ -18,28 +18,28 @@ public class FilmController {
 
     @GetMapping
     public List<Film> getFilmList() {
-        return filmService.getFilmStorage().findAll();
-    }
-
-    @GetMapping("/{id}")
-    public Film getFilm(@PathVariable("id") Long filmId) throws FilmNotFoundException {
-        return filmService.getFilmStorage().getFilmById(filmId);
+        return filmService.findAll();
     }
 
     @PostMapping
     public Film create(@Valid @RequestBody DtoFilm dtoFilm) throws InvalidFilmException, UserAlreadyExistException {
-        return filmService.getFilmStorage().create(dtoFilm);
+        return filmService.create(dtoFilm);
     }
 
     @PutMapping
     public Film update(@Valid @RequestBody DtoFilm dtoFilm) throws InvalidFilmException {
-        return filmService.getFilmStorage().update(dtoFilm);
+        return filmService.update(dtoFilm);
     }
 
     @DeleteMapping
     public String delete(@Valid @RequestBody DtoFilm dtoFilm) throws InvalidFilmRemoveException {
-        filmService.getFilmStorage().delete(dtoFilm);
+        filmService.delete(dtoFilm);
         return "delete - ok";
+    }
+
+    @GetMapping("/{id}")
+    public Film getFilm(@PathVariable("id") Long filmId) throws FilmNotFoundException {
+        return filmService.getFilmById(filmId);
     }
 
     @PutMapping("/{id}/like/{userId}")
