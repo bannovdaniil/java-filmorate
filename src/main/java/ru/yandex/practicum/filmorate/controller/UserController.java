@@ -21,28 +21,29 @@ public class UserController {
 
     @GetMapping
     public List<User> getUsersList() {
-        return userService.getUserStorage().findAll();
-    }
-
-    @GetMapping("/{id}")
-    public User getUser(@PathVariable("id") Long userId) throws UserNotFoundException {
-        return userService.getUserStorage().getUserById(userId);
+        return userService.findAll();
     }
 
     @PostMapping
     public User createUser(@RequestBody @Valid DtoUser dtoUser) throws InvalidEmailException, UserAlreadyExistException {
-        return userService.getUserStorage().create(dtoUser);
+        return userService.create(dtoUser);
     }
 
     @PutMapping
     public User updateUser(@RequestBody @Valid DtoUser dtoUser) throws UserAlreadyExistException, InvalidEmailException {
-        return userService.getUserStorage().update(dtoUser);
+        return userService.update(dtoUser);
     }
 
     @DeleteMapping
     public void removeUser(@RequestBody @Valid DtoUser dtoUser) throws UserRemoveException {
-        userService.getUserStorage().remove(dtoUser);
+        userService.remove(dtoUser);
     }
+
+    @GetMapping("/{id}")
+    public User getUserById(@PathVariable("id") Long userId) throws UserNotFoundException {
+        return userService.getUserById(userId);
+    }
+
 
     @PutMapping("{id}/friends/{friendId}")
     public void addFriend(
@@ -69,8 +70,6 @@ public class UserController {
             @PathVariable("otherId") Long otherId) throws UserNotFoundException {
         return userService.getCrossFriendList(userId, otherId);
     }
-
-
 }
 
 

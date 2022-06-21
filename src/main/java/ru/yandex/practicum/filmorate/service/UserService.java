@@ -2,6 +2,9 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dto.DtoUser;
+import ru.yandex.practicum.filmorate.exceptions.InvalidEmailException;
+import ru.yandex.practicum.filmorate.exceptions.UserAlreadyExistException;
 import ru.yandex.practicum.filmorate.exceptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.UserRemoveException;
 import ru.yandex.practicum.filmorate.model.User;
@@ -16,6 +19,26 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class UserService {
     private final UserStorage userStorage;
+
+    public List<User> findAll() {
+        return userStorage.findAll();
+    }
+
+    public User create(DtoUser dtoUser) throws InvalidEmailException, UserAlreadyExistException {
+        return userStorage.create(dtoUser);
+    }
+
+    public User update(DtoUser dtoUser) throws InvalidEmailException, UserAlreadyExistException {
+        return userStorage.update(dtoUser);
+    }
+
+    public void remove(DtoUser dtoUser) throws UserRemoveException {
+        userStorage.remove(dtoUser);
+    }
+
+    public User getUserById(Long userId) throws UserNotFoundException {
+        return userStorage.getUserById(userId);
+    }
 
     public void addFriend(Long userId, Long friendId) throws UserNotFoundException {
         User user = userStorage.getUserById(userId);
@@ -65,9 +88,5 @@ public class UserService {
         }
 
         return resultFriendsList;
-    }
-
-    public UserStorage getUserStorage() {
-        return userStorage;
     }
 }
