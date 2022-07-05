@@ -1,11 +1,12 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * целочисленный идентификатор — id;
@@ -19,11 +20,38 @@ import java.time.LocalDate;
 @Setter
 @ToString
 public class Film {
-    private int id;
+    private long id;
     private String name;
     private String description;
     private LocalDate releaseDate;
     private long duration;
+    private Set<Long> likes = new HashSet<>();
+
+    public Integer getRate() {
+        return likes.size();
+    }
+
+    public void addLike(long userId) {
+        likes.add(userId);
+    }
+
+    public boolean isLike(long userId) {
+        return likes.contains(userId);
+    }
+
+    public boolean removeLike(long userId) {
+        boolean isRemove = isLike(userId);
+        if (isRemove) {
+            likes.remove(userId);
+            isRemove = isLike(userId);
+        }
+        return isRemove;
+    }
+
+
+    public Set<Long> getLikes() {
+        return likes;
+    }
 
     @Override
     public boolean equals(Object o) {

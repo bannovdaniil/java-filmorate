@@ -1,11 +1,12 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * целочисленный идентификатор — id;
@@ -19,11 +20,33 @@ import java.time.LocalDate;
 @Setter
 @ToString
 public class User {
-    private int id;
+    private long id;
     private String email;
     private String login;
     private String name;
     private LocalDate birthday;
+    private final Set<Long> friends = new HashSet<>();
+
+    public void addFriend(long id) {
+        friends.add(id);
+    }
+
+    public boolean isFriend(long id) {
+        return friends.contains(id);
+    }
+
+    public boolean removeFriend(long id) {
+        boolean isRemove = isFriend(id);
+        if (isRemove) {
+            friends.remove(id);
+            isRemove = isFriend(id);
+        }
+        return isRemove;
+    }
+
+    public Set<Long> getFriends() {
+        return friends;
+    }
 
     @Override
     public boolean equals(Object o) {

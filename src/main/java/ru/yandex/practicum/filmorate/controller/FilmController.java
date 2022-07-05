@@ -1,69 +1,63 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.dto.DtoFilm;
-import ru.yandex.practicum.filmorate.exceptions.InvalidFilmException;
-import ru.yandex.practicum.filmorate.exceptions.UserAlreadyExistException;
-import ru.yandex.practicum.filmorate.mapper.DtoMapper;
+import ru.yandex.practicum.filmorate.exceptions.*;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-@Slf4j
 @RestController
 @RequestMapping("/films")
+@RequiredArgsConstructor
 public class FilmController {
-    private final Map<Integer, Film> filmsList = new HashMap<>();
+    private final FilmService filmService;
 
     @GetMapping
-    public List<Film> getUsersPage() {
-        log.info("Get Film list size: {}", filmsList.size());
-        return new ArrayList<>(filmsList.values());
+    public List<Film> getFilmList() {
+        return filmService.findAll();
     }
 
     @PostMapping
     public Film create(@Valid @RequestBody DtoFilm dtoFilm) throws InvalidFilmException, UserAlreadyExistException {
-        log.info("Attempt Create Film record");
-        if (dtoFilm == null || dtoFilm.getName() == null) {
-            log.error("Create Film: Invalid film name.");
-            throw new InvalidFilmException("Error: Film name is null.");
-        }
-        Film film = DtoMapper.dtoToFilm(dtoFilm);
-        if (filmsList.containsValue(film)) {
-            log.error("Create Film: Film already exists.");
-            throw new UserAlreadyExistException("Error: Film already exists.");
-        } else {
-            int id = filmsList.size() + 1;
-            film.setId(id);
-            filmsList.put(id, film);
-        }
-        log.info("Create Film: {}", film);
-
-        return film;
+        return filmService.create(dtoFilm);
     }
 
     @PutMapping
     public Film update(@Valid @RequestBody DtoFilm dtoFilm) throws InvalidFilmException {
-        log.info("Attempt Update Film record");
-        if (dtoFilm == null || dtoFilm.getName() == null) {
-            log.error("Update Film: Film name is null.");
-            throw new InvalidFilmException("Error: Film name is null.");
-        }
+        return filmService.update(dtoFilm);
+    }
 
-        Film film = DtoMapper.dtoToFilm(dtoFilm);
-        int id = film.getId();
-        if (!filmsList.containsKey(id)) {
-            log.error("Update Film: Film is unknown.");
-            throw new InvalidFilmException("Error: Film is unknown.");
-        }
-        filmsList.put(id, film);
-        log.info("Update Film: {}", film);
+    @DeleteMapping
+    public String delete(@Valid @RequestBody DtoFilm dtoFilm) throws InvalidFilmRemoveException {
+        filmService.delete(dtoFilm);
+        return "delete - ok";
+    }
 
-        return film;
+    @GetMapping("/{id}")
+    public Film getFilm(@PathVariable("id") Long filmId) throws FilmNotFoundException {
+        return filmService.getFilmById(filmId);
+    }
+
+    @PutMapping("/{id}/like/{userId}")
+    public void addLike(
+            @PathVariable("id") Long filmId,
+            @PathVariable("userId") Long userId) throws UserNotFoundException, FilmNotFoundException {
+        filmService.addLike(filmId, userId);
+    }
+
+    @DeleteMapping("/{id}/like/{userId}")
+    public void removeLike(
+            @PathVariable("id") Long filmId,
+            @PathVariable("userId") Long userId) throws UserNotFoundException, FilmNotFoundException, FilmRemoveLikeException {
+        filmService.removeLike(filmId, userId);
+    }
+
+    @GetMapping("/popular")
+    public List<Film> getFilmTop(@RequestParam(defaultValue = "10", required = false) Long count) {
+        return filmService.getFilmTop(count);
     }
 }
