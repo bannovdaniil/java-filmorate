@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS "films" (
     description VARCHAR(250) NOT NULL,
     duration INTEGER NOT NULL,
     likes INTEGER NOT NULL DEFAULT 0,
+    release_date DATE NOT NULL,
     rating_id INTEGER REFERENCES "ratings"(rating_id) ON DELETE NO ACTION,
     CONSTRAINT check_films_duration CHECK(duration > 0)
 );
