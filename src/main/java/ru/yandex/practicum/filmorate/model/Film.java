@@ -1,11 +1,10 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -19,30 +18,37 @@ import java.util.Set;
 @Getter
 @Setter
 @ToString
+@AllArgsConstructor
+@NoArgsConstructor
 public class Film {
-    private long id;
+    private Long filmId;
     private String name;
     private String description;
+    private Long duration;
     private LocalDate releaseDate;
-    private long duration;
-    private Set<Long> likes = new HashSet<>();
+    private Long likes;
+    private String rating;
+    private List<String> genres;
+    private Set<Long> userLikes = new HashSet<>();
 
-    public Integer getRate() {
-        return likes.size();
+    public Long getRate() {
+        return likes;
     }
 
     public void addLike(long userId) {
-        likes.add(userId);
+        userLikes.add(userId);
+        likes++;
     }
 
     public boolean isLike(long userId) {
-        return likes.contains(userId);
+        return userLikes.contains(userId);
     }
 
     public boolean removeLike(long userId) {
         boolean isRemove = isLike(userId);
         if (isRemove) {
-            likes.remove(userId);
+            userLikes.remove(userId);
+            likes--;
             isRemove = isLike(userId);
         }
         return isRemove;
@@ -50,7 +56,7 @@ public class Film {
 
 
     public Set<Long> getLikes() {
-        return likes;
+        return userLikes;
     }
 
     @Override
@@ -60,18 +66,20 @@ public class Film {
 
         Film film = (Film) o;
 
-        if (duration != film.duration) return false;
+        if (filmId != null ? !filmId.equals(film.filmId) : film.filmId != null) return false;
         if (name != null ? !name.equals(film.name) : film.name != null) return false;
         if (description != null ? !description.equals(film.description) : film.description != null) return false;
+        if (duration != null ? !duration.equals(film.duration) : film.duration != null) return false;
         return releaseDate != null ? releaseDate.equals(film.releaseDate) : film.releaseDate == null;
     }
 
     @Override
     public int hashCode() {
-        int result = name != null ? name.hashCode() : 0;
+        int result = filmId != null ? filmId.hashCode() : 0;
+        result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + (description != null ? description.hashCode() : 0);
+        result = 31 * result + (duration != null ? duration.hashCode() : 0);
         result = 31 * result + (releaseDate != null ? releaseDate.hashCode() : 0);
-        result = 31 * result + (int) (duration ^ (duration >>> 32));
         return result;
     }
 }
