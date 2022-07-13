@@ -3,9 +3,7 @@ package ru.yandex.practicum.filmorate.model;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * целочисленный идентификатор — id;
@@ -28,35 +26,22 @@ public class Film {
     private LocalDate releaseDate;
     private Long likes;
     private String rating;
-    private List<String> genres;
-    private Set<Long> userLikes = new HashSet<>();
 
     public Long getRate() {
         return likes;
     }
 
-    public void addLike(long userId) {
-        userLikes.add(userId);
+    public void addLike() {
         likes++;
     }
 
-    public boolean isLike(long userId) {
-        return userLikes.contains(userId);
-    }
-
-    public boolean removeLike(long userId) {
-        boolean isRemove = isLike(userId);
-        if (isRemove) {
-            userLikes.remove(userId);
+    public boolean removeLike() {
+        boolean isRemove = false;
+        if (likes > 0) {
             likes--;
-            isRemove = isLike(userId);
+            isRemove = true;
         }
         return isRemove;
-    }
-
-
-    public Set<Long> getLikes() {
-        return userLikes;
     }
 
     @Override

@@ -12,13 +12,16 @@ import java.time.LocalDate;
 @Getter
 @Setter
 public class DtoFilm {
-    private long id;
+    private Long filmId;
     @NotBlank(message = "name should not be blank")
     private String name;
     @Size(max = 200, message = "Description length must be less then 200")
     private String description;
+    @Min(value = 0, message = "Duration must be greater then 0")
+    private Long duration;
     @FilmDataChecker
     private LocalDate releaseDate;
-    @Min(value = 0, message = "Duration must be greater then 0")
-    private long duration;
+    private Long likes;
+    private String rating;
+
 }
