@@ -8,7 +8,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.yandex.practicum.filmorate.exceptions.*;
 
-@RestControllerAdvice(assignableTypes = {FilmController.class, UserController.class})
+@RestControllerAdvice(assignableTypes = {FilmController.class
+        , UserController.class
+        , GenreController.class
+        , MpaController.class})
 public class ErrorHandler {
     private ErrorResponse errorResponse;
 
@@ -25,6 +28,8 @@ public class ErrorHandler {
             InvalidFilmException.class,
             UserNotFoundException.class,
             UserAlreadyExistException.class,
+            GenreNotFound.class,
+            MpaRatingNotFound.class,
             FilmNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleNotFound(final Exception e) {

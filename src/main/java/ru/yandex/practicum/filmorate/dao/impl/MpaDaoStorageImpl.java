@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.dao.MpaStorage;
-import ru.yandex.practicum.filmorate.exceptions.RatingNotFound;
+import ru.yandex.practicum.filmorate.exceptions.MpaRatingNotFound;
 import ru.yandex.practicum.filmorate.model.MpaRating;
 
 import java.sql.ResultSet;
@@ -43,7 +43,7 @@ public class MpaDaoStorageImpl implements MpaStorage {
     }
 
     @Override
-    public int indexOfValue(String rating) throws RatingNotFound {
+    public int indexOfValue(String rating) throws MpaRatingNotFound {
         Optional<Integer> index = ratings.entrySet()
                 .stream()
                 .filter((e) -> e.getValue().getName().equals(rating))
@@ -52,15 +52,15 @@ public class MpaDaoStorageImpl implements MpaStorage {
         if (index.isPresent()) {
             return index.get();
         }
-        throw new RatingNotFound("Rating Value not found.");
+        throw new MpaRatingNotFound("Rating Value not found.");
     }
 
     @Override
-    public MpaRating getRatingMpaById(int ratingId) throws RatingNotFound {
+    public MpaRating getRatingMpaById(int ratingId) throws MpaRatingNotFound {
         if (ratings.containsKey(ratingId)) {
             return ratings.get(ratingId);
         }
-        throw new RatingNotFound("Rating Index not found.");
+        throw new MpaRatingNotFound("Rating Index not found.");
     }
 
     @Override
