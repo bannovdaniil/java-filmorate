@@ -88,7 +88,6 @@ public class UserDaoStorageImpl implements UserStorage {
     }
 
     private boolean isUserExist(long userId) {
-        boolean isUserExist = false;
         String sql = "SELECT COUNT(*) FROM USERS WHERE USER_ID = ? ;";
         Integer countUser = jdbcTemplate.queryForObject(sql, Integer.class, userId);
 
