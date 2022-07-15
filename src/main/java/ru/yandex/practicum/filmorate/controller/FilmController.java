@@ -27,7 +27,7 @@ public class FilmController {
     }
 
     @PutMapping
-    public Film update(@Valid @RequestBody DtoFilm dtoFilm) throws InvalidFilmException, FilmNotFoundException, MpaRatingNotFound, MpaRatingNotValid {
+    public Film update(@Valid @RequestBody DtoFilm dtoFilm) throws InvalidFilmException, FilmNotFoundException, MpaRatingNotFound, MpaRatingNotValid, GenreNotFound {
         return filmService.update(dtoFilm);
     }
 

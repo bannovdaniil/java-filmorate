@@ -79,31 +79,34 @@ public class FilmDaoStorageImpl implements FilmStorage {
                 , keyHolder);
 
         updateMpaRating(dtoFilm);
-        updateGenres(dtoFilm);
+        updateGenresNameById(dtoFilm);
 
         Film film = dtoMapper.dtoToFilm(dtoFilm);
         film.setId(keyHolder.getKey().longValue());
         saveGenreToDb(film);
 
-        log.info("Film rate: {}.", film.getRate());
+        log.info("Film create: {}.", film.getRate());
 
         return film;
     }
 
     private void saveGenreToDb(Film film) {
-        if (film.getGenres() == null) {
-            return;
-        }
         long filmId = film.getId();
-        final List<Genre> filmGenres = film.getGenres();
-        for (Genre genre : filmGenres) {
+        if (getFilmGenres(filmId).size() > 0) {
+            String sql = "DELETE FROM FILM_GENRES WHERE FILM_ID = ? ;";
+            jdbcTemplate.update(sql, filmId);
+        }
+        if (film.getGenres() != null) {
+            final List<Genre> filmGenres = film.getGenres();
             String sql = "INSERT INTO FILM_GENRES (FILM_ID, GENRE_ID) VALUES (?, ?)";
-            jdbcTemplate.update(sql, filmId, genre.getId());
+            for (Genre genre : filmGenres) {
+                jdbcTemplate.update(sql, filmId, genre.getId());
+            }
         }
     }
 
     @Override
-    public Film update(DtoFilm dtoFilm) throws InvalidFilmException, FilmNotFoundException, MpaRatingNotFound, MpaRatingNotValid {
+    public Film update(DtoFilm dtoFilm) throws InvalidFilmException, FilmNotFoundException, MpaRatingNotFound, MpaRatingNotValid, GenreNotFound {
         if (isFilmExist(dtoFilm.getId())) {
             String sql = "UPDATE FILMS SET NAME = ?, DESCRIPTION = ?, DURATION = ?, RELEASE_DATE = ?, RATING_ID = ? " +
                     " WHERE FILM_ID = ? ";
@@ -121,6 +124,12 @@ public class FilmDaoStorageImpl implements FilmStorage {
             throw new FilmNotFoundException("Update failed, film not found.");
         }
 
+        updateMpaRating(dtoFilm);
+        updateGenresNameById(dtoFilm);
+
+        Film film = dtoMapper.dtoToFilm(dtoFilm);
+        saveGenreToDb(film);
+
         return dtoMapper.dtoToFilm(dtoFilm);
     }
 
@@ -128,6 +137,9 @@ public class FilmDaoStorageImpl implements FilmStorage {
     public void delete(DtoFilm dtoFilm) throws InvalidFilmRemoveException {
         if (isFilmExist(dtoFilm.getId())) {
             String sql = "DELETE FROM FILM_GENRES WHERE FILM_ID = ? ;";
+            jdbcTemplate.update(sql, dtoFilm.getId());
+
+            sql = "DELETE FROM LIKES WHERE FILM_ID = ? ;";
             jdbcTemplate.update(sql, dtoFilm.getId());
 
             sql = "DELETE FROM FILMS WHERE FILM_ID = ? ;";
@@ -213,7 +225,7 @@ public class FilmDaoStorageImpl implements FilmStorage {
         dtoFilm.setMpa(mpaStorage.getRatingMpaById(dtoFilm.getMpa().getId()));
     }
 
-    private void updateGenres(DtoFilm dtoFilm) throws GenreNotFound {
+    private void updateGenresNameById(DtoFilm dtoFilm) throws GenreNotFound {
         if (dtoFilm.getGenres() == null) {
             return;
         }

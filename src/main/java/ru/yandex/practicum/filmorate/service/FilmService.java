@@ -35,7 +35,7 @@ public class FilmService {
         return filmStorage.create(dtoFilm);
     }
 
-    public Film update(DtoFilm dtoFilm) throws InvalidFilmException, FilmNotFoundException, MpaRatingNotFound, MpaRatingNotValid {
+    public Film update(DtoFilm dtoFilm) throws InvalidFilmException, FilmNotFoundException, MpaRatingNotFound, MpaRatingNotValid, GenreNotFound {
         return filmStorage.update(dtoFilm);
     }
 
