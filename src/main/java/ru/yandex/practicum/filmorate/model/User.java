@@ -5,8 +5,6 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * целочисленный идентификатор — id;
@@ -25,27 +23,9 @@ public class User {
     private String login;
     private String name;
     private LocalDate birthday;
-    private final Set<Long> friends = new HashSet<>();
 
-    public void addFriend(long id) {
-        friends.add(id);
-    }
-
-    public boolean isFriend(long id) {
-        return friends.contains(id);
-    }
-
-    public boolean removeFriend(long id) {
-        boolean isRemove = isFriend(id);
-        if (isRemove) {
-            friends.remove(id);
-            isRemove = isFriend(id);
-        }
-        return isRemove;
-    }
-
-    public Set<Long> getFriends() {
-        return friends;
+    public void setName(String name) {
+        this.name = name == null || name.isBlank() ? login : name;
     }
 
     @Override

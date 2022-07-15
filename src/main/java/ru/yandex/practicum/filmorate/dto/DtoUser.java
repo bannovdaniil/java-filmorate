@@ -18,11 +18,14 @@ public class DtoUser {
     @NotBlank(message = "Can not be blank")
     @Email(message = "Is not correct email")
     private String email;
-    @NotBlank(message = "Can not be blank")
     @NotSpaceChecker
+    @NotBlank(message = "Can not be blank")
     private String login;
     private String name;
     @PastOrPresent(message = "Not yet born")
     private LocalDate birthday;
 
+    public void setName(String name) {
+        this.name = name == null || name.isBlank() ? login : name;
+    }
 }
