@@ -1,3 +1,4 @@
+*.db
 *.class
 *.log
 *.jar
