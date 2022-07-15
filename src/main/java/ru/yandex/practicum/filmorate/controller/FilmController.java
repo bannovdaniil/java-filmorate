@@ -22,12 +22,20 @@ public class FilmController {
     }
 
     @PostMapping
-    public Film create(@Valid @RequestBody DtoFilm dtoFilm) throws InvalidFilmException, UserAlreadyExistException, MpaRatingNotFound, GenreNotFound, MpaRatingNotValid {
+    public Film create(@Valid @RequestBody DtoFilm dtoFilm) throws InvalidFilmException
+            , UserAlreadyExistException
+            , MpaRatingNotFound
+            , GenreNotFound
+            , MpaRatingNotValid {
         return filmService.create(dtoFilm);
     }
 
     @PutMapping
-    public Film update(@Valid @RequestBody DtoFilm dtoFilm) throws InvalidFilmException, FilmNotFoundException, MpaRatingNotFound, MpaRatingNotValid, GenreNotFound {
+    public Film update(@Valid @RequestBody DtoFilm dtoFilm) throws InvalidFilmException
+            , FilmNotFoundException
+            , MpaRatingNotFound
+            , MpaRatingNotValid
+            , GenreNotFound {
         return filmService.update(dtoFilm);
     }
 

@@ -12,20 +12,10 @@ import ru.yandex.practicum.filmorate.model.Film;
 import java.util.List;
 
 @Service
-//@RequiredArgsConstructor
+@RequiredArgsConstructor
 public class FilmService {
-    private FilmStorage filmStorage;
-    private LikeStorage likeStorage;
-
-    @Autowired
-    public void setFilmStorage(FilmStorage filmStorage) {
-        this.filmStorage = filmStorage;
-    }
-
-    @Autowired
-    public void setLikeStorage(LikeStorage likeStorage) {
-        this.likeStorage = likeStorage;
-    }
+    private final FilmStorage filmStorage;
+    private final LikeStorage likeStorage;
 
     public List<Film> findAll() throws MpaRatingNotFound {
         return filmStorage.findAll();
