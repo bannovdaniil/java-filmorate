@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.dto.DtoFilm;
 import ru.yandex.practicum.filmorate.exceptions.*;
@@ -11,13 +12,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/films")
-//@RequiredArgsConstructor
+@RequiredArgsConstructor
 public class FilmController {
     private final FilmService filmService;
-
-    public FilmController(FilmService filmService) {
-        this.filmService = filmService;
-    }
 
     @GetMapping
     public List<Film> getFilmList() throws MpaRatingNotFound {
@@ -25,12 +22,12 @@ public class FilmController {
     }
 
     @PostMapping
-    public Film create(@Valid @RequestBody DtoFilm dtoFilm) throws InvalidFilmException, UserAlreadyExistException, MpaRatingNotFound, GenreNotFound {
+    public Film create(@Valid @RequestBody DtoFilm dtoFilm) throws InvalidFilmException, UserAlreadyExistException, MpaRatingNotFound, GenreNotFound, MpaRatingNotValid {
         return filmService.create(dtoFilm);
     }
 
     @PutMapping
-    public Film update(@Valid @RequestBody DtoFilm dtoFilm) throws InvalidFilmException, FilmNotFoundException, MpaRatingNotFound {
+    public Film update(@Valid @RequestBody DtoFilm dtoFilm) throws InvalidFilmException, FilmNotFoundException, MpaRatingNotFound, MpaRatingNotValid {
         return filmService.update(dtoFilm);
     }
 
@@ -48,14 +45,14 @@ public class FilmController {
     @PutMapping("/{id}/like/{userId}")
     public void addLike(
             @PathVariable("id") Long filmId,
-            @PathVariable("userId") Long userId) throws FilmNotFoundException, MpaRatingNotFound {
+            @PathVariable("userId") Long userId) throws FilmNotFoundException, UserNotFoundException {
         filmService.addLike(filmId, userId);
     }
 
     @DeleteMapping("/{id}/like/{userId}")
     public void removeLike(
             @PathVariable("id") Long filmId,
-            @PathVariable("userId") Long userId) throws FilmNotFoundException, FilmRemoveLikeException, MpaRatingNotFound {
+            @PathVariable("userId") Long userId) throws FilmNotFoundException, UserNotFoundException {
         filmService.removeLike(filmId, userId);
     }
 

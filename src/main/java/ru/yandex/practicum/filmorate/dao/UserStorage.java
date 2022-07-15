@@ -16,6 +16,8 @@ public interface UserStorage {
 
     User update(DtoUser dtoUser) throws UserNotFoundException;
 
+    boolean isUserExist(long userId);
+
     void remove(DtoUser dtoUser) throws UserRemoveException;
 
     User getUserById(Long userId) throws UserNotFoundException;

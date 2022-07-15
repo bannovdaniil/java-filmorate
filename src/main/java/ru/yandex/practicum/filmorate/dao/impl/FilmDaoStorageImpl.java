@@ -58,7 +58,7 @@ public class FilmDaoStorageImpl implements FilmStorage {
     }
 
     @Override
-    public Film create(DtoFilm dtoFilm) throws InvalidFilmException, UserAlreadyExistException, MpaRatingNotFound, GenreNotFound {
+    public Film create(DtoFilm dtoFilm) throws InvalidFilmException, UserAlreadyExistException, MpaRatingNotFound, GenreNotFound, MpaRatingNotValid {
         String sql = "INSERT INTO FILMS (NAME, DESCRIPTION, DURATION, RELEASE_DATE, RATE, RATING_ID) " +
                 " VALUES(? , ? , ? , ? , ?, ?)";
 
@@ -103,7 +103,7 @@ public class FilmDaoStorageImpl implements FilmStorage {
     }
 
     @Override
-    public Film update(DtoFilm dtoFilm) throws InvalidFilmException, FilmNotFoundException, MpaRatingNotFound {
+    public Film update(DtoFilm dtoFilm) throws InvalidFilmException, FilmNotFoundException, MpaRatingNotFound, MpaRatingNotValid {
         if (isFilmExist(dtoFilm.getId())) {
             String sql = "UPDATE FILMS SET NAME = ?, DESCRIPTION = ?, DURATION = ?, RELEASE_DATE = ?, RATING_ID = ? " +
                     " WHERE FILM_ID = ? ";
@@ -127,10 +127,10 @@ public class FilmDaoStorageImpl implements FilmStorage {
     @Override
     public void delete(DtoFilm dtoFilm) throws InvalidFilmRemoveException {
         if (isFilmExist(dtoFilm.getId())) {
-            String sql = "DELETE FROM FILM_GENRES WHERE FILM_ID = ?";
+            String sql = "DELETE FROM FILM_GENRES WHERE FILM_ID = ? ;";
             jdbcTemplate.update(sql, dtoFilm.getId());
 
-            sql = "DELETE FROM FILMS WHERE FILM_ID = ?";
+            sql = "DELETE FROM FILMS WHERE FILM_ID = ? ;";
             jdbcTemplate.update(sql, dtoFilm.getId());
         } else {
             throw new InvalidFilmRemoveException("Film for delete not found.");
@@ -161,7 +161,7 @@ public class FilmDaoStorageImpl implements FilmStorage {
         log.info("Get Top Film list from DB.");
 
         String sql = "SELECT * FROM FILMS " +
-                " ORDER BY RATE DESC" +
+                " ORDER BY LIKES DESC" +
                 " LIMIT ?;";
 
         List<Film> films = jdbcTemplate.query(sql, this::makeFilm, count);
@@ -172,11 +172,24 @@ public class FilmDaoStorageImpl implements FilmStorage {
         return films;
     }
 
-    private boolean isFilmExist(long filmId) {
+    @Override
+    public boolean isFilmExist(long filmId) {
         String sql = "SELECT COUNT(*) FROM FILMS WHERE FILM_ID = ? ;";
         int filmCount = jdbcTemplate.queryForObject(sql, Integer.class, filmId);
 
         return filmCount > 0;
+    }
+
+    @Override
+    public void addLike(long filmId) {
+        String sql = "UPDATE FILMS SET LIKES = LIKES + 1 WHERE FILM_ID = ?; ";
+        jdbcTemplate.update(sql, filmId);
+    }
+
+    @Override
+    public void removeLike(long filmId) {
+        String sql = "UPDATE FILMS SET LIKES = LIKES - 1 WHERE FILM_ID = ?; ";
+        jdbcTemplate.update(sql, filmId);
     }
 
     private List<Genre> getFilmGenres(long filmId) {
@@ -193,9 +206,9 @@ public class FilmDaoStorageImpl implements FilmStorage {
                 , filmId);
     }
 
-    private void updateMpaRating(DtoFilm dtoFilm) throws MpaRatingNotFound {
+    private void updateMpaRating(DtoFilm dtoFilm) throws MpaRatingNotFound, MpaRatingNotValid {
         if (dtoFilm.getMpa() == null) {
-            throw new MpaRatingNotFound("Не заданно значение MPA.");
+            throw new MpaRatingNotValid("Не задано значение MPA");
         }
         dtoFilm.setMpa(mpaStorage.getRatingMpaById(dtoFilm.getMpa().getId()));
     }

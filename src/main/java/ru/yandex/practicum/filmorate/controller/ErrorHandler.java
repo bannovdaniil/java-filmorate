@@ -16,7 +16,7 @@ public class ErrorHandler {
     private ErrorResponse errorResponse;
 
     @ExceptionHandler({
-            MpaRatingNotFound.class,
+            MpaRatingNotValid.class,
             MethodArgumentNotValidException.class
     })
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -25,6 +25,7 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler({
+            MpaRatingNotFound.class,
             InvalidEmailException.class,
             InvalidFilmException.class,
             UserNotFoundException.class,
