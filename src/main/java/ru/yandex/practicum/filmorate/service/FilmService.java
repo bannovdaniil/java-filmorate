@@ -2,30 +2,31 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dao.FilmStorage;
+import ru.yandex.practicum.filmorate.dao.LikeStorage;
+import ru.yandex.practicum.filmorate.dao.UserStorage;
 import ru.yandex.practicum.filmorate.dto.DtoFilm;
 import ru.yandex.practicum.filmorate.exceptions.*;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class FilmService {
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
+    private final LikeStorage likeStorage;
 
-    public List<Film> findAll() {
+    public List<Film> findAll() throws MpaRatingNotFound {
         return filmStorage.findAll();
     }
 
-    public Film create(DtoFilm dtoFilm) throws InvalidFilmException, UserAlreadyExistException {
+    public Film create(DtoFilm dtoFilm) throws InvalidFilmException, UserAlreadyExistException, MpaRatingNotFound, GenreNotFound {
         return filmStorage.create(dtoFilm);
     }
 
-    public Film update(DtoFilm dtoFilm) throws InvalidFilmException {
+    public Film update(DtoFilm dtoFilm) throws InvalidFilmException, FilmNotFoundException, MpaRatingNotFound {
         return filmStorage.update(dtoFilm);
     }
 
@@ -34,34 +35,31 @@ public class FilmService {
 
     }
 
-    public Film getFilmById(Long filmId) throws FilmNotFoundException {
+    public Film getFilmById(Long filmId) throws FilmNotFoundException, MpaRatingNotFound {
         return filmStorage.getFilmById(filmId);
     }
 
 
-    public void addLike(Long filmId, Long userId) throws UserNotFoundException, FilmNotFoundException {
-        if (userStorage.getUserById(userId) != null) {
+    public void addLike(Long filmId, Long userId) throws FilmNotFoundException, MpaRatingNotFound {
+        if (likeStorage.addLike(filmId, userId)) {
             Film film = filmStorage.getFilmById(filmId);
-            film.addLike(userId);
+            film.addLike();
+            // TODO Update DB film record
         }
     }
 
-    public void removeLike(Long filmId, Long userId) throws UserNotFoundException, FilmNotFoundException, FilmRemoveLikeException {
-        if (userStorage.getUserById(userId) != null) {
+    public void removeLike(Long filmId, Long userId) throws FilmNotFoundException, FilmRemoveLikeException, MpaRatingNotFound {
+        if (likeStorage.removeLike(filmId, userId)) {
             Film film = filmStorage.getFilmById(filmId);
-            if (film.removeLike(userId)) {
-                throw new FilmRemoveLikeException("Can't delete like.");
-            }
+            film.removeLike();
+            // TODO Update DB film record
+        } else {
+            throw new FilmRemoveLikeException("Can't delete like.");
         }
     }
 
-    public List<Film> getFilmTop(Long count) {
-        List<Film> filmList = filmStorage.findAll();
-
-        return filmList.stream()
-                .sorted((film1, film2) -> film2.getRate().compareTo(film1.getRate()))
-                .limit(count)
-                .collect(Collectors.toList());
+    public List<Film> getFilmTop(Long count) throws MpaRatingNotFound {
+       return filmStorage.getFilmTop(count);
     }
 
 }

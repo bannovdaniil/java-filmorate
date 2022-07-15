@@ -11,4 +11,7 @@ public class MpaRating {
     private Integer id;
     private String name;
 
+    public MpaRating(int id) {
+        this.id = id;
+    }
 }

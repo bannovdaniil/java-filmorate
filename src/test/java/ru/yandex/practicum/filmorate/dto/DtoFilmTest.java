@@ -21,11 +21,11 @@ class DtoFilmTest {
     @BeforeEach
     void beforeEach() {
         dtoFilm = new DtoFilm();
-        dtoFilm.setId(1);
+        dtoFilm.setId(1L);
         dtoFilm.setName("Ivan");
         dtoFilm.setDescription("Description");
         dtoFilm.setReleaseDate(LocalDate.of(1977, 7, 10));
-        dtoFilm.setDuration(1);
+        dtoFilm.setDuration(1L);
     }
 
     @DisplayName("Name validation")

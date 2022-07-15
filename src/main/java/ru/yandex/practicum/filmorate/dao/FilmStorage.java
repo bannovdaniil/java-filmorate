@@ -8,13 +8,15 @@ import java.util.List;
 
 public interface FilmStorage {
 
-    List<Film> findAll();
+    List<Film> findAll() throws MpaRatingNotFound;
 
-    Film create(DtoFilm dtoFilm) throws InvalidFilmException, UserAlreadyExistException;
+    Film create(DtoFilm dtoFilm) throws InvalidFilmException, UserAlreadyExistException, MpaRatingNotFound, GenreNotFound;
 
-    Film update(DtoFilm dtoFilm) throws InvalidFilmException;
+    Film update(DtoFilm dtoFilm) throws InvalidFilmException, FilmNotFoundException, MpaRatingNotFound;
 
     void delete(DtoFilm dtoFilm) throws InvalidFilmRemoveException;
 
-    Film getFilmById(Long filmId) throws FilmNotFoundException;
+    Film getFilmById(Long filmId) throws FilmNotFoundException, MpaRatingNotFound;
+
+    List<Film> getFilmTop(Long count) throws MpaRatingNotFound;
 }

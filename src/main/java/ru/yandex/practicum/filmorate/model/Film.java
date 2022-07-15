@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -19,17 +20,16 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Film {
-    private Long filmId;
+    private Long id;
     private String name;
     private String description;
-    private Long duration;
     private LocalDate releaseDate;
+    private Long duration;
+    private Long rate;
+    private MpaRating mpa;
+    private List<Genre> genres;
+    @JsonIgnore
     private Long likes;
-    private String rating;
-
-    public Long getRate() {
-        return likes;
-    }
 
     public void addLike() {
         likes++;
@@ -51,7 +51,7 @@ public class Film {
 
         Film film = (Film) o;
 
-        if (filmId != null ? !filmId.equals(film.filmId) : film.filmId != null) return false;
+        if (id != null ? !id.equals(film.id) : film.id != null) return false;
         if (name != null ? !name.equals(film.name) : film.name != null) return false;
         if (description != null ? !description.equals(film.description) : film.description != null) return false;
         if (duration != null ? !duration.equals(film.duration) : film.duration != null) return false;
@@ -60,7 +60,7 @@ public class Film {
 
     @Override
     public int hashCode() {
-        int result = filmId != null ? filmId.hashCode() : 0;
+        int result = id != null ? id.hashCode() : 0;
         result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + (description != null ? description.hashCode() : 0);
         result = 31 * result + (duration != null ? duration.hashCode() : 0);
