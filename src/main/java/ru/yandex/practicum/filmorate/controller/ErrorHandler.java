@@ -16,11 +16,12 @@ public class ErrorHandler {
     private ErrorResponse errorResponse;
 
     @ExceptionHandler({
+            MpaRatingNotFound.class,
             MethodArgumentNotValidException.class
     })
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleBadRequest(final Exception e) {
-        return new ErrorResponse("Ошибка валидации данных");
+        return new ErrorResponse("Ошибка валидации данных: " + e.getMessage());
     }
 
     @ExceptionHandler({
@@ -29,7 +30,6 @@ public class ErrorHandler {
             UserNotFoundException.class,
             UserAlreadyExistException.class,
             GenreNotFound.class,
-            MpaRatingNotFound.class,
             FilmNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleNotFound(final Exception e) {
