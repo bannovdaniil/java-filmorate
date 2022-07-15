@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.dto.DtoUser;
 import ru.yandex.practicum.filmorate.exceptions.InvalidEmailException;
@@ -30,7 +31,7 @@ public class UserController {
     }
 
     @PutMapping
-    public User updateUser(@RequestBody @Valid DtoUser dtoUser) throws UserAlreadyExistException, InvalidEmailException {
+    public User updateUser(@RequestBody @Valid DtoUser dtoUser) throws UserNotFoundException {
         return userService.update(dtoUser);
     }
 
