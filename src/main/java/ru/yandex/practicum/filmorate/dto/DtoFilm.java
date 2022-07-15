@@ -10,7 +10,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
-import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -26,5 +26,5 @@ public class DtoFilm {
     private Long duration;
     private Long rate;
     private MpaRating mpa;
-    private List<Genre> genres;
+    private Set<Genre> genres;
 }

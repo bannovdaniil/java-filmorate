@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 /**
  * целочисленный идентификатор — id;
@@ -27,7 +28,7 @@ public class Film {
     private Long duration;
     private Long rate;
     private MpaRating mpa;
-    private List<Genre> genres;
+    private Set<Genre> genres;
     @JsonIgnore
     private Long likes;
 

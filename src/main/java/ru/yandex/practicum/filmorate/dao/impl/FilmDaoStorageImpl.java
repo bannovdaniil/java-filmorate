@@ -20,8 +20,9 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @Repository
@@ -97,7 +98,7 @@ public class FilmDaoStorageImpl implements FilmStorage {
             jdbcTemplate.update(sql, filmId);
         }
         if (film.getGenres() != null) {
-            final List<Genre> filmGenres = film.getGenres();
+            final Set<Genre> filmGenres = film.getGenres();
             String sql = "INSERT INTO FILM_GENRES (FILM_ID, GENRE_ID) VALUES (?, ?)";
             for (Genre genre : filmGenres) {
                 jdbcTemplate.update(sql, filmId, genre.getId());
@@ -204,10 +205,10 @@ public class FilmDaoStorageImpl implements FilmStorage {
         jdbcTemplate.update(sql, filmId);
     }
 
-    private List<Genre> getFilmGenres(long filmId) {
+    private Set<Genre> getFilmGenres(long filmId) {
         String sql = "SELECT * FROM FILM_GENRES WHERE FILM_ID = ? ;";
 
-        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+        return new HashSet<>(jdbcTemplate.query(sql, (rs, rowNum) -> {
                     int genreId = rs.getInt("GENRE_ID");
                     try {
                         return genreStorage.getGenreById(genreId);
@@ -215,7 +216,7 @@ public class FilmDaoStorageImpl implements FilmStorage {
                         throw new RuntimeException(e);
                     }
                 }
-                , filmId);
+                , filmId));
     }
 
     private void updateMpaRating(DtoFilm dtoFilm) throws MpaRatingNotFound, MpaRatingNotValid {
@@ -229,7 +230,7 @@ public class FilmDaoStorageImpl implements FilmStorage {
         if (dtoFilm.getGenres() == null) {
             return;
         }
-        List<Genre> genresWithName = new ArrayList<>();
+        Set<Genre> genresWithName = new HashSet<>();
         for (Genre genre : dtoFilm.getGenres()) {
             genresWithName.add(genreStorage.getGenreById(genre.getId()));
         }
