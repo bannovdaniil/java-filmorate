@@ -231,10 +231,14 @@ public class FilmDaoStorageImpl implements FilmStorage {
         if (dtoFilm.getGenres() == null) {
             return;
         }
-        Set<Genre> genresWithName = new HashSet<>();
+        List<Genre> genresWithName = new ArrayList<>();
+        Set<Integer> doubleId = new HashSet<>();
         for (Genre genre : dtoFilm.getGenres()) {
-            genresWithName.add(genreStorage.getGenreById(genre.getId()));
+            if (!doubleId.contains(genre.getId())) {
+                doubleId.add(genre.getId());
+                genresWithName.add(genreStorage.getGenreById(genre.getId()));
+            }
         }
-        dtoFilm.setGenres(new ArrayList<>(genresWithName));
+        dtoFilm.setGenres(genresWithName);
     }
 }
