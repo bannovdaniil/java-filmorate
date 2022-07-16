@@ -29,7 +29,7 @@ public class GenreDaoStorageImpl implements GenreStorage {
     private Map<Integer, Genre> loadValueFromDb() {
         Map<Integer, Genre> genres = new HashMap<>();
 
-        String sql = "SELECT * FROM GENRES;";
+        String sql = "SELECT * FROM GENRES ORDER BY GENRE_ID;";
         jdbcTemplate.query(sql, (ResultSet rs) -> {
             do {
                 int genreId = rs.getInt("GENRE_ID");

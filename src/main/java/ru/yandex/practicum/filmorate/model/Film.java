@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.util.Set;
+import java.util.List;
 
 /**
  * целочисленный идентификатор — id;
@@ -27,7 +27,7 @@ public class Film {
     private Long duration;
     private Long rate;
     private MpaRating mpa;
-    private Set<Genre> genres;
+    private List<Genre> genres;
     @JsonIgnore
     private Long likes;
 
