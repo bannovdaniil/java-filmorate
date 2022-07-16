@@ -8,8 +8,6 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.dao.UserStorage;
 import ru.yandex.practicum.filmorate.dto.DtoUser;
-import ru.yandex.practicum.filmorate.exceptions.InvalidEmailException;
-import ru.yandex.practicum.filmorate.exceptions.UserAlreadyExistException;
 import ru.yandex.practicum.filmorate.exceptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.UserRemoveException;
 import ru.yandex.practicum.filmorate.mapper.DtoMapper;
@@ -46,7 +44,7 @@ public class UserDaoStorageImpl implements UserStorage {
     }
 
     @Override
-    public User create(DtoUser dtoUser) throws InvalidEmailException, UserAlreadyExistException {
+    public User create(DtoUser dtoUser) {
         String sql = "INSERT INTO USERS (EMAIL, LOGIN, NAME, BIRTHDAY) " +
                 " VALUES(? , ? , ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();

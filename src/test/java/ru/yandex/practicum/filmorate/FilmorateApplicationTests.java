@@ -7,7 +7,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import ru.yandex.practicum.filmorate.dao.FilmStorage;
-import ru.yandex.practicum.filmorate.dao.MpaStorage;
 import ru.yandex.practicum.filmorate.dao.UserStorage;
 import ru.yandex.practicum.filmorate.dto.DtoFilm;
 import ru.yandex.practicum.filmorate.dto.DtoUser;
@@ -99,7 +98,7 @@ class FilmorateApplicationTests {
 
     @DisplayName("Create User")
     @Test
-    public void createUser() throws UserAlreadyExistException, InvalidEmailException {
+    public void createUser() {
         User userResult = userStorage.create(dtoUser1);
 
         assertThat(userResult).hasFieldOrPropertyWithValue("email", "testemail1@mail.ru");
@@ -107,7 +106,7 @@ class FilmorateApplicationTests {
 
     @DisplayName("Find User by Id")
     @Test
-    public void testFindUserById() throws UserNotFoundException, UserAlreadyExistException, InvalidEmailException {
+    public void testFindUserById() throws UserNotFoundException {
         User user = userStorage.create(dtoUser1);
 
         long userId = user.getId();
@@ -121,7 +120,7 @@ class FilmorateApplicationTests {
 
     @DisplayName("Update User")
     @Test
-    public void updateUser() throws UserNotFoundException, UserAlreadyExistException, InvalidEmailException {
+    public void updateUser() throws UserNotFoundException {
         User userResult = userStorage.create(dtoUser1);
 
         long userId = userResult.getId();
@@ -137,7 +136,7 @@ class FilmorateApplicationTests {
 
     @DisplayName("Remove User")
     @Test
-    public void removeUser() throws UserAlreadyExistException, InvalidEmailException, UserRemoveException {
+    public void removeUser() throws UserRemoveException {
         User userResult = userStorage.create(dtoUser1);
 
         long userId = userResult.getId();
@@ -154,7 +153,7 @@ class FilmorateApplicationTests {
 
     @DisplayName("Find All Users")
     @Test
-    public void findAllUser() throws UserAlreadyExistException, InvalidEmailException {
+    public void findAllUser() {
         User userResult1 = userStorage.create(dtoUser1);
         User userResult2 = userStorage.create(dtoUser2);
 
@@ -167,7 +166,7 @@ class FilmorateApplicationTests {
 
     @DisplayName("Create Film")
     @Test
-    public void createFilm() throws InvalidFilmException, UserAlreadyExistException, GenreNotFound, MpaRatingNotFound, MpaRatingNotValid {
+    public void createFilm() throws GenreNotFound, MpaRatingNotFound, MpaRatingNotValid {
         Film filmResult = filmStorage.create(dtoFilm1);
 
         assertThat(filmResult).hasFieldOrPropertyWithValue("name", "testFilm1");
@@ -175,7 +174,7 @@ class FilmorateApplicationTests {
 
     @DisplayName("Find Film by Id")
     @Test
-    public void testFindFilmById() throws FilmNotFoundException, InvalidFilmException, UserAlreadyExistException, GenreNotFound, MpaRatingNotFound, MpaRatingNotValid {
+    public void testFindFilmById() throws FilmNotFoundException, GenreNotFound, MpaRatingNotFound, MpaRatingNotValid {
         Film film = filmStorage.create(dtoFilm1);
 
         long filmId = film.getId();
@@ -189,7 +188,7 @@ class FilmorateApplicationTests {
 
     @DisplayName("Update Film")
     @Test
-    public void updateFilm() throws FilmNotFoundException, InvalidFilmException, UserAlreadyExistException, GenreNotFound, MpaRatingNotFound, MpaRatingNotValid {
+    public void updateFilm() throws FilmNotFoundException, GenreNotFound, MpaRatingNotFound, MpaRatingNotValid {
         Film filmResult = filmStorage.create(dtoFilm1);
 
         long filmId = filmResult.getId();
@@ -205,7 +204,7 @@ class FilmorateApplicationTests {
 
     @DisplayName("Remove Film")
     @Test
-    public void removeFilm() throws InvalidFilmException, UserAlreadyExistException, GenreNotFound, MpaRatingNotFound, MpaRatingNotValid, InvalidFilmRemoveException {
+    public void removeFilm() throws GenreNotFound, MpaRatingNotFound, MpaRatingNotValid, InvalidFilmRemoveException {
         Film filmResult = filmStorage.create(dtoFilm1);
 
         long filmId = filmResult.getId();
@@ -222,7 +221,7 @@ class FilmorateApplicationTests {
 
     @DisplayName("Find All Films")
     @Test
-    public void findAllFilm() throws InvalidFilmException, UserAlreadyExistException, GenreNotFound, MpaRatingNotFound, MpaRatingNotValid {
+    public void findAllFilm() throws GenreNotFound, MpaRatingNotFound, MpaRatingNotValid {
         Film filmResult1 = filmStorage.create(dtoFilm1);
         Film filmResult2 = filmStorage.create(dtoFilm2);
 

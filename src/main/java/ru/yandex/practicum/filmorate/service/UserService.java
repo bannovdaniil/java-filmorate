@@ -4,8 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dao.UserStorage;
 import ru.yandex.practicum.filmorate.dto.DtoUser;
-import ru.yandex.practicum.filmorate.exceptions.InvalidEmailException;
-import ru.yandex.practicum.filmorate.exceptions.UserAlreadyExistException;
 import ru.yandex.practicum.filmorate.exceptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.UserRemoveException;
 import ru.yandex.practicum.filmorate.model.User;
@@ -21,7 +19,7 @@ public class UserService {
         return userStorage.findAll();
     }
 
-    public User create(DtoUser dtoUser) throws InvalidEmailException, UserAlreadyExistException {
+    public User create(DtoUser dtoUser) {
         return userStorage.create(dtoUser);
     }
 

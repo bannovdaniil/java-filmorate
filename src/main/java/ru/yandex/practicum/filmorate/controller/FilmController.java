@@ -22,17 +22,14 @@ public class FilmController {
     }
 
     @PostMapping
-    public Film create(@Valid @RequestBody DtoFilm dtoFilm) throws InvalidFilmException
-            , UserAlreadyExistException
-            , MpaRatingNotFound
+    public Film create(@Valid @RequestBody DtoFilm dtoFilm) throws MpaRatingNotFound
             , GenreNotFound
             , MpaRatingNotValid {
         return filmService.create(dtoFilm);
     }
 
     @PutMapping
-    public Film update(@Valid @RequestBody DtoFilm dtoFilm) throws InvalidFilmException
-            , FilmNotFoundException
+    public Film update(@Valid @RequestBody DtoFilm dtoFilm) throws FilmNotFoundException
             , MpaRatingNotFound
             , MpaRatingNotValid
             , GenreNotFound {
@@ -40,9 +37,8 @@ public class FilmController {
     }
 
     @DeleteMapping
-    public String delete(@Valid @RequestBody DtoFilm dtoFilm) throws InvalidFilmRemoveException {
-        filmService.delete(dtoFilm);
-        return "delete - ok";
+    public void remove(@Valid @RequestBody DtoFilm dtoFilm) throws InvalidFilmRemoveException {
+        filmService.remove(dtoFilm);
     }
 
     @GetMapping("/{id}")

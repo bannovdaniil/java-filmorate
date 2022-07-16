@@ -20,15 +20,15 @@ public class FilmService {
         return filmStorage.findAll();
     }
 
-    public Film create(DtoFilm dtoFilm) throws InvalidFilmException, UserAlreadyExistException, MpaRatingNotFound, GenreNotFound, MpaRatingNotValid {
+    public Film create(DtoFilm dtoFilm) throws MpaRatingNotFound, GenreNotFound, MpaRatingNotValid {
         return filmStorage.create(dtoFilm);
     }
 
-    public Film update(DtoFilm dtoFilm) throws InvalidFilmException, FilmNotFoundException, MpaRatingNotFound, MpaRatingNotValid, GenreNotFound {
+    public Film update(DtoFilm dtoFilm) throws FilmNotFoundException, MpaRatingNotFound, MpaRatingNotValid, GenreNotFound {
         return filmStorage.update(dtoFilm);
     }
 
-    public void delete(DtoFilm dtoFilm) throws InvalidFilmRemoveException {
+    public void remove(DtoFilm dtoFilm) throws InvalidFilmRemoveException {
         filmStorage.remove(dtoFilm);
 
     }

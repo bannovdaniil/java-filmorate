@@ -59,7 +59,7 @@ public class FilmDaoStorageImpl implements FilmStorage {
     }
 
     @Override
-    public Film create(DtoFilm dtoFilm) throws InvalidFilmException, UserAlreadyExistException, MpaRatingNotFound, GenreNotFound, MpaRatingNotValid {
+    public Film create(DtoFilm dtoFilm) throws MpaRatingNotFound, GenreNotFound, MpaRatingNotValid {
         String sql = "INSERT INTO FILMS (NAME, DESCRIPTION, DURATION, RELEASE_DATE, RATE, RATING_ID) " +
                 " VALUES(? , ? , ? , ? , ?, ?)";
 
@@ -107,7 +107,7 @@ public class FilmDaoStorageImpl implements FilmStorage {
     }
 
     @Override
-    public Film update(DtoFilm dtoFilm) throws InvalidFilmException, FilmNotFoundException, MpaRatingNotFound, MpaRatingNotValid, GenreNotFound {
+    public Film update(DtoFilm dtoFilm) throws FilmNotFoundException, MpaRatingNotFound, MpaRatingNotValid, GenreNotFound {
         if (isFilmExist(dtoFilm.getId())) {
             String sql = "UPDATE FILMS SET NAME = ?, DESCRIPTION = ?, DURATION = ?, RELEASE_DATE = ?, RATING_ID = ? " +
                     " WHERE FILM_ID = ? ";

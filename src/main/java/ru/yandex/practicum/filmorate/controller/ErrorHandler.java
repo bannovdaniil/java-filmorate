@@ -44,7 +44,7 @@ public class ErrorHandler {
     }
 
     private static class ErrorResponse {
-        String error;
+        private final String error;
 
         public ErrorResponse(String error) {
             this.error = error;
