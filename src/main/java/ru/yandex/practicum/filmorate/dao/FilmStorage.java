@@ -14,7 +14,7 @@ public interface FilmStorage {
 
     Film update(DtoFilm dtoFilm) throws InvalidFilmException, FilmNotFoundException, MpaRatingNotFound, MpaRatingNotValid, GenreNotFound;
 
-    void delete(DtoFilm dtoFilm) throws InvalidFilmRemoveException;
+    void remove(DtoFilm dtoFilm) throws InvalidFilmRemoveException;
 
     Film getFilmById(Long filmId) throws FilmNotFoundException, MpaRatingNotFound;
 

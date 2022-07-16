@@ -135,7 +135,7 @@ public class FilmDaoStorageImpl implements FilmStorage {
     }
 
     @Override
-    public void delete(DtoFilm dtoFilm) throws InvalidFilmRemoveException {
+    public void remove(DtoFilm dtoFilm) throws InvalidFilmRemoveException {
         if (isFilmExist(dtoFilm.getId())) {
             String sql = "DELETE FROM FILM_GENRES WHERE FILM_ID = ? ;";
             jdbcTemplate.update(sql, dtoFilm.getId());
