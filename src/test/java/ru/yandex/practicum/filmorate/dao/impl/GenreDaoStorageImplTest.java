@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.jdbc.core.JdbcTemplate;
 import ru.yandex.practicum.filmorate.dao.GenreStorage;
 import ru.yandex.practicum.filmorate.exceptions.GenreNotFound;
 import ru.yandex.practicum.filmorate.model.Genre;
@@ -18,7 +17,6 @@ import java.util.List;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 class GenreDaoStorageImplTest {
     private final GenreStorage genreStorage;
-    private final JdbcTemplate jdbcTemplate;
 
     @Test
     void indexOfValue() throws GenreNotFound {
