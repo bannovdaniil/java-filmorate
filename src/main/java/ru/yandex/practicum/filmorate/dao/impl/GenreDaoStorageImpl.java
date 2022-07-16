@@ -9,10 +9,7 @@ import ru.yandex.practicum.filmorate.exceptions.GenreNotFound;
 import ru.yandex.practicum.filmorate.model.Genre;
 
 import java.sql.ResultSet;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Repository
 @Slf4j
@@ -60,6 +57,15 @@ public class GenreDaoStorageImpl implements GenreStorage {
             return genres.get(genreId);
         }
         throw new GenreNotFound("Genre Index not exist.");
+    }
+
+    public List<Genre> getFilmGenres(long filmId) {
+        String sql = "SELECT * FROM GENRES WHERE GENRE_ID IN (SELECT GENRE_ID FROM FILM_GENRES WHERE FILM_ID = ?) " +
+                " ORDER BY GENRE_ID;";
+
+        return jdbcTemplate.query(sql,
+                (rs, rowNum) -> new Genre(rs.getInt("GENRE_ID"), rs.getString("NAME"))
+                , filmId);
     }
 
     @Override

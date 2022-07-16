@@ -94,7 +94,7 @@ public class FilmDaoStorageImpl implements FilmStorage {
 
     private void saveGenreToDb(Film film) {
         long filmId = film.getId();
-        if (getFilmGenres(filmId).size() > 0) {
+        if (genreStorage.getFilmGenres(filmId).size() > 0) {
             String sql = "DELETE FROM FILM_GENRES WHERE FILM_ID = ? ;";
             jdbcTemplate.update(sql, filmId);
         }
@@ -154,15 +154,13 @@ public class FilmDaoStorageImpl implements FilmStorage {
     @Override
     public Film getFilmById(Long filmId) throws FilmNotFoundException, MpaRatingNotFound {
         if (isFilmExist(filmId)) {
-            String sql = "SELECT * FROM FILMS " +
-                    " WHERE FILM_ID = ?" +
-                    " LIMIT 1;";
+            String sql = "SELECT * FROM FILMS WHERE FILM_ID = ?;";
 
             List<Film> films = jdbcTemplate.query(sql, this::makeFilm, filmId);
             Film film = films.get(0);
 
             film.setMpa(mpaStorage.getRatingMpaById(film.getMpa().getId()));
-            film.setGenres(getFilmGenres(film.getId()));
+            film.setGenres(genreStorage.getFilmGenres(film.getId()));
 
             return film;
         } else {
@@ -204,20 +202,6 @@ public class FilmDaoStorageImpl implements FilmStorage {
     public void removeLike(long filmId) {
         String sql = "UPDATE FILMS SET LIKES = LIKES - 1 WHERE FILM_ID = ?; ";
         jdbcTemplate.update(sql, filmId);
-    }
-
-    private List<Genre> getFilmGenres(long filmId) {
-        String sql = "SELECT * FROM FILM_GENRES WHERE FILM_ID = ? ORDER BY GENRE_ID;";
-
-        return jdbcTemplate.query(sql, (rs, rowNum) -> {
-                    int genreId = rs.getInt("GENRE_ID");
-                    try {
-                        return genreStorage.getGenreById(genreId);
-                    } catch (GenreNotFound e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-                , filmId);
     }
 
     private void updateMpaRating(DtoFilm dtoFilm) throws MpaRatingNotFound, MpaRatingNotValid {
