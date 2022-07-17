@@ -1,7 +1,5 @@
 package ru.yandex.practicum.filmorate.validation;
 
-import ru.yandex.practicum.filmorate.constant.FilmCheckDate;
-
 import javax.validation.Constraint;
 import javax.validation.Payload;
 import java.lang.annotation.Retention;
@@ -10,7 +8,7 @@ import java.lang.annotation.Target;
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-@Target({ FIELD })
+@Target({FIELD})
 @Retention(RUNTIME)
 @Constraint(validatedBy = NotSpaceCheckerValidation.class)
 public @interface NotSpaceChecker {

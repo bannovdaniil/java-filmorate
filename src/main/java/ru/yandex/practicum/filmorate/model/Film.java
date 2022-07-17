@@ -1,12 +1,10 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 /**
  * целочисленный идентификатор — id;
@@ -19,39 +17,19 @@ import java.util.Set;
 @Getter
 @Setter
 @ToString
+@AllArgsConstructor
+@NoArgsConstructor
 public class Film {
-    private long id;
+    private Long id;
     private String name;
     private String description;
     private LocalDate releaseDate;
-    private long duration;
-    private Set<Long> likes = new HashSet<>();
-
-    public Integer getRate() {
-        return likes.size();
-    }
-
-    public void addLike(long userId) {
-        likes.add(userId);
-    }
-
-    public boolean isLike(long userId) {
-        return likes.contains(userId);
-    }
-
-    public boolean removeLike(long userId) {
-        boolean isRemove = isLike(userId);
-        if (isRemove) {
-            likes.remove(userId);
-            isRemove = isLike(userId);
-        }
-        return isRemove;
-    }
-
-
-    public Set<Long> getLikes() {
-        return likes;
-    }
+    private Long duration;
+    private Long rate;
+    private MpaRating mpa;
+    private List<Genre> genres;
+    @JsonIgnore
+    private Long likes;
 
     @Override
     public boolean equals(Object o) {
@@ -60,10 +38,10 @@ public class Film {
 
         Film film = (Film) o;
 
-        if (duration != film.duration) return false;
         if (name != null ? !name.equals(film.name) : film.name != null) return false;
         if (description != null ? !description.equals(film.description) : film.description != null) return false;
-        return releaseDate != null ? releaseDate.equals(film.releaseDate) : film.releaseDate == null;
+        if (releaseDate != null ? !releaseDate.equals(film.releaseDate) : film.releaseDate != null) return false;
+        return duration != null ? duration.equals(film.duration) : film.duration == null;
     }
 
     @Override
@@ -71,7 +49,7 @@ public class Film {
         int result = name != null ? name.hashCode() : 0;
         result = 31 * result + (description != null ? description.hashCode() : 0);
         result = 31 * result + (releaseDate != null ? releaseDate.hashCode() : 0);
-        result = 31 * result + (int) (duration ^ (duration >>> 32));
+        result = 31 * result + (duration != null ? duration.hashCode() : 0);
         return result;
     }
 }

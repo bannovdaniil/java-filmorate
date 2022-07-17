@@ -1,23 +1,28 @@
 package ru.yandex.practicum.filmorate.mapper;
 
+import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.dto.DtoFilm;
 import ru.yandex.practicum.filmorate.dto.DtoUser;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
+@Component
 public class DtoMapper {
-    public static Film dtoToFilm(DtoFilm dtoFilm) {
+    public Film dtoToFilm(DtoFilm dtoFilm) {
         Film film = new Film();
         film.setId(dtoFilm.getId());
         film.setName(dtoFilm.getName());
         film.setDescription(dtoFilm.getDescription());
-        film.setReleaseDate(dtoFilm.getReleaseDate());
         film.setDuration(dtoFilm.getDuration());
+        film.setReleaseDate(dtoFilm.getReleaseDate());
+        film.setRate(dtoFilm.getRate());
+        film.setMpa(dtoFilm.getMpa());
+        film.setGenres(dtoFilm.getGenres());
 
         return film;
     }
 
-    public static User dtoToUser(DtoUser dtoUser) {
+    public User dtoToUser(DtoUser dtoUser) {
         User user = new User();
         user.setId(dtoUser.getId());
         user.setEmail(dtoUser.getEmail());
