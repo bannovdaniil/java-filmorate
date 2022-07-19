@@ -19,9 +19,9 @@ public interface ReviewStorage {
 
     Review getReviewById(Long reviewId) throws ReviewNotFoundException;
 
-    void addLike(long reviewId);
+    void addUseful(long reviewId);
 
-    void removeLike(long reviewId);
+    void subUseful(long reviewId);
 
     boolean isReviewExist(long reviewId);
 }

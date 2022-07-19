@@ -141,13 +141,13 @@ public class ReviewDaoStorageImpl implements ReviewStorage {
     }
 
     @Override
-    public void addLike(long reviewId) {
+    public void addUseful(long reviewId) {
         String sql = "UPDATE REVIEWS SET USEFUL = USEFUL + 1 WHERE REVIEW_ID = ?; ";
         jdbcTemplate.update(sql, reviewId);
     }
 
     @Override
-    public void removeLike(long reviewId) {
+    public void subUseful(long reviewId) {
         String sql = "UPDATE REVIEWS SET USEFUL = USEFUL - 1 WHERE REVIEW_ID = ?; ";
         jdbcTemplate.update(sql, reviewId);
     }
