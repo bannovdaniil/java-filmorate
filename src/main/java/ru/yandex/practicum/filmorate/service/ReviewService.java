@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.dao.ReviewDislikeStorage;
 import ru.yandex.practicum.filmorate.dao.ReviewLikeStorage;
 import ru.yandex.practicum.filmorate.exceptions.ReviewNotFoundException;
 import ru.yandex.practicum.filmorate.dao.ReviewStorage;
@@ -17,7 +16,6 @@ import java.util.List;
 public class ReviewService {
     private final ReviewStorage reviewStorage;
     private final ReviewLikeStorage reviewLikeStorage;
-    private final ReviewDislikeStorage reviewDislikeStorage;
 
     public List<Review> findAll(Long filmId, Long count) throws FilmNotFoundException {
         if (filmId > 0) {
@@ -44,18 +42,18 @@ public class ReviewService {
     }
 
     public void addLike(Long reviewId, Long userId) throws ReviewNotFoundException, UserNotFoundException {
-        reviewLikeStorage.addLike(reviewId, userId);
+        reviewLikeStorage.addLike(reviewId, userId, true);
     }
 
     public void addDislike(Long reviewId, Long userId) throws ReviewNotFoundException, UserNotFoundException {
-        reviewDislikeStorage.addDislike(reviewId, userId);
+        reviewLikeStorage.addLike(reviewId, userId, false);
     }
 
     public void removeLike(Long reviewId, Long userId) throws ReviewNotFoundException, UserNotFoundException {
-        reviewLikeStorage.removeLike(reviewId, userId);
+        reviewLikeStorage.removeLike(reviewId, userId, true);
     }
 
     public void removeDislike(Long reviewId, Long userId) throws ReviewNotFoundException, UserNotFoundException {
-        reviewDislikeStorage.removeDislike(reviewId, userId);
+        reviewLikeStorage.removeLike(reviewId, userId, false);
     }
 }

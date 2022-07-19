@@ -124,9 +124,6 @@ public class ReviewDaoStorageImpl implements ReviewStorage {
             String sql = "DELETE FROM REVIEW_LIKES WHERE REVIEW_ID = ? ;";
             jdbcTemplate.update(sql, reviewId);
 
-            sql = "DELETE FROM REVIEW_DISLIKES WHERE REVIEW_ID = ? ;";
-            jdbcTemplate.update(sql, reviewId);
-
             sql = "DELETE FROM REVIEWS WHERE REVIEW_ID = ? ;";
             jdbcTemplate.update(sql, reviewId);
         } else {

@@ -6,7 +6,6 @@ DROP TABLE IF EXISTS `friends` CASCADE;
 DROP TABLE IF EXISTS `films` CASCADE;
 DROP TABLE IF EXISTS `users` CASCADE;
 DROP TABLE IF EXISTS `review_likes` CASCADE;
-DROP TABLE IF EXISTS `review_dislikes` CASCADE;
 DROP TABLE IF EXISTS `reviews` CASCADE;
 
 CREATE TABLE IF NOT EXISTS `ratings` (
@@ -71,11 +70,8 @@ CREATE TABLE IF NOT EXISTS `reviews`(
 CREATE TABLE IF NOT EXISTS `review_likes`(
      review_id INTEGER REFERENCES `reviews`(review_id) ON DELETE NO ACTION,
      user_id INTEGER REFERENCES `users`(user_id) ON DELETE NO ACTION,
-     CONSTRAINT pk_review_likes PRIMARY KEY(review_id, user_id)
+     status BOOLEAN,
+     -- LIKE*(true), DISLIKE *(false)
+     CONSTRAINT pk_review_likes PRIMARY KEY(review_id, user_id, status)
 );
 
-CREATE TABLE IF NOT EXISTS `review_dislikes`(
-    review_id INTEGER REFERENCES `reviews`(review_id) ON DELETE NO ACTION,
-    user_id INTEGER REFERENCES `users`(user_id) ON DELETE NO ACTION,
-    CONSTRAINT pk_review_dislikes PRIMARY KEY(review_id, user_id)
-);
