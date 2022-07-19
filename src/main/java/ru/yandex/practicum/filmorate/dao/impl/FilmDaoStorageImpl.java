@@ -204,10 +204,7 @@ public class FilmDaoStorageImpl implements FilmStorage {
         jdbcTemplate.update(sql, filmId);
     }
 
-    private void updateMpaRating(DtoFilm dtoFilm) throws MpaRatingNotFound, MpaRatingNotValid {
-        if (dtoFilm.getMpa() == null) {
-            throw new MpaRatingNotValid("Не задано значение MPA");
-        }
+    private void updateMpaRating(DtoFilm dtoFilm) throws MpaRatingNotFound {
         dtoFilm.setMpa(mpaStorage.getRatingMpaById(dtoFilm.getMpa().getId()));
     }
 

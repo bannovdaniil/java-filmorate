@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.validation.FilmDataChecker;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.List;
@@ -25,6 +26,7 @@ public class DtoFilm {
     @Min(value = 0, message = "Duration must be greater then 0")
     private Long duration;
     private Long rate;
+    @NotNull(message = "Не задано значение MPA.")
     private MpaRating mpa;
     private List<Genre> genres;
 }
