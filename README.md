@@ -1,3 +1,6 @@
+# # Групповой проект
+## #1 Создал ветку develop
+
 # последняя актуальная схема DB для проекта
 ![This is an image](src/main/resources/shema/filmorate-v5.png)
 
