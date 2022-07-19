@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.dao.ReviewNotFoundException;
+import ru.yandex.practicum.filmorate.exceptions.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.service.ReviewService;
@@ -19,7 +20,7 @@ public class ReviewController {
     @GetMapping
     public List<Review> getReviewList(
             @RequestParam(defaultValue = "0", required = false) Long filmId
-            , @RequestParam(defaultValue = "10", required = false) Long count) {
+            , @RequestParam(defaultValue = "10", required = false) Long count) throws FilmNotFoundException {
         return reviewService.findAll(filmId, count);
     }
 

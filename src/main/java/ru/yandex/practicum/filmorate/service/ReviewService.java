@@ -6,6 +6,7 @@ import ru.yandex.practicum.filmorate.dao.ReviewDislikeStorage;
 import ru.yandex.practicum.filmorate.dao.ReviewLikeStorage;
 import ru.yandex.practicum.filmorate.dao.ReviewNotFoundException;
 import ru.yandex.practicum.filmorate.dao.ReviewStorage;
+import ru.yandex.practicum.filmorate.exceptions.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.Review;
 
@@ -18,8 +19,12 @@ public class ReviewService {
     private final ReviewLikeStorage reviewLikeStorage;
     private final ReviewDislikeStorage reviewDislikeStorage;
 
-    public List<Review> findAll(Long filmId, Long count) {
-        return reviewStorage.findAll(filmId, count);
+    public List<Review> findAll(Long filmId, Long count) throws FilmNotFoundException {
+        if (filmId > 0) {
+            return reviewStorage.getReviewTopForFilmId(filmId, count);
+        } else {
+            return reviewStorage.findAll();
+        }
     }
 
     public Review create(Review review) {
