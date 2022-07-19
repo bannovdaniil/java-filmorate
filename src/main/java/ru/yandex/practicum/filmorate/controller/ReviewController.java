@@ -2,9 +2,10 @@ package ru.yandex.practicum.filmorate.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exceptions.ReviewNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.FilmNotFoundException;
+import ru.yandex.practicum.filmorate.exceptions.ReviewNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.UserNotFoundException;
+import ru.yandex.practicum.filmorate.model.LikeStatus;
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.service.ReviewService;
 
@@ -35,7 +36,7 @@ public class ReviewController {
     }
 
     @DeleteMapping("/{id}")
-    public void remove(@PathVariable("id")  Long reviewId) throws ReviewNotFoundException {
+    public void remove(@PathVariable("id") Long reviewId) throws ReviewNotFoundException {
         reviewService.remove(reviewId);
     }
 
@@ -48,28 +49,28 @@ public class ReviewController {
     public void addLike(
             @PathVariable("id") Long reviewId,
             @PathVariable("userId") Long userId) throws ReviewNotFoundException, UserNotFoundException {
-        reviewService.addLike(reviewId, userId);
+        reviewService.addLike(reviewId, userId, LikeStatus.LIKE);
     }
 
     @PutMapping("/{id}/dislike/{userId}")
     public void addDislike(
             @PathVariable("id") Long reviewId,
             @PathVariable("userId") Long userId) throws ReviewNotFoundException, UserNotFoundException {
-        reviewService.addDislike(reviewId, userId);
+        reviewService.addLike(reviewId, userId, LikeStatus.DISLIKE);
     }
 
     @DeleteMapping("/{id}/like/{userId}")
     public void removeLike(
             @PathVariable("id") Long reviewId,
             @PathVariable("userId") Long userId) throws ReviewNotFoundException, UserNotFoundException {
-        reviewService.removeLike(reviewId, userId);
+        reviewService.removeLike(reviewId, userId, LikeStatus.LIKE);
     }
 
     @DeleteMapping("/{id}/dislike/{userId}")
     public void removeDislike(
             @PathVariable("id") Long reviewId,
             @PathVariable("userId") Long userId) throws ReviewNotFoundException, UserNotFoundException {
-        reviewService.removeDislike(reviewId, userId);
+        reviewService.removeLike(reviewId, userId, LikeStatus.DISLIKE);
     }
 
 }

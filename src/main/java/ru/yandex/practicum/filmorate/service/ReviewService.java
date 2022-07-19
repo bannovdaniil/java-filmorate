@@ -42,19 +42,12 @@ public class ReviewService {
         return reviewStorage.getReviewById(reviewId);
     }
 
-    public void addLike(Long reviewId, Long userId) throws ReviewNotFoundException, UserNotFoundException {
-        reviewLikeStorage.addLike(reviewId, userId, LikeStatus.LIKE);
+    public void addLike(Long reviewId, Long userId, LikeStatus likeStatus) throws ReviewNotFoundException, UserNotFoundException {
+        reviewLikeStorage.addLike(reviewId, userId, likeStatus);
     }
 
-    public void addDislike(Long reviewId, Long userId) throws ReviewNotFoundException, UserNotFoundException {
-        reviewLikeStorage.addLike(reviewId, userId, LikeStatus.DISLIKE);
+    public void removeLike(Long reviewId, Long userId, LikeStatus likeStatus) throws ReviewNotFoundException, UserNotFoundException {
+        reviewLikeStorage.removeLike(reviewId, userId, likeStatus);
     }
 
-    public void removeLike(Long reviewId, Long userId) throws ReviewNotFoundException, UserNotFoundException {
-        reviewLikeStorage.removeLike(reviewId, userId, LikeStatus.LIKE);
-    }
-
-    public void removeDislike(Long reviewId, Long userId) throws ReviewNotFoundException, UserNotFoundException {
-        reviewLikeStorage.removeLike(reviewId, userId, LikeStatus.DISLIKE);
-    }
 }
