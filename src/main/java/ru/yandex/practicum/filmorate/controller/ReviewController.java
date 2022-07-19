@@ -2,7 +2,7 @@ package ru.yandex.practicum.filmorate.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.dao.ReviewNotFoundException;
+import ru.yandex.practicum.filmorate.exceptions.ReviewNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.Review;
@@ -25,7 +25,7 @@ public class ReviewController {
     }
 
     @PostMapping
-    public Review create(@Valid @RequestBody Review review) {
+    public Review create(@Valid @RequestBody Review review) throws UserNotFoundException, FilmNotFoundException {
         return reviewService.create(review);
     }
 
@@ -34,9 +34,9 @@ public class ReviewController {
         return reviewService.update(review);
     }
 
-    @DeleteMapping
-    public void remove(@Valid @RequestBody Review review) throws ReviewNotFoundException {
-        reviewService.remove(review);
+    @DeleteMapping("/{id}")
+    public void remove(@PathVariable("id")  Long reviewId) throws ReviewNotFoundException {
+        reviewService.remove(reviewId);
     }
 
     @GetMapping("/{id}")

@@ -7,9 +7,11 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.dao.FilmStorage;
-import ru.yandex.practicum.filmorate.dao.ReviewNotFoundException;
 import ru.yandex.practicum.filmorate.dao.ReviewStorage;
+import ru.yandex.practicum.filmorate.dao.UserStorage;
 import ru.yandex.practicum.filmorate.exceptions.FilmNotFoundException;
+import ru.yandex.practicum.filmorate.exceptions.ReviewNotFoundException;
+import ru.yandex.practicum.filmorate.exceptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.Review;
 
 import java.sql.PreparedStatement;
@@ -21,14 +23,15 @@ import java.util.List;
 @Repository
 @RequiredArgsConstructor
 public class ReviewDaoStorageImpl implements ReviewStorage {
-    FilmStorage filmStorage;
+    private final FilmStorage filmStorage;
     private final JdbcTemplate jdbcTemplate;
+    private final UserStorage userStorage;
 
     private Review makeReview(ResultSet rs, int rowNum) throws SQLException {
         Review review = new Review();
         review.setReviewId(rs.getLong("REVIEW_ID"));
         review.setContent(rs.getString("CONTENT"));
-        review.setPositive(rs.getBoolean("IS_POSITIVE"));
+        review.setIsPositive(rs.getBoolean("POSITIVE"));
         review.setUseful(rs.getInt("USEFUL"));
         review.setUserId(rs.getLong("USER_ID"));
         review.setFilmId(rs.getLong("FILM_ID"));
@@ -65,7 +68,13 @@ public class ReviewDaoStorageImpl implements ReviewStorage {
     }
 
     @Override
-    public Review create(Review review) {
+    public Review create(Review review) throws UserNotFoundException, FilmNotFoundException {
+        if (!userStorage.isUserExist(review.getUserId())) {
+            throw new UserNotFoundException("User Id for review not found.");
+        }
+        if (!filmStorage.isFilmExist(review.getFilmId())) {
+            throw new FilmNotFoundException("Film Id for review not found.");
+        }
         String sql = "INSERT INTO REVIEWS (CONTENT, POSITIVE, USEFUL, USER_ID, FILM_ID) " +
                 " VALUES(? , ? , ? , ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -73,9 +82,9 @@ public class ReviewDaoStorageImpl implements ReviewStorage {
                 connection -> {
                     PreparedStatement prSt = connection.prepareStatement(
                             sql
-                            , new String[]{"film_id"});
+                            , new String[]{"review_id"});
                     prSt.setString(1, review.getContent());
-                    prSt.setBoolean(2, review.isPositive());
+                    prSt.setBoolean(2, review.getIsPositive());
                     prSt.setLong(3, review.getUseful());
                     prSt.setLong(4, review.getUserId());
                     prSt.setLong(5, review.getFilmId());
@@ -93,15 +102,14 @@ public class ReviewDaoStorageImpl implements ReviewStorage {
     @Override
     public Review update(Review review) throws ReviewNotFoundException {
         if (isReviewExist(review.getReviewId())) {
-            String sql = "UPDATE REVIEWS SET CONTENT = ?, POSITIVE = ?, USEFUL = ? " +
-                    " WHERE USER_ID = ? AND FILM_ID = ? ";
+            String sql = "UPDATE REVIEWS " +
+                    " SET CONTENT = ?, POSITIVE = ? " +
+                    " WHERE REVIEW_ID = ? ;";
 
             jdbcTemplate.update(sql
                     , review.getContent()
-                    , review.isPositive()
-                    , review.getUseful()
-                    , review.getUserId()
-                    , review.getFilmId()
+                    , review.getIsPositive()
+                    , review.getReviewId()
             );
         } else {
             throw new ReviewNotFoundException("Update failed, review not found.");
@@ -111,16 +119,16 @@ public class ReviewDaoStorageImpl implements ReviewStorage {
     }
 
     @Override
-    public void remove(Review review) throws ReviewNotFoundException {
-        if (isReviewExist(review.getReviewId())) {
+    public void remove(Long reviewId) throws ReviewNotFoundException {
+        if (isReviewExist(reviewId)) {
             String sql = "DELETE FROM REVIEW_LIKES WHERE REVIEW_ID = ? ;";
-            jdbcTemplate.update(sql, review.getReviewId());
+            jdbcTemplate.update(sql, reviewId);
 
             sql = "DELETE FROM REVIEW_DISLIKES WHERE REVIEW_ID = ? ;";
-            jdbcTemplate.update(sql, review.getReviewId());
+            jdbcTemplate.update(sql, reviewId);
 
             sql = "DELETE FROM REVIEWS WHERE REVIEW_ID = ? ;";
-            jdbcTemplate.update(sql, review.getReviewId());
+            jdbcTemplate.update(sql, reviewId);
         } else {
             throw new ReviewNotFoundException("Review for delete not found.");
         }
@@ -132,9 +140,9 @@ public class ReviewDaoStorageImpl implements ReviewStorage {
         if (isReviewExist(reviewId)) {
             String sql = "SELECT * FROM REVIEWS WHERE REVIEW_ID = ?;";
 
-            Review review = jdbcTemplate.queryForObject(sql, this::makeReview, Review.class, reviewId);
+            List<Review> reviews = jdbcTemplate.query(sql, this::makeReview, reviewId);
 
-            return review;
+            return reviews.get(0);
         } else {
             throw new ReviewNotFoundException("Review ID not found.");
         }

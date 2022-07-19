@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dao.ReviewDislikeStorage;
 import ru.yandex.practicum.filmorate.dao.ReviewLikeStorage;
-import ru.yandex.practicum.filmorate.dao.ReviewNotFoundException;
+import ru.yandex.practicum.filmorate.exceptions.ReviewNotFoundException;
 import ru.yandex.practicum.filmorate.dao.ReviewStorage;
 import ru.yandex.practicum.filmorate.exceptions.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.UserNotFoundException;
@@ -27,7 +27,7 @@ public class ReviewService {
         }
     }
 
-    public Review create(Review review) {
+    public Review create(Review review) throws UserNotFoundException, FilmNotFoundException {
         return reviewStorage.create(review);
     }
 
@@ -35,8 +35,8 @@ public class ReviewService {
         return reviewStorage.update(review);
     }
 
-    public void remove(Review review) throws ReviewNotFoundException {
-        reviewStorage.remove(review);
+    public void remove(Long reviewId) throws ReviewNotFoundException {
+        reviewStorage.remove(reviewId);
     }
 
     public Review getReviewById(Long reviewId) throws ReviewNotFoundException {

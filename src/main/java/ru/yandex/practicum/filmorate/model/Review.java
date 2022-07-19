@@ -1,6 +1,9 @@
 package ru.yandex.practicum.filmorate.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
+
+import javax.validation.constraints.NotNull;
 
 /**
  * {
@@ -20,8 +23,11 @@ import lombok.*;
 public class Review {
     private long reviewId;
     private String content;
-    private boolean positive;
-    private long userId;
-    private long filmId;
+    @NotNull
+    private Boolean isPositive;
+    @NotNull
+    private Long userId;
+    @NotNull
+    private Long filmId;
     private int useful;
 }
