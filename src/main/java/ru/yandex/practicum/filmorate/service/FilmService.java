@@ -3,7 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dao.FilmStorage;
-import ru.yandex.practicum.filmorate.dao.LikeStorage;
+import ru.yandex.practicum.filmorate.dao.FilmLikeStorage;
 import ru.yandex.practicum.filmorate.dto.DtoFilm;
 import ru.yandex.practicum.filmorate.exceptions.*;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -14,7 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class FilmService {
     private final FilmStorage filmStorage;
-    private final LikeStorage likeStorage;
+    private final FilmLikeStorage filmLikeStorage;
 
     public List<Film> findAll() throws MpaRatingNotFound {
         return filmStorage.findAll();
@@ -39,11 +39,11 @@ public class FilmService {
 
 
     public void addLike(Long filmId, Long userId) throws FilmNotFoundException, UserNotFoundException {
-        likeStorage.addLike(filmId, userId);
+        filmLikeStorage.addLike(filmId, userId);
     }
 
     public void removeLike(Long filmId, Long userId) throws FilmNotFoundException, UserNotFoundException {
-        likeStorage.removeLike(filmId, userId);
+        filmLikeStorage.removeLike(filmId, userId);
     }
 
     public List<Film> getFilmTop(Long count) throws MpaRatingNotFound {
