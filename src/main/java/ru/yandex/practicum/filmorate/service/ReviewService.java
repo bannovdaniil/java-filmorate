@@ -7,6 +7,7 @@ import ru.yandex.practicum.filmorate.exceptions.ReviewNotFoundException;
 import ru.yandex.practicum.filmorate.dao.ReviewStorage;
 import ru.yandex.practicum.filmorate.exceptions.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.UserNotFoundException;
+import ru.yandex.practicum.filmorate.model.LikeStatus;
 import ru.yandex.practicum.filmorate.model.Review;
 
 import java.util.List;
@@ -42,18 +43,18 @@ public class ReviewService {
     }
 
     public void addLike(Long reviewId, Long userId) throws ReviewNotFoundException, UserNotFoundException {
-        reviewLikeStorage.addLike(reviewId, userId, true);
+        reviewLikeStorage.addLike(reviewId, userId, LikeStatus.LIKE);
     }
 
     public void addDislike(Long reviewId, Long userId) throws ReviewNotFoundException, UserNotFoundException {
-        reviewLikeStorage.addLike(reviewId, userId, false);
+        reviewLikeStorage.addLike(reviewId, userId, LikeStatus.DISLIKE);
     }
 
     public void removeLike(Long reviewId, Long userId) throws ReviewNotFoundException, UserNotFoundException {
-        reviewLikeStorage.removeLike(reviewId, userId, true);
+        reviewLikeStorage.removeLike(reviewId, userId, LikeStatus.LIKE);
     }
 
     public void removeDislike(Long reviewId, Long userId) throws ReviewNotFoundException, UserNotFoundException {
-        reviewLikeStorage.removeLike(reviewId, userId, false);
+        reviewLikeStorage.removeLike(reviewId, userId, LikeStatus.DISLIKE);
     }
 }
