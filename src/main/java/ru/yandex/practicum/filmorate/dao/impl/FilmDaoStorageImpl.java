@@ -169,18 +169,41 @@ public class FilmDaoStorageImpl implements FilmStorage {
     }
 
     @Override
-    public List<Film> getFilmTop(Long count) throws MpaRatingNotFound {
+    public List<Film> getFilmTop(Long count, Integer genreId, Integer year) throws MpaRatingNotFound {
         log.info("Get Top Film list from DB.");
 
-        String sql = "SELECT * FROM FILMS " +
-                " ORDER BY LIKES DESC" +
-                " LIMIT ?;";
+        StringBuilder sqlBuilder = new StringBuilder("SELECT * FROM FILMS ");
 
-        List<Film> films = jdbcTemplate.query(sql, this::makeFilm, count);
+        if (genreId != null && year != null) {
+            sqlBuilder.append("WHERE FILM_ID IN (SELECT FILM_ID FROM FILM_GENRES WHERE GENRE_ID = ?) ");
+            sqlBuilder.append("AND YEAR(RELEASE_DATE) = ? ");
+        } else if (genreId != null || year != null) {
+            if (genreId != null) {
+                sqlBuilder.append("WHERE FILM_ID IN (SELECT FILM_ID FROM FILM_GENRES WHERE GENRE_ID = ?) ");
+            } else {
+                sqlBuilder.append("WHERE YEAR(RELEASE_DATE) = ? ");
+            }
+        }
+        sqlBuilder.append("ORDER BY LIKES DESC ");
+        sqlBuilder.append("LIMIT ?;");
+        String sql = sqlBuilder.toString();
+
+        List<Film> films;
+        if (genreId != null && year != null) {
+            films = jdbcTemplate.query(sql, this::makeFilm, genreId, year, count);
+        } else if (genreId != null || year != null) {
+            if (genreId != null) {
+                films = jdbcTemplate.query(sql, this::makeFilm, genreId, count);
+            } else {
+                films = jdbcTemplate.query(sql, this::makeFilm, year, count);
+            }
+        } else {
+            films = jdbcTemplate.query(sql, this::makeFilm, count);
+        }
         for (Film film : films) {
             film.setMpa(mpaStorage.getRatingMpaById(film.getMpa().getId()));
+            film.setGenres(genreStorage.getFilmGenres(film.getId()));
         }
-
         return films;
     }
 

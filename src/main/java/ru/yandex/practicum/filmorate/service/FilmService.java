@@ -37,7 +37,6 @@ public class FilmService {
         return filmStorage.getFilmById(filmId);
     }
 
-
     public void addLike(Long filmId, Long userId) throws FilmNotFoundException, UserNotFoundException {
         filmLikeStorage.addLike(filmId, userId);
     }
@@ -46,8 +45,7 @@ public class FilmService {
         filmLikeStorage.removeLike(filmId, userId);
     }
 
-    public List<Film> getFilmTop(Long count) throws MpaRatingNotFound {
-        return filmStorage.getFilmTop(count);
+    public List<Film> getFilmTop(Long count, Integer genreId, Integer year) throws MpaRatingNotFound {
+        return filmStorage.getFilmTop(count, genreId, year);
     }
-
 }
