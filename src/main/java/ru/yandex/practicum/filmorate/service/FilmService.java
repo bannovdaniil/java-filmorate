@@ -6,6 +6,8 @@ import ru.yandex.practicum.filmorate.dao.FilmStorage;
 import ru.yandex.practicum.filmorate.dao.FilmLikeStorage;
 import ru.yandex.practicum.filmorate.dto.DtoFilm;
 import ru.yandex.practicum.filmorate.exceptions.*;
+import ru.yandex.practicum.filmorate.model.EventOperation;
+import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.List;
@@ -15,6 +17,7 @@ import java.util.List;
 public class FilmService {
     private final FilmStorage filmStorage;
     private final FilmLikeStorage filmLikeStorage;
+    private final EventService eventService;
 
     public List<Film> findAll() throws MpaRatingNotFound {
         return filmStorage.findAll();
@@ -40,10 +43,12 @@ public class FilmService {
 
     public void addLike(Long filmId, Long userId) throws FilmNotFoundException, UserNotFoundException {
         filmLikeStorage.addLike(filmId, userId);
+        eventService.addEvent(userId, EventType.LIKE, EventOperation.ADD, filmId);
     }
 
     public void removeLike(Long filmId, Long userId) throws FilmNotFoundException, UserNotFoundException {
         filmLikeStorage.removeLike(filmId, userId);
+        eventService.addEvent(userId, EventType.LIKE, EventOperation.REMOVE, filmId);
     }
 
     public List<Film> getFilmTop(Long count) throws MpaRatingNotFound {

@@ -5,7 +5,9 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.dto.DtoUser;
 import ru.yandex.practicum.filmorate.exceptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.UserRemoveException;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.EventService;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import javax.validation.Valid;
@@ -16,6 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+    private final EventService eventService;
 
     @GetMapping
     public List<User> getUsersList() {
@@ -67,6 +70,11 @@ public class UserController {
             @PathVariable("id") Long userId,
             @PathVariable("otherId") Long otherId) throws UserNotFoundException {
         return userService.getCrossFriendList(userId, otherId);
+    }
+
+    @GetMapping("{id}/feed")
+    public List<Event> getUserFeed(@PathVariable("id") Long userId) {
+        return eventService.findAllByUserId(userId);
     }
 }
 
