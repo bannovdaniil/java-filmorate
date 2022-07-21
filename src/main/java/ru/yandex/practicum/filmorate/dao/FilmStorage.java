@@ -25,4 +25,6 @@ public interface FilmStorage {
     void addLike(long filmId);
 
     void removeLike(long filmId);
+
+    List<Film> getRecommendations(int userId) throws MpaRatingNotFound;
 }

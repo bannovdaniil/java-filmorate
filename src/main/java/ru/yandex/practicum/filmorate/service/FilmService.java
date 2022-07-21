@@ -48,4 +48,8 @@ public class FilmService {
     public List<Film> getFilmTop(Long count, Integer genreId, Integer year) throws MpaRatingNotFound {
         return filmStorage.getFilmTop(count, genreId, year);
     }
+
+    public List<Film> getRecommendations(int userId) throws MpaRatingNotFound {
+        return filmStorage.getRecommendations(userId);
+    }
 }
