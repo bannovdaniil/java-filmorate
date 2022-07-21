@@ -3,10 +3,13 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.dto.DtoUser;
+import ru.yandex.practicum.filmorate.exceptions.MpaRatingNotFound;
 import ru.yandex.practicum.filmorate.exceptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.UserRemoveException;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.EventService;
 import ru.yandex.practicum.filmorate.service.UserService;
 
@@ -19,6 +22,7 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
     private final EventService eventService;
+    private final FilmService filmService;
 
     @GetMapping
     public List<User> getUsersList() {
@@ -70,6 +74,11 @@ public class UserController {
             @PathVariable("id") Long userId,
             @PathVariable("otherId") Long otherId) throws UserNotFoundException {
         return userService.getCrossFriendList(userId, otherId);
+    }
+
+    @GetMapping("{id}/recommendations")
+    public List<Film> getRecommendations(@PathVariable("id") int userId) throws MpaRatingNotFound {
+        return filmService.getRecommendations(userId);
     }
 
     @GetMapping("{id}/feed")

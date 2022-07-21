@@ -70,4 +70,8 @@ public class FilmService {
             throw new RequestParamNotValid("Параметр запроса неправильный: " + sortBy);
         }
     }
+
+    public List<Film> getRecommendations(int userId) throws MpaRatingNotFound {
+        return filmStorage.getRecommendations(userId);
+    }
 }
