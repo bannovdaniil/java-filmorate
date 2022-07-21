@@ -40,7 +40,6 @@ public class FilmService {
         return filmStorage.getFilmById(filmId);
     }
 
-
     public void addLike(Long filmId, Long userId) throws FilmNotFoundException, UserNotFoundException {
         filmLikeStorage.addLike(filmId, userId);
         eventService.addEvent(userId, EventType.LIKE, EventOperation.ADD, filmId);
@@ -51,8 +50,7 @@ public class FilmService {
         eventService.addEvent(userId, EventType.LIKE, EventOperation.REMOVE, filmId);
     }
 
-    public List<Film> getFilmTop(Long count) throws MpaRatingNotFound {
-        return filmStorage.getFilmTop(count);
+    public List<Film> getFilmTop(Long count, Integer genreId, Integer year) throws MpaRatingNotFound {
+        return filmStorage.getFilmTop(count, genreId, year);
     }
-
 }
