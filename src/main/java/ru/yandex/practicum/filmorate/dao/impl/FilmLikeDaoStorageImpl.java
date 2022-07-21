@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.dao.FilmStorage;
-import ru.yandex.practicum.filmorate.dao.LikeStorage;
+import ru.yandex.practicum.filmorate.dao.FilmLikeStorage;
 import ru.yandex.practicum.filmorate.dao.UserStorage;
 import ru.yandex.practicum.filmorate.exceptions.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.UserNotFoundException;
@@ -13,7 +13,7 @@ import ru.yandex.practicum.filmorate.exceptions.UserNotFoundException;
 @Slf4j
 @Repository
 @RequiredArgsConstructor
-public class LikeDaoStorageImpl implements LikeStorage {
+public class FilmLikeDaoStorageImpl implements FilmLikeStorage {
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
     private final JdbcTemplate jdbcTemplate;
