@@ -18,7 +18,7 @@ public interface FilmStorage {
 
     Film getFilmById(Long filmId) throws FilmNotFoundException, MpaRatingNotFound;
 
-    List<Film> getFilmTop(Long count) throws MpaRatingNotFound;
+    List<Film> getFilmTop(Long count, Integer genreId, Integer year) throws MpaRatingNotFound;
 
     boolean isFilmExist(long filmId);
 
