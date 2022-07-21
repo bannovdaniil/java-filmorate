@@ -11,7 +11,8 @@ import ru.yandex.practicum.filmorate.exceptions.*;
 @RestControllerAdvice(assignableTypes = {FilmController.class
         , UserController.class
         , GenreController.class
-        , MpaController.class})
+        , MpaController.class
+        , ReviewController.class})
 public class ErrorHandler {
     private ErrorResponse errorResponse;
 
@@ -29,6 +30,7 @@ public class ErrorHandler {
             InvalidEmailException.class,
             InvalidFilmException.class,
             UserNotFoundException.class,
+            ReviewNotFoundException.class,
             UserAlreadyExistException.class,
             GenreNotFound.class,
             FilmNotFoundException.class})
