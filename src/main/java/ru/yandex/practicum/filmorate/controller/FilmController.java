@@ -62,8 +62,11 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public List<Film> getFilmTop(@RequestParam(defaultValue = "10", required = false) Long count) throws MpaRatingNotFound {
-        return filmService.getFilmTop(count);
+    public List<Film> getFilmTop(
+            @RequestParam(defaultValue = "10", required = false) Long count,
+            @RequestParam(required = false) Integer genreId,
+            @RequestParam(required = false) Integer year) throws MpaRatingNotFound {
+        return filmService.getFilmTop(count, genreId, year);
     }
 
     @GetMapping("/director/{directorId}")

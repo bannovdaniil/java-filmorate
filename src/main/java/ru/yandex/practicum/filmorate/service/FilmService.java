@@ -4,9 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dao.DirectorStorage;
 import ru.yandex.practicum.filmorate.dao.FilmStorage;
-import ru.yandex.practicum.filmorate.dao.LikeStorage;
+import ru.yandex.practicum.filmorate.dao.FilmLikeStorage;
 import ru.yandex.practicum.filmorate.dto.DtoFilm;
 import ru.yandex.practicum.filmorate.exceptions.*;
+import ru.yandex.practicum.filmorate.model.EventOperation;
+import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.ArrayList;
@@ -17,7 +19,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class FilmService {
     private final FilmStorage filmStorage;
-    private final LikeStorage likeStorage;
+    private final FilmLikeStorage filmLikeStorage;
+    private final EventService eventService;
 
     private final DirectorStorage directorStorage;
 
@@ -42,17 +45,18 @@ public class FilmService {
         return filmStorage.getFilmById(filmId);
     }
 
-
     public void addLike(Long filmId, Long userId) throws FilmNotFoundException, UserNotFoundException {
-        likeStorage.addLike(filmId, userId);
+        filmLikeStorage.addLike(filmId, userId);
+        eventService.addEvent(userId, EventType.LIKE, EventOperation.ADD, filmId);
     }
 
     public void removeLike(Long filmId, Long userId) throws FilmNotFoundException, UserNotFoundException {
-        likeStorage.removeLike(filmId, userId);
+        filmLikeStorage.removeLike(filmId, userId);
+        eventService.addEvent(userId, EventType.LIKE, EventOperation.REMOVE, filmId);
     }
 
-    public List<Film> getFilmTop(Long count) throws MpaRatingNotFound {
-        return filmStorage.getFilmTop(count);
+    public List<Film> getFilmTop(Long count, Integer genreId, Integer year) throws MpaRatingNotFound {
+        return filmStorage.getFilmTop(count, genreId, year);
     }
 
     public List<Film> getFilmsByDirectorsSortedByLike(int id) throws FilmNotFoundException, MpaRatingNotFound {

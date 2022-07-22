@@ -181,16 +181,23 @@ public class FilmDaoStorageImpl implements FilmStorage {
     }
 
     @Override
-    public List<Film> getFilmTop(Long count) throws MpaRatingNotFound {
+    public List<Film> getFilmTop(Long count, Integer genreId, Integer year) throws MpaRatingNotFound {
         log.info("Get Top Film list from DB.");
 
-        String sql = "SELECT * FROM FILMS " +
-                " ORDER BY LIKES DESC" +
-                " LIMIT ?;";
+        List<Film> films;
+        if (genreId == null && year == null) {
+            films = getTopFilmByCount(count);
+        } else if (genreId == null) {
+            films = getTopFilmByCountYear(count, year);
+        } else if (year == null) {
+            films = getTopFilmByCountGenre(count, genreId);
+        } else {
+            films = getTopFilmByCountGenreYear(count, genreId, year);
+        }
 
-        List<Film> films = jdbcTemplate.query(sql, this::makeFilm, count);
         for (Film film : films) {
             film.setMpa(mpaStorage.getRatingMpaById(film.getMpa().getId()));
+            film.setGenres(genreStorage.getFilmGenres(film.getId()));
         }
 
         return films;
@@ -233,5 +240,41 @@ public class FilmDaoStorageImpl implements FilmStorage {
             }
         }
         dtoFilm.setGenres(genresWithName);
+    }
+
+    private List<Film> getTopFilmByCountGenreYear(Long count, Integer genreId, Integer year) {
+        String sql = "SELECT * FROM FILMS WHERE " +
+                "FILM_ID IN (SELECT FILM_ID FROM FILM_GENRES WHERE GENRE_ID = ?) " +
+                "AND YEAR(RELEASE_DATE) = ? " +
+                "ORDER BY LIKES DESC " +"" +
+                "LIMIT ?;";
+
+        return jdbcTemplate.query(sql, this::makeFilm, genreId, year, count);
+    }
+
+    private List<Film> getTopFilmByCountGenre(Long count, Integer genreId) {
+        String sql = "SELECT * FROM FILMS WHERE " +
+                "FILM_ID IN (SELECT FILM_ID FROM FILM_GENRES WHERE GENRE_ID = ?) " +
+                "ORDER BY LIKES DESC " +
+                "LIMIT ?;";
+
+        return jdbcTemplate.query(sql, this::makeFilm, genreId, count);
+    }
+
+    private List<Film> getTopFilmByCountYear(Long count, Integer year) {
+        String sql = "SELECT * FROM FILMS WHERE " +
+                "YEAR(RELEASE_DATE) = ? " +
+                "ORDER BY LIKES DESC " +
+                "LIMIT ?;";
+
+        return jdbcTemplate.query(sql, this::makeFilm, year, count);
+    }
+
+    private List<Film> getTopFilmByCount(Long count) {
+        String sql = "SELECT * FROM FILMS " +
+                "ORDER BY LIKES DESC " +
+                "LIMIT ?;";
+
+        return jdbcTemplate.query(sql, this::makeFilm, count);
     }
 }

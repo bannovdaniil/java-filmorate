@@ -12,6 +12,8 @@ import ru.yandex.practicum.filmorate.exceptions.*;
         , UserController.class
         , GenreController.class
         , MpaController.class
+        , ReviewController.class})
+        , MpaController.class
         , DirectorController.class})
 public class ErrorHandler {
     private ErrorResponse errorResponse;
@@ -31,6 +33,7 @@ public class ErrorHandler {
             InvalidEmailException.class,
             InvalidFilmException.class,
             UserNotFoundException.class,
+            ReviewNotFoundException.class,
             UserAlreadyExistException.class,
             GenreNotFound.class,
             FilmNotFoundException.class,
@@ -39,7 +42,6 @@ public class ErrorHandler {
     public ErrorResponse handleNotFound(final Exception e) {
         return new ErrorResponse(e.getMessage());
     }
-
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
