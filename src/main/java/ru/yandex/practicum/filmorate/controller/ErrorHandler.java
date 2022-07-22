@@ -12,7 +12,7 @@ import ru.yandex.practicum.filmorate.exceptions.*;
         , UserController.class
         , GenreController.class
         , MpaController.class
-        , ReviewController.class})
+        , ReviewController.class
         , MpaController.class
         , DirectorController.class})
 public class ErrorHandler {

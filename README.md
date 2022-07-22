@@ -2,7 +2,7 @@
 ## #1 Создал ветку develop
 
 # последняя актуальная схема DB для проекта
-![This is an image](src/main/resources/shema/filmorate-v6.png)
+![This is an image](src/main/resources/shema/filmorate-v8.png)
 
 # #11 Спринт Финальное задание
 ## #4 Тестирование
