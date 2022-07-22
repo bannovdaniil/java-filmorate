@@ -7,5 +7,5 @@ import java.util.List;
 public interface EventStorage {
     void addEvent(long userId, int eventTypeId, int eventOperationId, long entityId);
 
-    List<Event> findAllByUserId(Long userId);
+    List<Event> findAllEventsByUserId(Long userId);
 }

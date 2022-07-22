@@ -37,8 +37,6 @@ public class ReviewService {
 
     public Review update(Review review) throws ReviewNotFoundException {
         Review newReview = reviewStorage.update(review);
-        /* обход ошибки теста постман, в review приходит пользователь с id 2
-         хотя у review с id 1 должен быть пользователь 1 */
         Review correctReview = reviewStorage.getReviewById(review.getReviewId());
         eventService.addEvent(correctReview.getUserId(),
                 EventType.REVIEW,

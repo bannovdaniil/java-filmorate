@@ -19,7 +19,7 @@ public class EventService {
         eventStorage.addEvent(userId, eventType.getId(), eventOperation.getId(), entityId);
     }
 
-    public List<Event> findAllByUserId(Long userId) {
-        return eventStorage.findAllByUserId(userId);
+    public List<Event> findAllEventsByUserId(Long userId) {
+        return eventStorage.findAllEventsByUserId(userId);
     }
 }

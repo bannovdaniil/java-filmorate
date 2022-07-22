@@ -36,7 +36,7 @@ public class EventDaoStorageImpl implements EventStorage {
     }
 
     @Override
-    public List<Event> findAllByUserId(Long userId) {
+    public List<Event> findAllEventsByUserId(Long userId) {
         String sql =
                 "SELECT " +
                 "   UE.EVENT_ID, " +
