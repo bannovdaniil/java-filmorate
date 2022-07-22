@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.dto.DtoFilm;
 import ru.yandex.practicum.filmorate.exceptions.*;
@@ -63,5 +64,13 @@ public class FilmController {
     @GetMapping("/popular")
     public List<Film> getFilmTop(@RequestParam(defaultValue = "10", required = false) Long count) throws MpaRatingNotFound {
         return filmService.getFilmTop(count);
+    }
+
+    @GetMapping("/director/{directorId}")
+    public List<Film> getFilmsByDirector(@PathVariable("directorId") Integer id,  @RequestParam String sortBy)
+            throws FilmNotFoundException, MpaRatingNotFound, RequestParamNotValid {
+        if (sortBy.equals("year")) return filmService.getFilmsByDirectorsSortedByDate(id);
+        else if (sortBy.equals("likes")) return filmService.getFilmsByDirectorsSortedByLike(id);
+        else throw new RequestParamNotValid("Параметр запроса неверный:  " + sortBy);
     }
 }

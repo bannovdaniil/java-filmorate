@@ -6,12 +6,14 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.dao.DirectorStorage;
 import ru.yandex.practicum.filmorate.dao.FilmStorage;
 import ru.yandex.practicum.filmorate.dao.GenreStorage;
 import ru.yandex.practicum.filmorate.dao.MpaStorage;
 import ru.yandex.practicum.filmorate.dto.DtoFilm;
 import ru.yandex.practicum.filmorate.exceptions.*;
 import ru.yandex.practicum.filmorate.mapper.DtoMapper;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.MpaRating;
@@ -24,6 +26,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Repository
@@ -34,6 +37,8 @@ public class FilmDaoStorageImpl implements FilmStorage {
     private final MpaStorage mpaStorage;
     private final GenreStorage genreStorage;
 
+    private final DirectorStorage directorStorage;
+
     @Override
     public List<Film> findAll() throws MpaRatingNotFound {
         String sql = "SELECT * FROM FILMS;";
@@ -43,7 +48,6 @@ public class FilmDaoStorageImpl implements FilmStorage {
         for (Film film : films) {
             film.setMpa(mpaStorage.getRatingMpaById(film.getMpa().getId()));
         }
-
         return films;
     }
 
@@ -56,6 +60,7 @@ public class FilmDaoStorageImpl implements FilmStorage {
         film.setDuration(rs.getLong("duration"));
         film.setRate(rs.getLong("rate"));
         film.setMpa(new MpaRating(rs.getInt("rating_ID")));
+        film.setDirectors(directorStorage.getDirectorsByFilm(film.getId()));
         return film;
     }
 
@@ -74,7 +79,7 @@ public class FilmDaoStorageImpl implements FilmStorage {
                     prSt.setString(2, dtoFilm.getDescription());
                     prSt.setLong(3, dtoFilm.getDuration());
                     prSt.setDate(4, Date.valueOf(dtoFilm.getReleaseDate()));
-                    prSt.setLong(5, dtoFilm.getRate());
+                    prSt.setLong(5, dtoFilm.getRate() == null ? 0 : dtoFilm.getRate());
                     prSt.setLong(6, dtoFilm.getMpa().getId());
                     return prSt;
                 }
@@ -87,8 +92,10 @@ public class FilmDaoStorageImpl implements FilmStorage {
         film.setId(keyHolder.getKey().longValue());
         saveGenreToDb(film);
 
-        log.info("Film create: {}.", film.getRate());
+        List<Director> directorsOfFilm = directorStorage.saveDirectorsOfFilm(film.getId(), film.getDirectors());
+        film.setDirectors(directorsOfFilm);
 
+        log.info("Film create: {}.", film.getRate());
         return film;
     }
 
@@ -132,7 +139,10 @@ public class FilmDaoStorageImpl implements FilmStorage {
         Film film = dtoMapper.dtoToFilm(dtoFilm);
         saveGenreToDb(film);
 
-        return dtoMapper.dtoToFilm(dtoFilm);
+        List<Director> directors = directorStorage.updateDirectorsOfFilm(film.getId(), film.getDirectors());
+        film.setDirectors(directors);
+
+        return film;
     }
 
     @Override
@@ -146,6 +156,8 @@ public class FilmDaoStorageImpl implements FilmStorage {
 
             sql = "DELETE FROM FILMS WHERE FILM_ID = ? ;";
             jdbcTemplate.update(sql, dtoFilm.getId());
+
+            directorStorage.deleteDirectorsOfFilm(dtoFilm.getId());
         } else {
             throw new InvalidFilmRemoveException("Film for delete not found.");
         }

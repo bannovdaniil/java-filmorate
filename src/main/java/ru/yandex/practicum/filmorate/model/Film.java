@@ -28,6 +28,7 @@ public class Film {
     private Long rate;
     private MpaRating mpa;
     private List<Genre> genres;
+    private List<Director> directors;
     @JsonIgnore
     private Long likes;
 
