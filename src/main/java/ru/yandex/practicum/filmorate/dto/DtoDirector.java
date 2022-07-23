@@ -7,7 +7,6 @@ import javax.validation.constraints.NotNull;
 
 @Data
 public class DtoDirector {
-    @NotNull
     private int id;
     @NotNull
     @NotBlank(message = "name should not be blank")

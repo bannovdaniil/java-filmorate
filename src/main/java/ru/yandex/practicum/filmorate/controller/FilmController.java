@@ -72,8 +72,6 @@ public class FilmController {
     @GetMapping("/director/{directorId}")
     public List<Film> getFilmsByDirector(@PathVariable("directorId") Integer id,  @RequestParam String sortBy)
             throws FilmNotFoundException, MpaRatingNotFound, RequestParamNotValid {
-        if (sortBy.equals("year")) return filmService.getFilmsByDirectorsSortedByDate(id);
-        else if (sortBy.equals("likes")) return filmService.getFilmsByDirectorsSortedByLike(id);
-        else throw new RequestParamNotValid("Параметр запроса неверный:  " + sortBy);
+        return filmService.getFilmsByDirectorsSorted(id, sortBy);
     }
 }

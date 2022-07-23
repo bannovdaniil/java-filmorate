@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.dao;
 
 import ru.yandex.practicum.filmorate.dto.DtoDirector;
 import ru.yandex.practicum.filmorate.model.Director;
+import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.List;
 
@@ -14,15 +15,13 @@ public interface DirectorStorage {
 
     List<Director> getDirectorsByFilm(Long film_id);
 
-    List<Director> saveDirectorsOfFilm(Long film_id, List<Director> directors);
+    List<Director> saveDirectorsOfFilm(Film film);
 
-    List<Director> updateDirectorsOfFilm(Long film_id, List<Director> directors);
+    List<Director> updateDirectorsOfFilm(Film film);
 
     void deleteDirectorsOfFilm(Long film_id);
 
     boolean isExists(int id);
 
-    List<Long> getFilmsByDirectorOrderByLikes(int id);
-
-    List<Long> getFilmsByDirectorOrderByDate(int id);
+    void validateDirector(int id);
 }

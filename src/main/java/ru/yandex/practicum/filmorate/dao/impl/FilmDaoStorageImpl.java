@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Repository
@@ -92,7 +91,7 @@ public class FilmDaoStorageImpl implements FilmStorage {
         film.setId(keyHolder.getKey().longValue());
         saveGenreToDb(film);
 
-        List<Director> directorsOfFilm = directorStorage.saveDirectorsOfFilm(film.getId(), film.getDirectors());
+        List<Director> directorsOfFilm = directorStorage.saveDirectorsOfFilm(film);
         film.setDirectors(directorsOfFilm);
 
         log.info("Film create: {}.", film.getRate());
@@ -139,7 +138,7 @@ public class FilmDaoStorageImpl implements FilmStorage {
         Film film = dtoMapper.dtoToFilm(dtoFilm);
         saveGenreToDb(film);
 
-        List<Director> directors = directorStorage.updateDirectorsOfFilm(film.getId(), film.getDirectors());
+        List<Director> directors = directorStorage.updateDirectorsOfFilm(film);
         film.setDirectors(directors);
 
         return film;
@@ -276,5 +275,34 @@ public class FilmDaoStorageImpl implements FilmStorage {
                 "LIMIT ?;";
 
         return jdbcTemplate.query(sql, this::makeFilm, count);
+    }
+
+    @Override
+    public List<Film> getFilmsByDirectorOrderByLikes(int id) throws MpaRatingNotFound {
+        directorStorage.validateDirector(id);
+        String sql = "SELECT * FROM FILMS F" +
+                " WHERE F.FILM_ID IN (SELECT FD.FILM_ID FROM FILM_DIRECTORS FD WHERE FD.DIRECTOR_ID = ?)" +
+                " ORDER BY F.LIKES DESC, F.FILM_ID ASC";
+
+        List<Film> films = jdbcTemplate.query(sql, this::makeFilm, id);
+        for (Film film :films) {
+            film.setMpa(mpaStorage.getRatingMpaById(film.getMpa().getId()));
+            film.setGenres(genreStorage.getFilmGenres(film.getId()));
+        }
+        return films;
+    }
+
+    @Override
+    public List<Film> getFilmsByDirectorOrderByDate(int id) throws MpaRatingNotFound {
+        directorStorage.validateDirector(id);
+        String sql = "SELECT * FROM FILMS F WHERE F.FILM_ID IN " +
+                "(SELECT FD.FILM_ID FROM FILM_DIRECTORS FD WHERE FD.DIRECTOR_ID = ?) " +
+                "ORDER BY F.RELEASE_DATE ASC";
+        List<Film> films = jdbcTemplate.query(sql, this::makeFilm, id);
+        for (Film film :films) {
+            film.setMpa(mpaStorage.getRatingMpaById(film.getMpa().getId()));
+            film.setGenres(genreStorage.getFilmGenres(film.getId()));
+        }
+        return films;
     }
 }
