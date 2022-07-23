@@ -29,11 +29,11 @@ public class FilmService {
         return filmStorage.findAll();
     }
 
-    public Film create(DtoFilm dtoFilm) throws MpaRatingNotFound, GenreNotFound, MpaRatingNotValid {
+    public Film create(DtoFilm dtoFilm) throws MpaRatingNotFound, GenreNotFound, MpaRatingNotValid, DirectorNotFoundException {
         return filmStorage.create(dtoFilm);
     }
 
-    public Film update(DtoFilm dtoFilm) throws FilmNotFoundException, MpaRatingNotFound, MpaRatingNotValid, GenreNotFound {
+    public Film update(DtoFilm dtoFilm) throws FilmNotFoundException, MpaRatingNotFound, MpaRatingNotValid, GenreNotFound, DirectorNotFoundException {
         return filmStorage.update(dtoFilm);
     }
 
@@ -61,7 +61,7 @@ public class FilmService {
     }
 
     public List<Film> getFilmsByDirectorsSorted(int id, String sortBy) throws FilmNotFoundException, MpaRatingNotFound,
-            RequestParamNotValid {
+            RequestParamNotValid, DirectorNotFoundException {
         if (sortBy.equals("year")){
             return filmStorage.getFilmsByDirectorOrderByDate(id);
         } else if (sortBy.equals("likes")) {

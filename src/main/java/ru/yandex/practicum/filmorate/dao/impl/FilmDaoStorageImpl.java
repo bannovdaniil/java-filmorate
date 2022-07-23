@@ -64,7 +64,7 @@ public class FilmDaoStorageImpl implements FilmStorage {
     }
 
     @Override
-    public Film create(DtoFilm dtoFilm) throws MpaRatingNotFound, GenreNotFound, MpaRatingNotValid {
+    public Film create(DtoFilm dtoFilm) throws MpaRatingNotFound, GenreNotFound, MpaRatingNotValid, DirectorNotFoundException {
         String sql = "INSERT INTO FILMS (NAME, DESCRIPTION, DURATION, RELEASE_DATE, RATE, RATING_ID) " +
                 " VALUES(? , ? , ? , ? , ?, ?)";
 
@@ -114,7 +114,7 @@ public class FilmDaoStorageImpl implements FilmStorage {
     }
 
     @Override
-    public Film update(DtoFilm dtoFilm) throws FilmNotFoundException, MpaRatingNotFound, MpaRatingNotValid, GenreNotFound {
+    public Film update(DtoFilm dtoFilm) throws FilmNotFoundException, MpaRatingNotFound, MpaRatingNotValid, GenreNotFound, DirectorNotFoundException {
         if (isFilmExist(dtoFilm.getId())) {
             String sql = "UPDATE FILMS SET NAME = ?, DESCRIPTION = ?, DURATION = ?, RELEASE_DATE = ?, RATING_ID = ? " +
                     " WHERE FILM_ID = ? ";
@@ -278,7 +278,7 @@ public class FilmDaoStorageImpl implements FilmStorage {
     }
 
     @Override
-    public List<Film> getFilmsByDirectorOrderByLikes(int id) throws MpaRatingNotFound {
+    public List<Film> getFilmsByDirectorOrderByLikes(int id) throws MpaRatingNotFound, DirectorNotFoundException {
         directorStorage.validateDirector(id);
         String sql = "SELECT * FROM FILMS F" +
                 " WHERE F.FILM_ID IN (SELECT FD.FILM_ID FROM FILM_DIRECTORS FD WHERE FD.DIRECTOR_ID = ?)" +
@@ -293,7 +293,7 @@ public class FilmDaoStorageImpl implements FilmStorage {
     }
 
     @Override
-    public List<Film> getFilmsByDirectorOrderByDate(int id) throws MpaRatingNotFound {
+    public List<Film> getFilmsByDirectorOrderByDate(int id) throws MpaRatingNotFound, DirectorNotFoundException {
         directorStorage.validateDirector(id);
         String sql = "SELECT * FROM FILMS F WHERE F.FILM_ID IN " +
                 "(SELECT FD.FILM_ID FROM FILM_DIRECTORS FD WHERE FD.DIRECTOR_ID = ?) " +

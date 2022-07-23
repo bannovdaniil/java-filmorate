@@ -25,7 +25,7 @@ public class FilmController {
     @PostMapping
     public Film create(@Valid @RequestBody DtoFilm dtoFilm) throws MpaRatingNotFound
             , GenreNotFound
-            , MpaRatingNotValid {
+            , MpaRatingNotValid, DirectorNotFoundException {
         return filmService.create(dtoFilm);
     }
 
@@ -33,7 +33,7 @@ public class FilmController {
     public Film update(@Valid @RequestBody DtoFilm dtoFilm) throws FilmNotFoundException
             , MpaRatingNotFound
             , MpaRatingNotValid
-            , GenreNotFound {
+            , GenreNotFound, DirectorNotFoundException {
         return filmService.update(dtoFilm);
     }
 
@@ -71,7 +71,7 @@ public class FilmController {
 
     @GetMapping("/director/{directorId}")
     public List<Film> getFilmsByDirector(@PathVariable("directorId") Integer id,  @RequestParam String sortBy)
-            throws FilmNotFoundException, MpaRatingNotFound, RequestParamNotValid {
+            throws FilmNotFoundException, MpaRatingNotFound, RequestParamNotValid, DirectorNotFoundException {
         return filmService.getFilmsByDirectorsSorted(id, sortBy);
     }
 }
