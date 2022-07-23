@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.dto.DtoFilm;
 import ru.yandex.practicum.filmorate.exceptions.*;
@@ -24,7 +25,7 @@ public class FilmController {
     @PostMapping
     public Film create(@Valid @RequestBody DtoFilm dtoFilm) throws MpaRatingNotFound
             , GenreNotFound
-            , MpaRatingNotValid {
+            , MpaRatingNotValid, DirectorNotFoundException {
         return filmService.create(dtoFilm);
     }
 
@@ -32,7 +33,7 @@ public class FilmController {
     public Film update(@Valid @RequestBody DtoFilm dtoFilm) throws FilmNotFoundException
             , MpaRatingNotFound
             , MpaRatingNotValid
-            , GenreNotFound {
+            , GenreNotFound, DirectorNotFoundException {
         return filmService.update(dtoFilm);
     }
 
@@ -66,5 +67,11 @@ public class FilmController {
             @RequestParam(required = false) Integer genreId,
             @RequestParam(required = false) Integer year) throws MpaRatingNotFound {
         return filmService.getFilmTop(count, genreId, year);
+    }
+
+    @GetMapping("/director/{directorId}")
+    public List<Film> getFilmsByDirector(@PathVariable("directorId") Integer id,  @RequestParam String sortBy)
+            throws FilmNotFoundException, MpaRatingNotFound, RequestParamNotValid, DirectorNotFoundException {
+        return filmService.getFilmsByDirectorsSorted(id, sortBy);
     }
 }

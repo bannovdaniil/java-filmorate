@@ -6,6 +6,8 @@ import ru.yandex.practicum.filmorate.dto.DtoUser;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
+import java.util.ArrayList;
+
 @Component
 public class DtoMapper {
     public Film dtoToFilm(DtoFilm dtoFilm) {
@@ -18,6 +20,7 @@ public class DtoMapper {
         film.setRate(dtoFilm.getRate());
         film.setMpa(dtoFilm.getMpa());
         film.setGenres(dtoFilm.getGenres());
+        film.setDirectors(dtoFilm.getDirectors() == null ? new ArrayList<>(): dtoFilm.getDirectors());
 
         return film;
     }

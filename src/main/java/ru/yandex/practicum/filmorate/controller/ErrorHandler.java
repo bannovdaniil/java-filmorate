@@ -12,13 +12,16 @@ import ru.yandex.practicum.filmorate.exceptions.*;
         , UserController.class
         , GenreController.class
         , MpaController.class
-        , ReviewController.class})
+        , ReviewController.class
+        , MpaController.class
+        , DirectorController.class})
 public class ErrorHandler {
     private ErrorResponse errorResponse;
 
     @ExceptionHandler({
             MpaRatingNotValid.class,
-            MethodArgumentNotValidException.class
+            MethodArgumentNotValidException.class,
+            RequestParamNotValid.class
     })
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleBadRequest(final Exception e) {
@@ -33,7 +36,8 @@ public class ErrorHandler {
             ReviewNotFoundException.class,
             UserAlreadyExistException.class,
             GenreNotFound.class,
-            FilmNotFoundException.class})
+            FilmNotFoundException.class,
+            DirectorNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleNotFound(final Exception e) {
         return new ErrorResponse(e.getMessage());
