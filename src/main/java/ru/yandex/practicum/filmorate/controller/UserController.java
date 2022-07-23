@@ -8,9 +8,11 @@ import ru.yandex.practicum.filmorate.exceptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.UserRemoveException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Event;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.EventService;
+import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import javax.validation.Valid;
@@ -84,6 +86,11 @@ public class UserController {
     @GetMapping("{id}/feed")
     public List<Event> getUserFeed(@PathVariable("id") Long userId) {
         return eventService.findAllEventsByUserId(userId);
+    }
+
+    @GetMapping("{id}/recommendations")
+    public List<Film> getRecommendations(@PathVariable("id") int userId) throws MpaRatingNotFound {
+        return filmService.getRecommendations(userId);
     }
 }
 
