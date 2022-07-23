@@ -16,8 +16,8 @@ import ru.yandex.practicum.filmorate.model.Film;
 import java.sql.PreparedStatement;
 import java.util.List;
 
-@Repository
 @Slf4j
+@Repository
 @RequiredArgsConstructor
 public class DirectorDaoStorageImpl implements DirectorStorage {
 
