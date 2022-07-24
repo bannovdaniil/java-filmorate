@@ -78,11 +78,6 @@ public class UserController {
         return userService.getCrossFriendList(userId, otherId);
     }
 
-    @GetMapping("{id}/recommendations")
-    public List<Film> getRecommendations(@PathVariable("id") int userId) throws MpaRatingNotFound {
-        return filmService.getRecommendations(userId);
-    }
-
     @GetMapping("{id}/feed")
     public List<Event> getUserFeed(@PathVariable("id") Long userId) {
         return eventService.findAllEventsByUserId(userId);

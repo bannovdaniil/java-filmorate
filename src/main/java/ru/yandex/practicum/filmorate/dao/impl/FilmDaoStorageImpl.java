@@ -281,7 +281,7 @@ public class FilmDaoStorageImpl implements FilmStorage {
         directorStorage.validateDirector(id);
         String sql = "SELECT * FROM FILMS F" +
                 " WHERE F.FILM_ID IN (SELECT FD.FILM_ID FROM FILM_DIRECTORS FD WHERE FD.DIRECTOR_ID = ?)" +
-                " ORDER BY F.LIKES DESC, F.FILM_ID ASC";
+                " ORDER BY F.LIKES DESC, F.FILM_ID";
 
         List<Film> films = jdbcTemplate.query(sql, this::makeFilm, id);
         for (Film film :films) {
@@ -296,7 +296,7 @@ public class FilmDaoStorageImpl implements FilmStorage {
         directorStorage.validateDirector(id);
         String sql = "SELECT * FROM FILMS F WHERE F.FILM_ID IN " +
                 "(SELECT FD.FILM_ID FROM FILM_DIRECTORS FD WHERE FD.DIRECTOR_ID = ?) " +
-                "ORDER BY F.RELEASE_DATE ASC";
+                "ORDER BY F.RELEASE_DATE";
         List<Film> films = jdbcTemplate.query(sql, this::makeFilm, id);
         for (Film film :films) {
             film.setMpa(mpaStorage.getRatingMpaById(film.getMpa().getId()));
@@ -304,32 +304,6 @@ public class FilmDaoStorageImpl implements FilmStorage {
         }
         return films;
     }
-
-    @Override
-    public List<Film> getRecommendations(int userId) throws MpaRatingNotFound {
-        String sql = "SELECT f.* FROM FILMS f JOIN LIKES l ON f.FILM_ID = l.FILM_ID JOIN " +
-                "           (SELECT FILM_ID FROM LIKES l " +
-                "           WHERE USER_ID IN (?, " +
-                "               SELECT USER_ID FROM LIKES " +
-                "               WHERE USER_ID  <> ? AND FILM_ID  IN " +
-                "                   (SELECT FILM_ID FROM LIKES " +
-                "                   WHERE USER_ID = ?) " +
-                "               GROUP BY USER_ID " +
-                "               ORDER BY sum(1) DESC " +
-                "               LIMIT 1) " +
-                "           GROUP BY FILM_ID " +
-                "           HAVING COUNT(USER_ID) = 1) f2 ON l.FILM_ID = f2.FILM_ID" +
-                "      WHERE l.USER_ID <> ?;";
-
-        List<Film> films = jdbcTemplate.query(sql, this::makeFilm, userId, userId, userId, userId);
-        for (Film film : films) {
-            film.setMpa(mpaStorage.getRatingMpaById(film.getMpa().getId()));
-            film.setGenres(genreStorage.getFilmGenres(film.getId()));
-        }
-
-        return films;
-    }
-
     @Override
     public List<Film> getRecommendations(int userId) throws MpaRatingNotFound {
         String sql = "SELECT f.* FROM FILMS f JOIN LIKES l ON f.FILM_ID = l.FILM_ID JOIN " +

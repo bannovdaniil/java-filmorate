@@ -58,7 +58,6 @@ public class ReviewController {
             @PathVariable("userId") Long userId) throws ReviewNotFoundException, UserNotFoundException {
         reviewService.addLike(reviewId, userId, LikeStatus.DISLIKE);
     }
-
     @DeleteMapping("/{id}/like/{userId}")
     public void removeLike(
             @PathVariable("id") Long reviewId,

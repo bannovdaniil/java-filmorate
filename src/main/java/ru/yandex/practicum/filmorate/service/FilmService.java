@@ -60,7 +60,7 @@ public class FilmService {
         return filmStorage.getFilmTop(count, genreId, year);
     }
 
-    public List<Film> getFilmsByDirectorsSorted(int id, String sortBy) throws FilmNotFoundException, MpaRatingNotFound,
+    public List<Film> getFilmsByDirectorsSorted(int id, String sortBy) throws MpaRatingNotFound,
             RequestParamNotValid, DirectorNotFoundException {
         if (sortBy.equals("year")){
             return filmStorage.getFilmsByDirectorOrderByDate(id);
@@ -69,10 +69,6 @@ public class FilmService {
         } else {
             throw new RequestParamNotValid("Параметр запроса неправильный: " + sortBy);
         }
-    }
-
-    public List<Film> getRecommendations(int userId) throws MpaRatingNotFound {
-        return filmStorage.getRecommendations(userId);
     }
 
     public List<Film> getRecommendations(int userId) throws MpaRatingNotFound {
