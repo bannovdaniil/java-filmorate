@@ -11,7 +11,9 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 class DtoFilmTest {
     private DtoFilm dtoFilm;
@@ -31,60 +33,66 @@ class DtoFilmTest {
     @DisplayName("Name validation")
     @ParameterizedTest
     @CsvSource({
-            "'', 1, name should not be blank",
-            "null, 1, name should not be blank",
-            "'Stars wars', 0, OK"
+            "'', name should not be blank",
+            "null, name should not be blank",
+            "'Stars wars', OK"
     })
-    void checkNameValidation(String testName, int expectSize, String expected) {
+    void checkNameValidation(String testName, String expectedErrorMessage) {
         if ("null".equals(testName)) {
             testName = null;
         }
         dtoFilm.setName(testName);
-        Set<ConstraintViolation<DtoFilm>> violations = validator.validate(dtoFilm);
+        List<String> violations = validator.validate(dtoFilm)
+                .stream().map(ConstraintViolation::getMessage)
+                .filter(expectedErrorMessage::equals)
+                .collect(Collectors.toList());
 
-        Assertions.assertEquals(expectSize, violations.size());
         if (!violations.isEmpty()) {
-            Assertions.assertEquals(expected, violations.iterator().next().getMessage());
+            Assertions.assertEquals(expectedErrorMessage, violations.get(0));
         }
     }
 
     @DisplayName("Description validation")
     @ParameterizedTest
     @CsvSource({
-            "0, 0, OK",
-            "1, 0, OK",
-            "199, 0, OK",
-            "200, 0, OK",
-            "201, 1, Description length must be less then 200"
+            "0, OK",
+            "1, OK",
+            "199, OK",
+            "200, OK",
+            "201, Description length must be less then 200"
     })
-    void checkDescriptionValidation(int lengthDiscription, int expectSize, String expected) {
+    void checkDescriptionValidation(int lengthDiscription, String expectedErrorMessage) {
         String testDiscription = "a".repeat(lengthDiscription);
 
         dtoFilm.setDescription(testDiscription);
-        Set<ConstraintViolation<DtoFilm>> violations = validator.validate(dtoFilm);
+        List<String> violations = validator.validate(dtoFilm)
+                .stream().map(ConstraintViolation::getMessage)
+                .filter(expectedErrorMessage::equals)
+                .collect(Collectors.toList());
 
-        Assertions.assertEquals(expectSize, violations.size());
         if (!violations.isEmpty()) {
-            Assertions.assertEquals(expected, violations.iterator().next().getMessage());
+            Assertions.assertEquals(expectedErrorMessage, violations.get(0));
         }
     }
 
     @DisplayName("ReleaseDate")
     @ParameterizedTest
     @CsvSource({
-            "1800-10-10, 1, Data must be after 1895-12-28",
-            "1895-12-27, 1, Data must be after 1895-12-28",
-            "1895-12-28, 1, Data must be after 1895-12-28",
-            "1895-12-29, 0, OK",
-            "2021-12-29, 0, OK",
+            "1800-10-10, Data must be after 1895-12-28",
+            "1895-12-27, Data must be after 1895-12-28",
+            "1895-12-28, Data must be after 1895-12-28",
+            "1895-12-29, OK",
+            "2021-12-29, OK",
     })
-    void checkReleaseDateValidation(LocalDate releaseDate, int expectSize, String expected) {
+    void checkReleaseDateValidation(LocalDate releaseDate, String expectedErrorMessage) {
         dtoFilm.setReleaseDate(releaseDate);
-        Set<ConstraintViolation<DtoFilm>> violations = validator.validate(dtoFilm);
+        List<String> violations = validator.validate(dtoFilm)
+                .stream().map(ConstraintViolation::getMessage)
+                .filter(expectedErrorMessage::equals)
+                .collect(Collectors.toList());
 
-        Assertions.assertEquals(expectSize, violations.size());
         if (!violations.isEmpty()) {
-            Assertions.assertEquals(expected, violations.iterator().next().getMessage());
+            Assertions.assertEquals(expectedErrorMessage, violations.get(0));
         }
     }
 

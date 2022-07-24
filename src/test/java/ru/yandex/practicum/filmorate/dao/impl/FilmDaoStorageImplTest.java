@@ -72,7 +72,7 @@ class FilmDaoStorageImplTest {
 
     @DisplayName("Create Film")
     @Test
-    public void createFilm() throws GenreNotFound, MpaRatingNotFound, MpaRatingNotValid {
+    public void createFilm() throws GenreNotFound, MpaRatingNotFound, MpaRatingNotValid, DirectorNotFoundException {
         Film filmResult = filmStorage.create(dtoFilm1);
 
         assertThat(filmResult).hasFieldOrPropertyWithValue("name", "testFilm1");
@@ -80,7 +80,7 @@ class FilmDaoStorageImplTest {
 
     @DisplayName("Find Film by Id")
     @Test
-    public void testFindFilmById() throws FilmNotFoundException, GenreNotFound, MpaRatingNotFound, MpaRatingNotValid {
+    public void testFindFilmById() throws FilmNotFoundException, GenreNotFound, MpaRatingNotFound, MpaRatingNotValid, DirectorNotFoundException {
         Film film = filmStorage.create(dtoFilm1);
 
         long filmId = film.getId();
@@ -94,7 +94,7 @@ class FilmDaoStorageImplTest {
 
     @DisplayName("Update Film")
     @Test
-    public void updateFilm() throws FilmNotFoundException, GenreNotFound, MpaRatingNotFound, MpaRatingNotValid {
+    public void updateFilm() throws FilmNotFoundException, GenreNotFound, MpaRatingNotFound, MpaRatingNotValid, DirectorNotFoundException {
         Film filmResult = filmStorage.create(dtoFilm1);
 
         long filmId = filmResult.getId();
@@ -110,7 +110,7 @@ class FilmDaoStorageImplTest {
 
     @DisplayName("Remove Film")
     @Test
-    public void removeFilm() throws GenreNotFound, MpaRatingNotFound, MpaRatingNotValid, InvalidFilmRemoveException {
+    public void removeFilm() throws GenreNotFound, MpaRatingNotFound, MpaRatingNotValid, InvalidFilmRemoveException, DirectorNotFoundException {
         Film filmResult = filmStorage.create(dtoFilm1);
 
         long filmId = filmResult.getId();
@@ -127,7 +127,7 @@ class FilmDaoStorageImplTest {
 
     @DisplayName("Find All Films")
     @Test
-    public void findAllFilm() throws GenreNotFound, MpaRatingNotFound, MpaRatingNotValid {
+    public void findAllFilm() throws GenreNotFound, MpaRatingNotFound, MpaRatingNotValid, DirectorNotFoundException {
         Film filmResult1 = filmStorage.create(dtoFilm1);
         Film filmResult2 = filmStorage.create(dtoFilm2);
 
