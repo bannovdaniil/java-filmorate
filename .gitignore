@@ -1,4 +1,5 @@
 *.mv.db
+*.trace.db
 *.class
 *.log
 *.jar
