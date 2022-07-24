@@ -77,7 +77,7 @@ public class FilmController {
 
     @GetMapping("/search")
     public List<Film> searchFilms(@RequestParam String query,
-                                  @RequestParam(name = "by") List<String> searchByParams) throws RequestParamNotValid, MpaRatingNotFound {
+                                  @RequestParam(name = "by", defaultValue = "title") List<String> searchByParams) throws RequestParamNotValid, MpaRatingNotFound {
         return filmService.searchFilms(query, searchByParams);
     }
 }
