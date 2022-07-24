@@ -307,20 +307,20 @@ public class FilmDaoStorageImpl implements FilmStorage {
     }
 
     @Override
-    public List<Film> searchFilms(String query, List<String> by) throws MpaRatingNotFound {
+    public List<Film> searchFilms(String query, List<String> searchByParams) throws MpaRatingNotFound {
         List<Film> films;
 
-        if (by.contains("title") && by.contains("director")) {
+        if (searchByParams.contains("title") && searchByParams.contains("director")) {
             films = searchFilmsByTitleAndDirector(query);
         }
-        else if (by.contains("director")) {
+        else if (searchByParams.contains("director")) {
             films = searchFilmsByDirector(query);
         }
         else {
             films = searchFilmsByTitle(query);
         }
 
-        for (Film film :films) {
+        for (Film film : films) {
             film.setMpa(mpaStorage.getRatingMpaById(film.getMpa().getId()));
             film.setGenres(genreStorage.getFilmGenres(film.getId()));
         }

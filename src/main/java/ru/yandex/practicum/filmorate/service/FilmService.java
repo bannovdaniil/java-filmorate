@@ -71,7 +71,10 @@ public class FilmService {
         }
     }
 
-    public List<Film> searchFilms(String query, List<String> by) throws MpaRatingNotFound {
-        return filmStorage.searchFilms(query, by);
+    public List<Film> searchFilms(String query, List<String> searchByParams) throws MpaRatingNotFound, RequestParamNotValid {
+        if (!(searchByParams.contains("title") || searchByParams.contains("director"))) {
+            throw new RequestParamNotValid("Query param 'by' should contains 'title' or 'director'");
+        }
+        return filmStorage.searchFilms(query, searchByParams);
     }
 }
