@@ -74,4 +74,13 @@ public class FilmController {
             throws FilmNotFoundException, MpaRatingNotFound, RequestParamNotValid, DirectorNotFoundException {
         return filmService.getFilmsByDirectorsSorted(id, sortBy);
     }
+
+    @GetMapping("/search")
+    public List<Film> searchFilms(@RequestParam String query,
+                                  @RequestParam List<String> by) throws RequestParamNotValid, MpaRatingNotFound {
+        if (!(by.contains("title") || by.contains("director"))) {
+            throw new RequestParamNotValid("Query param \"by\" should contains \"title\" or \"director\"");
+        }
+        return filmService.searchFilms(query, by);
+    }
 }
