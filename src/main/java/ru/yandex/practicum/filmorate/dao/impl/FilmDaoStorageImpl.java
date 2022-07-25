@@ -6,10 +6,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.dao.DirectorStorage;
-import ru.yandex.practicum.filmorate.dao.FilmStorage;
-import ru.yandex.practicum.filmorate.dao.GenreStorage;
-import ru.yandex.practicum.filmorate.dao.MpaStorage;
+import ru.yandex.practicum.filmorate.dao.*;
 import ru.yandex.practicum.filmorate.dto.DtoFilm;
 import ru.yandex.practicum.filmorate.exceptions.*;
 import ru.yandex.practicum.filmorate.mapper.DtoMapper;
@@ -29,6 +26,7 @@ public class FilmDaoStorageImpl implements FilmStorage {
     private final DtoMapper dtoMapper;
     private final MpaStorage mpaStorage;
     private final GenreStorage genreStorage;
+    private final UserStorage userStorage;
 
     private final DirectorStorage directorStorage;
 
@@ -239,7 +237,7 @@ public class FilmDaoStorageImpl implements FilmStorage {
         String sql = "SELECT * FROM FILMS WHERE " +
                 "FILM_ID IN (SELECT FILM_ID FROM FILM_GENRES WHERE GENRE_ID = ?) " +
                 "AND YEAR(RELEASE_DATE) = ? " +
-                "ORDER BY LIKES DESC " +"" +
+                "ORDER BY LIKES DESC " + "" +
                 "LIMIT ?;";
 
         return jdbcTemplate.query(sql, this::makeFilm, genreId, year, count);
@@ -279,7 +277,7 @@ public class FilmDaoStorageImpl implements FilmStorage {
                 " ORDER BY F.LIKES DESC, F.FILM_ID ASC";
 
         List<Film> films = jdbcTemplate.query(sql, this::makeFilm, id);
-        for (Film film :films) {
+        for (Film film : films) {
             film.setMpa(mpaStorage.getRatingMpaById(film.getMpa().getId()));
             film.setGenres(genreStorage.getFilmGenres(film.getId()));
         }
@@ -293,10 +291,61 @@ public class FilmDaoStorageImpl implements FilmStorage {
                 "(SELECT FD.FILM_ID FROM FILM_DIRECTORS FD WHERE FD.DIRECTOR_ID = ?) " +
                 "ORDER BY F.RELEASE_DATE ASC";
         List<Film> films = jdbcTemplate.query(sql, this::makeFilm, id);
-        for (Film film :films) {
+        for (Film film : films) {
             film.setMpa(mpaStorage.getRatingMpaById(film.getMpa().getId()));
             film.setGenres(genreStorage.getFilmGenres(film.getId()));
         }
+        return films;
+    }
+
+    @Override
+    public List<Film> getCommonFilms(long userId, long friendId) throws MpaRatingNotFound, UserNotFoundException {
+        if (!userStorage.isUserExist(userId)) {
+            throw new UserNotFoundException(String.format("User not found by id = %d", userId));
+        }
+        if (!userStorage.isUserExist(friendId)) {
+            throw new UserNotFoundException(String.format("User not found by id = %d", friendId));
+        }
+
+        String sql = "SELECT * " +
+                "FROM FILMS " +
+                "WHERE FILM_ID IN (" +
+                "SELECT first_user_likes.FILM_ID " +
+                "FROM (" +
+                "SELECT FILM_ID " +
+                "FROM LIKES " +
+                "WHERE USER_ID = ?) AS first_user_likes " +
+                "JOIN (" +
+                "SELECT FILM_ID " +
+                "FROM LIKES " +
+                "WHERE USER_ID = ?) AS second_user_likes " +
+                "ON first_user_likes.FILM_ID = second_user_likes.FILM_ID) " +
+                "ORDER BY LIKES DESC";
+
+        List<Film> commonFilms = jdbcTemplate.query(sql, this::makeFilm, userId, friendId);
+        for (Film film : commonFilms) {
+            film.setMpa(mpaStorage.getRatingMpaById(film.getMpa().getId()));
+            film.setGenres(genreStorage.getFilmGenres(film.getId()));
+        }
+        return commonFilms;
+    }
+
+    public List<Film> searchFilms(String query, List<String> searchByParams) throws MpaRatingNotFound {
+        List<Film> films;
+
+        if (searchByParams.contains("title") && searchByParams.contains("director")) {
+            films = searchFilmsByTitleAndDirector(query);
+        } else if (searchByParams.contains("director")) {
+            films = searchFilmsByDirector(query);
+        } else {
+            films = searchFilmsByTitle(query);
+        }
+
+        for (Film film : films) {
+            film.setMpa(mpaStorage.getRatingMpaById(film.getMpa().getId()));
+            film.setGenres(genreStorage.getFilmGenres(film.getId()));
+        }
+
         return films;
     }
 
@@ -318,5 +367,60 @@ public class FilmDaoStorageImpl implements FilmStorage {
         } else {
             throw new FilmNotFoundException("Film ID not found.");
         }
+}
+
+private List<Film> searchFilmsByTitle(String query) {
+        log.info(String.format("Search films by title = %s", query));
+
+        String searchQuery = "SELECT * " +
+                "FROM FILMS " +
+                "WHERE NAME ILIKE ? " +
+                "ORDER BY LIKES DESC";
+
+        return jdbcTemplate.query(searchQuery, this::makeFilm, "%" + query + "%");
+    }
+
+    private List<Film> searchFilmsByDirector(String query) {
+        log.info(String.format("Search films by director = %s", query));
+
+        String searchQuery = "SELECT F.FILM_ID, " +
+                "   F.NAME, " +
+                "   F.DESCRIPTION," +
+                "   F.DURATION, " +
+                "   F.LIKES, " +
+                "   F.RATE, " +
+                "   F.RELEASE_DATE, " +
+                "   F.RATING_ID " +
+                "FROM FILMS F " +
+                "JOIN FILM_DIRECTORS  FD ON F.FILM_ID = FD.FILM_ID " +
+                "JOIN DIRECTORS D ON FD.DIRECTOR_ID = D.DIRECTOR_ID " +
+                "WHERE D.NAME ILIKE ? " +
+                "ORDER BY LIKES DESC";
+
+        return jdbcTemplate.query(searchQuery, this::makeFilm, "%" + query + "%");
+    }
+
+    private List<Film> searchFilmsByTitleAndDirector(String query) {
+        log.info(String.format("Search films by title = %s and director = %s", query, query));
+
+        String searchQuery = "SELECT * " +
+                "FROM FILMS F1 " +
+                "WHERE F1.NAME ILIKE ? " +
+                "UNION " +
+                "SELECT F2.FILM_ID, " +
+                "   F2.NAME, " +
+                "   F2.DESCRIPTION," +
+                "   F2.DURATION, " +
+                "   F2.LIKES, " +
+                "   F2.RATE, " +
+                "   F2.RELEASE_DATE, " +
+                "   F2.RATING_ID " +
+                "FROM FILMS F2 " +
+                "JOIN FILM_DIRECTORS  FD ON F2.FILM_ID = FD.FILM_ID " +
+                "JOIN DIRECTORS D ON FD.DIRECTOR_ID = D.DIRECTOR_ID " +
+                "WHERE D.NAME ILIKE ? " +
+                "ORDER BY LIKES DESC";
+
+        return jdbcTemplate.query(searchQuery, this::makeFilm, "%" + query + "%", "%" + query + "%");
     }
 }

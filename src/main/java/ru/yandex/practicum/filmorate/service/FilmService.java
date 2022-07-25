@@ -70,5 +70,11 @@ public class FilmService {
 
     public void removeFilmById(Long filmId) throws FilmNotFoundException {
         filmStorage.removeFilmById(filmId);
+}
+public List<Film> getCommonFilms(long userId, long friendId) throws UserNotFoundException, MpaRatingNotFound {
+        return filmStorage.getCommonFilms(userId, friendId);
+}
+    public List<Film> searchFilms(String query, List<String> searchByParams) throws MpaRatingNotFound, RequestParamNotValid {
+        return filmStorage.searchFilms(query, searchByParams);
     }
 }

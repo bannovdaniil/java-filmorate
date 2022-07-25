@@ -73,4 +73,17 @@ public class FilmController {
             throws FilmNotFoundException, MpaRatingNotFound, RequestParamNotValid, DirectorNotFoundException {
         return filmService.getFilmsByDirectorsSorted(id, sortBy);
     }
+
+    @GetMapping("/common")
+    public List<Film> getCommonFilms(
+            @RequestParam long userId,
+            @RequestParam long friendId
+    ) throws UserNotFoundException, MpaRatingNotFound {
+        return filmService.getCommonFilms(userId, friendId);
+    }
+    @GetMapping("/search")
+    public List<Film> searchFilms(@RequestParam String query,
+                                  @RequestParam(name = "by", defaultValue = "title") List<String> searchByParams) throws RequestParamNotValid, MpaRatingNotFound {
+        return filmService.searchFilms(query, searchByParams);
+    }
 }
