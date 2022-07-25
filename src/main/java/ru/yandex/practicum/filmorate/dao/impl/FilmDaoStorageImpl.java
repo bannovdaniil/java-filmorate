@@ -19,10 +19,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Slf4j
 @Repository
@@ -295,7 +292,7 @@ public class FilmDaoStorageImpl implements FilmStorage {
         directorStorage.validateDirector(id);
         String sql = "SELECT * FROM FILMS F WHERE F.FILM_ID IN " +
                 "(SELECT FD.FILM_ID FROM FILM_DIRECTORS FD WHERE FD.DIRECTOR_ID = ?) " +
-                "ORDER BY F.RELEASE_DATE ASC";
+                "ORDER BY F.RELEASE_DATE";
         List<Film> films = jdbcTemplate.query(sql, this::makeFilm, id);
         for (Film film : films) {
             film.setMpa(mpaStorage.getRatingMpaById(film.getMpa().getId()));
@@ -353,6 +350,26 @@ public class FilmDaoStorageImpl implements FilmStorage {
         }
 
         return films;
+    }
+
+    @Override
+    public void removeFilmById(Long filmId) throws FilmNotFoundException {
+        if (isFilmExist(filmId)) {
+            int paramsCount = 5;
+            Long[] params = new Long[paramsCount];
+            Arrays.fill(params, filmId);
+
+            String sql =
+                    "DELETE FROM likes WHERE film_id=?; " +
+                            "DELETE FROM review_likes " +
+                            "WHERE review_id IN (SELECT review_id FROM reviews WHERE film_id=?); " +
+                            "DELETE FROM reviews WHERE film_id=?; " +
+                            "DELETE FROM film_genres WHERE film_id=?; " +
+                            "DELETE FROM films WHERE film_id=?";
+            jdbcTemplate.update(sql, params);
+        } else {
+            throw new FilmNotFoundException("Film ID not found.");
+        }
     }
 
     private List<Film> searchFilmsByTitle(String query) {

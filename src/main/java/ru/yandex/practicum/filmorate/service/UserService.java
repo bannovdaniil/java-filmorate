@@ -55,4 +55,8 @@ public class UserService {
     public List<User> getCrossFriendList(Long userId, Long otherId) throws UserNotFoundException {
         return userStorage.getCrossFriendList(userId, otherId);
     }
+
+    public void removeUserById(Long userId) throws UserRemoveException {
+        userStorage.removeUserById(userId);
+    }
 }

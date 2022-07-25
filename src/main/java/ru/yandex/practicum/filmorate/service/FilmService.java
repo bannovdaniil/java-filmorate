@@ -57,9 +57,9 @@ public class FilmService {
         return filmStorage.getFilmTop(count, genreId, year);
     }
 
-    public List<Film> getFilmsByDirectorsSorted(int id, String sortBy) throws FilmNotFoundException, MpaRatingNotFound,
+    public List<Film> getFilmsByDirectorsSorted(int id, String sortBy) throws MpaRatingNotFound,
             RequestParamNotValid, DirectorNotFoundException {
-        if (sortBy.equals("year")){
+        if (sortBy.equals("year")) {
             return filmStorage.getFilmsByDirectorOrderByDate(id);
         } else if (sortBy.equals("likes")) {
             return filmStorage.getFilmsByDirectorOrderByLikes(id);
@@ -68,9 +68,14 @@ public class FilmService {
         }
     }
 
+    public void removeFilmById(Long filmId) throws FilmNotFoundException {
+        filmStorage.removeFilmById(filmId);
+    }
+
     public List<Film> getCommonFilms(long userId, long friendId) throws UserNotFoundException, MpaRatingNotFound {
         return filmStorage.getCommonFilms(userId, friendId);
-}
+    }
+
     public List<Film> searchFilms(String query, List<String> searchByParams) throws MpaRatingNotFound, RequestParamNotValid {
         return filmStorage.searchFilms(query, searchByParams);
     }
