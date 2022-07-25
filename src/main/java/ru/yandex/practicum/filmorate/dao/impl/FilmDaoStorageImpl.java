@@ -243,7 +243,7 @@ public class FilmDaoStorageImpl implements FilmStorage {
         String sql = "SELECT * FROM FILMS WHERE " +
                 "FILM_ID IN (SELECT FILM_ID FROM FILM_GENRES WHERE GENRE_ID = ?) " +
                 "AND YEAR(RELEASE_DATE) = ? " +
-                "ORDER BY LIKES DESC " +"" +
+                "ORDER BY LIKES DESC " + "" +
                 "LIMIT ?;";
 
         return jdbcTemplate.query(sql, this::makeFilm, genreId, year, count);
@@ -283,7 +283,7 @@ public class FilmDaoStorageImpl implements FilmStorage {
                 " ORDER BY F.LIKES DESC, F.FILM_ID ASC";
 
         List<Film> films = jdbcTemplate.query(sql, this::makeFilm, id);
-        for (Film film :films) {
+        for (Film film : films) {
             film.setMpa(mpaStorage.getRatingMpaById(film.getMpa().getId()));
             film.setGenres(genreStorage.getFilmGenres(film.getId()));
         }
@@ -297,7 +297,7 @@ public class FilmDaoStorageImpl implements FilmStorage {
                 "(SELECT FD.FILM_ID FROM FILM_DIRECTORS FD WHERE FD.DIRECTOR_ID = ?) " +
                 "ORDER BY F.RELEASE_DATE ASC";
         List<Film> films = jdbcTemplate.query(sql, this::makeFilm, id);
-        for (Film film :films) {
+        for (Film film : films) {
             film.setMpa(mpaStorage.getRatingMpaById(film.getMpa().getId()));
             film.setGenres(genreStorage.getFilmGenres(film.getId()));
         }
@@ -334,17 +334,16 @@ public class FilmDaoStorageImpl implements FilmStorage {
             film.setGenres(genreStorage.getFilmGenres(film.getId()));
         }
         return commonFilms;
+    }
 
-      public List<Film> searchFilms(String query, List<String> searchByParams) throws MpaRatingNotFound {
+    public List<Film> searchFilms(String query, List<String> searchByParams) throws MpaRatingNotFound {
         List<Film> films;
 
         if (searchByParams.contains("title") && searchByParams.contains("director")) {
             films = searchFilmsByTitleAndDirector(query);
-        }
-        else if (searchByParams.contains("director")) {
+        } else if (searchByParams.contains("director")) {
             films = searchFilmsByDirector(query);
-        }
-        else {
+        } else {
             films = searchFilmsByTitle(query);
         }
 

@@ -80,7 +80,7 @@ public class FilmController {
             @RequestParam long friendId
     ) throws UserNotFoundException, MpaRatingNotFound {
         return filmService.getCommonFilms(userId, friendId);
-
+    }
     @GetMapping("/search")
     public List<Film> searchFilms(@RequestParam String query,
                                   @RequestParam(name = "by", defaultValue = "title") List<String> searchByParams) throws RequestParamNotValid, MpaRatingNotFound {
