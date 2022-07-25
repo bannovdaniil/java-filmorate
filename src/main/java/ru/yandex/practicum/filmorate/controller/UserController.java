@@ -41,9 +41,9 @@ public class UserController {
         return userService.update(dtoUser);
     }
 
-    @DeleteMapping
-    public void removeUser(@RequestBody @Valid DtoUser dtoUser) throws UserRemoveException {
-        userService.remove(dtoUser);
+    @DeleteMapping("/{id}")
+    public void removeUser(@PathVariable("id") Long userId) throws UserRemoveException {
+        userService.removeUserById(userId);
     }
 
     @GetMapping("/{id}")

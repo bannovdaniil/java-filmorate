@@ -28,4 +28,6 @@ public interface UserStorage {
     List<User> getFriendList(Long userId) throws UserNotFoundException;
 
     List<User> getCrossFriendList(Long userId, Long otherId) throws UserNotFoundException;
+
+    void removeUserById(Long userId) throws UserRemoveException;
 }

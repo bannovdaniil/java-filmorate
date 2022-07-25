@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.dto.DtoFilm;
 import ru.yandex.practicum.filmorate.exceptions.*;
@@ -37,9 +36,9 @@ public class FilmController {
         return filmService.update(dtoFilm);
     }
 
-    @DeleteMapping
-    public void remove(@Valid @RequestBody DtoFilm dtoFilm) throws InvalidFilmRemoveException {
-        filmService.remove(dtoFilm);
+    @DeleteMapping("/{id}")
+    public void remove(@PathVariable("id") Long filmId) throws FilmNotFoundException {
+        filmService.removeFilmById(filmId);
     }
 
     @GetMapping("/{id}")
@@ -70,8 +69,22 @@ public class FilmController {
     }
 
     @GetMapping("/director/{directorId}")
-    public List<Film> getFilmsByDirector(@PathVariable("directorId") Integer id,  @RequestParam String sortBy)
+    public List<Film> getFilmsByDirector(@PathVariable("directorId") Integer id, @RequestParam String sortBy)
             throws FilmNotFoundException, MpaRatingNotFound, RequestParamNotValid, DirectorNotFoundException {
         return filmService.getFilmsByDirectorsSorted(id, sortBy);
+    }
+
+    @GetMapping("/common")
+    public List<Film> getCommonFilms(
+            @RequestParam long userId,
+            @RequestParam long friendId
+    ) throws UserNotFoundException, MpaRatingNotFound {
+        return filmService.getCommonFilms(userId, friendId);
+    }
+
+    @GetMapping("/search")
+    public List<Film> searchFilms(@RequestParam String query,
+                                  @RequestParam(name = "by", defaultValue = "title") List<String> searchByParams) throws RequestParamNotValid, MpaRatingNotFound {
+        return filmService.searchFilms(query, searchByParams);
     }
 }

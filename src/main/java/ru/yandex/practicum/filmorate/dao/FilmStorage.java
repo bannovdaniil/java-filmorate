@@ -31,4 +31,10 @@ public interface FilmStorage {
     List<Film> getFilmsByDirectorOrderByDate(int id) throws MpaRatingNotFound, DirectorNotFoundException;
 
     List<Film> getFilmsByDirectorOrderByLikes(int id) throws MpaRatingNotFound, DirectorNotFoundException;
+
+    void removeFilmById(Long filmId) throws FilmNotFoundException;
+
+    List<Film> getCommonFilms(long userId, long friendId) throws MpaRatingNotFound, UserNotFoundException;
+
+    List<Film> searchFilms(String query, List<String> searchByParams) throws MpaRatingNotFound;
 }
