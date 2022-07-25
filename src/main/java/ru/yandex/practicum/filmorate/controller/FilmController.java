@@ -70,7 +70,7 @@ public class FilmController {
 
     @GetMapping("/director/{directorId}")
     public List<Film> getFilmsByDirector(@PathVariable("directorId") Integer id, @RequestParam String sortBy)
-            throws FilmNotFoundException, MpaRatingNotFound, RequestParamNotValid, DirectorNotFoundException {
+            throws MpaRatingNotFound, RequestParamNotValid, DirectorNotFoundException {
         return filmService.getFilmsByDirectorsSorted(id, sortBy);
     }
 
@@ -84,7 +84,7 @@ public class FilmController {
 
     @GetMapping("/search")
     public List<Film> searchFilms(@RequestParam String query,
-                                  @RequestParam(name = "by", defaultValue = "title") List<String> searchByParams) throws RequestParamNotValid, MpaRatingNotFound {
+                                  @RequestParam(name = "by", defaultValue = "title") List<String> searchByParams) throws MpaRatingNotFound {
         return filmService.searchFilms(query, searchByParams);
     }
 }

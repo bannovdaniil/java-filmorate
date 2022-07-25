@@ -3,18 +3,15 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dao.DirectorStorage;
-import ru.yandex.practicum.filmorate.dao.FilmStorage;
 import ru.yandex.practicum.filmorate.dao.FilmLikeStorage;
+import ru.yandex.practicum.filmorate.dao.FilmStorage;
 import ru.yandex.practicum.filmorate.dto.DtoFilm;
 import ru.yandex.practicum.filmorate.exceptions.*;
 import ru.yandex.practicum.filmorate.model.EventOperation;
 import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import java.awt.*;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,11 +26,11 @@ public class FilmService {
         return filmStorage.findAll();
     }
 
-    public Film create(DtoFilm dtoFilm) throws MpaRatingNotFound, GenreNotFound, MpaRatingNotValid, DirectorNotFoundException {
+    public Film create(DtoFilm dtoFilm) throws MpaRatingNotFound, GenreNotFound, DirectorNotFoundException {
         return filmStorage.create(dtoFilm);
     }
 
-    public Film update(DtoFilm dtoFilm) throws FilmNotFoundException, MpaRatingNotFound, MpaRatingNotValid, GenreNotFound, DirectorNotFoundException {
+    public Film update(DtoFilm dtoFilm) throws FilmNotFoundException, MpaRatingNotFound, GenreNotFound, DirectorNotFoundException {
         return filmStorage.update(dtoFilm);
     }
 
@@ -60,9 +57,9 @@ public class FilmService {
         return filmStorage.getFilmTop(count, genreId, year);
     }
 
-    public List<Film> getFilmsByDirectorsSorted(int id, String sortBy) throws FilmNotFoundException, MpaRatingNotFound,
+    public List<Film> getFilmsByDirectorsSorted(int id, String sortBy) throws MpaRatingNotFound,
             RequestParamNotValid, DirectorNotFoundException {
-        if (sortBy.equals("year")){
+        if (sortBy.equals("year")) {
             return filmStorage.getFilmsByDirectorOrderByDate(id);
         } else if (sortBy.equals("likes")) {
             return filmStorage.getFilmsByDirectorOrderByLikes(id);
@@ -83,7 +80,7 @@ public class FilmService {
         return filmStorage.getCommonFilms(userId, friendId);
     }
 
-    public List<Film> searchFilms(String query, List<String> searchByParams) throws MpaRatingNotFound, RequestParamNotValid {
+    public List<Film> searchFilms(String query, List<String> searchByParams) throws MpaRatingNotFound {
         return filmStorage.searchFilms(query, searchByParams);
     }
 }

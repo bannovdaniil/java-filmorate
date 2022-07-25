@@ -9,9 +9,13 @@ import java.util.List;
 
 public interface DirectorStorage {
     Director create(DtoDirector dtoDirector) throws DirectorNotFoundException;
+
     Director update(DtoDirector dtoDirector) throws DirectorNotFoundException;
+
     void delete(int id) throws DirectorNotFoundException;
+
     Director getById(int id) throws DirectorNotFoundException;
+
     List<Director> getAll();
 
     List<Director> getDirectorsByFilm(Long film_id);

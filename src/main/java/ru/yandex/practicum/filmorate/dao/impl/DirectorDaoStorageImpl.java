@@ -15,6 +15,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Repository
@@ -36,14 +37,15 @@ public class DirectorDaoStorageImpl implements DirectorStorage {
             ps.setString(1, dtoDirector.getName());
             return ps;
         }, keyHolder);
-        return getById(keyHolder.getKey().intValue());
+        return getById(Objects.requireNonNull(keyHolder.getKey()).intValue());
     }
 
     @Override
     public Director update(DtoDirector dtoDirector) throws DirectorNotFoundException {
-        String sql = "UPDATE `DIRECTORS` SET DIRECTOR_ID=?, NAME=?;";
         if (isExistsDirector(dtoDirector.getId())) {
-            jdbcTemplate.update(sql, dtoDirector.getId(), dtoDirector.getName());
+            String sql = "UPDATE `DIRECTORS` SET NAME = ? " +
+                    " WHERE DIRECTOR_ID = ? ;";
+            jdbcTemplate.update(sql, dtoDirector.getName(), dtoDirector.getId());
         } else {
             throw new DirectorNotFoundException("Director ID not found.");
         }
@@ -51,7 +53,7 @@ public class DirectorDaoStorageImpl implements DirectorStorage {
     }
 
     @Override
-    public void delete(int id) throws DirectorNotFoundException{
+    public void delete(int id) throws DirectorNotFoundException {
         if (isExistsDirector(id)) {
             jdbcTemplate.update("DELETE FROM FILM_DIRECTORS WHERE DIRECTOR_ID = ?;", id);
             jdbcTemplate.update("DELETE FROM DIRECTORS WHERE DIRECTOR_ID = ?;", id);
@@ -67,7 +69,7 @@ public class DirectorDaoStorageImpl implements DirectorStorage {
         if (rowSet.next()) {
             return new Director(rowSet.getInt("director_id"), rowSet.getString("name"));
         } else {
-            throw new DirectorNotFoundException("Director ID= "+ id + " not found.");
+            throw new DirectorNotFoundException("Director ID= " + id + " not found.");
         }
     }
 
@@ -75,12 +77,12 @@ public class DirectorDaoStorageImpl implements DirectorStorage {
     public List<Director> getAll() {
         String sql = "SELECT DIRECTOR_ID, NAME FROM `DIRECTORS`;";
         return jdbcTemplate.query(sql,
-                (rs, rowNum)->new Director(rs.getInt("director_id"), rs.getString("name")));
+                (rs, rowNum) -> new Director(rs.getInt("director_id"), rs.getString("name")));
     }
 
     @Override
     public List<Director> saveDirectorsOfFilm(Film film) throws DirectorNotFoundException {
-        String sql = "INSERT INTO FILM_DIRECTORS (film_id, director_id) values ( ?, ? );";
+        String sql = "INSERT INTO FILM_DIRECTORS (FILM_ID, DIRECTOR_ID) VALUES ( ?, ? );";
 
         for (Director director : film.getDirectors()) {
             if (isExistsDirector(director.getId())) {
@@ -108,19 +110,19 @@ public class DirectorDaoStorageImpl implements DirectorStorage {
     @Override
     public List<Director> getDirectorsByFilm(Long film_id) {
         String sql = "SELECT DIRECTOR_ID, NAME FROM DIRECTORS WHERE DIRECTOR_ID IN " +
-                    "(SELECT DIRECTOR_ID FROM FILM_DIRECTORS WHERE FILM_ID = ?)";
+                "(SELECT DIRECTOR_ID FROM FILM_DIRECTORS WHERE FILM_ID = ?)";
 
         return jdbcTemplate.query(sql, (rs, numRow) ->
                 new Director(rs.getInt("director_id"), rs.getString("name")), film_id);
     }
 
     private boolean isExistsDirector(int id) {
-        return jdbcTemplate.queryForObject( "SELECT COUNT(*) FROM DIRECTORS WHERE DIRECTOR_ID = ? ;",
+        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM DIRECTORS WHERE DIRECTOR_ID = ? ;",
                 Integer.class, id) > 0;
     }
 
     @Override
     public void validateDirector(int id) throws DirectorNotFoundException {
-        if (!isExistsDirector(id))  throw new DirectorNotFoundException("Director with id= " + id + " not found!");
+        if (!isExistsDirector(id)) throw new DirectorNotFoundException("Director with id= " + id + " not found!");
     }
 }

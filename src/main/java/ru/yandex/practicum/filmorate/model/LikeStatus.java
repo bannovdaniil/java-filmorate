@@ -4,7 +4,7 @@ public enum LikeStatus {
     LIKE(true),
     DISLIKE(false);
 
-    private boolean isLike;
+    private final boolean isLike;
 
     LikeStatus(boolean isLike) {
         this.isLike = isLike;

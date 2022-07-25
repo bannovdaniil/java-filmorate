@@ -20,7 +20,7 @@ public class DtoMapper {
         film.setRate(dtoFilm.getRate());
         film.setMpa(dtoFilm.getMpa());
         film.setGenres(dtoFilm.getGenres());
-        film.setDirectors(dtoFilm.getDirectors() == null ? new ArrayList<>(): dtoFilm.getDirectors());
+        film.setDirectors(dtoFilm.getDirectors() == null ? new ArrayList<>() : dtoFilm.getDirectors());
 
         return film;
     }

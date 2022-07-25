@@ -21,6 +21,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
+@SuppressWarnings("ALL")
 @Slf4j
 @Repository
 @RequiredArgsConstructor
@@ -59,7 +60,7 @@ public class FilmDaoStorageImpl implements FilmStorage {
     }
 
     @Override
-    public Film create(DtoFilm dtoFilm) throws MpaRatingNotFound, GenreNotFound, MpaRatingNotValid, DirectorNotFoundException {
+    public Film create(DtoFilm dtoFilm) throws MpaRatingNotFound, GenreNotFound, DirectorNotFoundException {
         String sql = "INSERT INTO FILMS (NAME, DESCRIPTION, DURATION, RELEASE_DATE, RATE, RATING_ID) " +
                 " VALUES(? , ? , ? , ? , ?, ?)";
 
@@ -109,7 +110,7 @@ public class FilmDaoStorageImpl implements FilmStorage {
     }
 
     @Override
-    public Film update(DtoFilm dtoFilm) throws FilmNotFoundException, MpaRatingNotFound, MpaRatingNotValid, GenreNotFound, DirectorNotFoundException {
+    public Film update(DtoFilm dtoFilm) throws FilmNotFoundException, MpaRatingNotFound, GenreNotFound, DirectorNotFoundException {
         if (isFilmExist(dtoFilm.getId())) {
             String sql = "UPDATE FILMS SET NAME = ?, DESCRIPTION = ?, DURATION = ?, RELEASE_DATE = ?, RATING_ID = ? " +
                     " WHERE FILM_ID = ? ";
@@ -240,7 +241,7 @@ public class FilmDaoStorageImpl implements FilmStorage {
         String sql = "SELECT * FROM FILMS WHERE " +
                 "FILM_ID IN (SELECT FILM_ID FROM FILM_GENRES WHERE GENRE_ID = ?) " +
                 "AND YEAR(RELEASE_DATE) = ? " +
-                "ORDER BY LIKES DESC " +"" +
+                "ORDER BY LIKES DESC " + "" +
                 "LIMIT ?;";
 
         return jdbcTemplate.query(sql, this::makeFilm, genreId, year, count);
@@ -280,7 +281,7 @@ public class FilmDaoStorageImpl implements FilmStorage {
                 " ORDER BY F.LIKES DESC, F.FILM_ID ASC";
 
         List<Film> films = jdbcTemplate.query(sql, this::makeFilm, id);
-        for (Film film :films) {
+        for (Film film : films) {
             film.setMpa(mpaStorage.getRatingMpaById(film.getMpa().getId()));
             film.setGenres(genreStorage.getFilmGenres(film.getId()));
         }
@@ -294,12 +295,13 @@ public class FilmDaoStorageImpl implements FilmStorage {
                 "(SELECT FD.FILM_ID FROM FILM_DIRECTORS FD WHERE FD.DIRECTOR_ID = ?) " +
                 "ORDER BY F.RELEASE_DATE";
         List<Film> films = jdbcTemplate.query(sql, this::makeFilm, id);
-        for (Film film :films) {
+        for (Film film : films) {
             film.setMpa(mpaStorage.getRatingMpaById(film.getMpa().getId()));
             film.setGenres(genreStorage.getFilmGenres(film.getId()));
         }
         return films;
     }
+
     @Override
     public List<Film> getRecommendations(int userId) throws MpaRatingNotFound {
         String sql = "SELECT f.* FROM FILMS f JOIN LIKES l ON f.FILM_ID = l.FILM_ID JOIN " +

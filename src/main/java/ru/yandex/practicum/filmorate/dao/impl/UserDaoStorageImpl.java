@@ -19,6 +19,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Repository
@@ -61,7 +62,7 @@ public class UserDaoStorageImpl implements UserStorage {
                     return prSt;
                 }
                 , keyHolder);
-        dtoUser.setId(keyHolder.getKey().longValue());
+        dtoUser.setId(Objects.requireNonNull(keyHolder.getKey()).longValue());
 
         return dtoMapper.dtoToUser(dtoUser);
     }

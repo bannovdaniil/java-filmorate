@@ -18,6 +18,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Repository
@@ -92,7 +93,7 @@ public class ReviewDaoStorageImpl implements ReviewStorage {
                 }
                 , keyHolder);
 
-        review.setReviewId(keyHolder.getKey().longValue());
+        review.setReviewId(Objects.requireNonNull(keyHolder.getKey()).longValue());
 
         log.info("Review create: {}.", review.getReviewId());
 

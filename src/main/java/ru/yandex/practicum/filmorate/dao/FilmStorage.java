@@ -10,9 +10,9 @@ public interface FilmStorage {
 
     List<Film> findAll() throws MpaRatingNotFound;
 
-    Film create(DtoFilm dtoFilm) throws MpaRatingNotFound, GenreNotFound, MpaRatingNotValid, DirectorNotFoundException;
+    Film create(DtoFilm dtoFilm) throws MpaRatingNotFound, GenreNotFound, DirectorNotFoundException;
 
-    Film update(DtoFilm dtoFilm) throws FilmNotFoundException, MpaRatingNotFound, MpaRatingNotValid, GenreNotFound, DirectorNotFoundException;
+    Film update(DtoFilm dtoFilm) throws FilmNotFoundException, MpaRatingNotFound, GenreNotFound, DirectorNotFoundException;
 
     void remove(DtoFilm dtoFilm) throws InvalidFilmRemoveException;
 

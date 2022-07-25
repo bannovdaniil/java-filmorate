@@ -20,7 +20,7 @@ public class DirectorController {
     }
 
     @GetMapping
-    public List<Director> getAll(){
+    public List<Director> getAll() {
         return directorService.getAll();
     }
 

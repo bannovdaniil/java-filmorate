@@ -20,6 +20,7 @@ import java.util.List;
 public class EventDaoStorageImpl implements EventStorage {
 
     private final JdbcTemplate jdbcTemplate;
+
     @Override
     public void addEvent(long userId, int eventTypeId, int eventOperationId, long entityId) {
         String sql = "INSERT INTO USER_EVENTS (ADDED_AT, USER_ID, EVENT_TYPE_ID, EVENT_OPERATION_ID, ENTITY_ID) " +
@@ -31,7 +32,7 @@ public class EventDaoStorageImpl implements EventStorage {
                 eventTypeId,
                 eventOperationId,
                 entityId
-                );
+        );
         log.info("User event created");
     }
 
@@ -39,18 +40,18 @@ public class EventDaoStorageImpl implements EventStorage {
     public List<Event> findAllEventsByUserId(Long userId) {
         String sql =
                 "SELECT " +
-                "   UE.EVENT_ID, " +
-                "   UE.ADDED_AT, " +
-                "   UE.USER_ID, " +
-                "   UE.ENTITY_ID, " +
-                "   ET.NAME AS EVENT_TYPE_NAME, " +
-                "   EO.NAME AS EVENT_OPERATION_NAME " +
-                "FROM USER_EVENTS AS UE " +
-                "LEFT JOIN EVENT_TYPES AS ET " +
-                "   ON UE.EVENT_TYPE_ID = ET.EVENT_TYPE_ID " +
-                "LEFT JOIN EVENT_OPERATIONS AS EO " +
-                "   ON UE.EVENT_OPERATION_ID = EO.EVENT_OPERATION_ID " +
-                "WHERE UE.USER_ID=?";
+                        "   UE.EVENT_ID, " +
+                        "   UE.ADDED_AT, " +
+                        "   UE.USER_ID, " +
+                        "   UE.ENTITY_ID, " +
+                        "   ET.NAME AS EVENT_TYPE_NAME, " +
+                        "   EO.NAME AS EVENT_OPERATION_NAME " +
+                        "FROM USER_EVENTS AS UE " +
+                        "LEFT JOIN EVENT_TYPES AS ET " +
+                        "   ON UE.EVENT_TYPE_ID = ET.EVENT_TYPE_ID " +
+                        "LEFT JOIN EVENT_OPERATIONS AS EO " +
+                        "   ON UE.EVENT_OPERATION_ID = EO.EVENT_OPERATION_ID " +
+                        "WHERE UE.USER_ID=?";
         return jdbcTemplate.query(sql, this::makeEvent, userId);
     }
 
