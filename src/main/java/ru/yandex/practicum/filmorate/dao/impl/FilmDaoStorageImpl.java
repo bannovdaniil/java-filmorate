@@ -13,19 +13,13 @@ import ru.yandex.practicum.filmorate.dao.MpaStorage;
 import ru.yandex.practicum.filmorate.dto.DtoFilm;
 import ru.yandex.practicum.filmorate.exceptions.*;
 import ru.yandex.practicum.filmorate.mapper.DtoMapper;
-import ru.yandex.practicum.filmorate.model.Director;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.MpaRating;
+import ru.yandex.practicum.filmorate.model.*;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Slf4j
 @Repository
@@ -304,5 +298,25 @@ public class FilmDaoStorageImpl implements FilmStorage {
             film.setGenres(genreStorage.getFilmGenres(film.getId()));
         }
         return films;
+    }
+
+    @Override
+    public void removeFilmById(Long filmId) throws FilmNotFoundException {
+        if (isFilmExist(filmId)) {
+            int paramsCount = 5;
+            Long[] params = new Long[paramsCount];
+            Arrays.fill(params, filmId);
+
+            String sql =
+                    "DELETE FROM likes WHERE film_id=?; " +
+                    "DELETE FROM review_likes " +
+                            "WHERE review_id IN (SELECT review_id FROM reviews WHERE film_id=?); " +
+                    "DELETE FROM reviews WHERE film_id=?; " +
+                    "DELETE FROM film_genres WHERE film_id=?; " +
+                    "DELETE FROM films WHERE film_id=?";
+            jdbcTemplate.update(sql, params);
+        } else {
+            throw new FilmNotFoundException("Film ID not found.");
+        }
     }
 }

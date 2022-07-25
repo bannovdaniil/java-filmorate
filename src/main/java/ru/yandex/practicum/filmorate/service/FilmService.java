@@ -3,18 +3,15 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dao.DirectorStorage;
-import ru.yandex.practicum.filmorate.dao.FilmStorage;
 import ru.yandex.practicum.filmorate.dao.FilmLikeStorage;
+import ru.yandex.practicum.filmorate.dao.FilmStorage;
 import ru.yandex.practicum.filmorate.dto.DtoFilm;
 import ru.yandex.practicum.filmorate.exceptions.*;
 import ru.yandex.practicum.filmorate.model.EventOperation;
 import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import java.awt.*;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -60,7 +57,7 @@ public class FilmService {
         return filmStorage.getFilmTop(count, genreId, year);
     }
 
-    public List<Film> getFilmsByDirectorsSorted(int id, String sortBy) throws FilmNotFoundException, MpaRatingNotFound,
+    public List<Film> getFilmsByDirectorsSorted(int id, String sortBy) throws MpaRatingNotFound,
             RequestParamNotValid, DirectorNotFoundException {
         if (sortBy.equals("year")){
             return filmStorage.getFilmsByDirectorOrderByDate(id);
@@ -69,5 +66,9 @@ public class FilmService {
         } else {
             throw new RequestParamNotValid("Параметр запроса неправильный: " + sortBy);
         }
+    }
+
+    public void removeFilmById(Long filmId) throws FilmNotFoundException {
+        filmStorage.removeFilmById(filmId);
     }
 }

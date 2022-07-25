@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.dto.DtoFilm;
 import ru.yandex.practicum.filmorate.exceptions.*;
@@ -37,9 +36,9 @@ public class FilmController {
         return filmService.update(dtoFilm);
     }
 
-    @DeleteMapping
-    public void remove(@Valid @RequestBody DtoFilm dtoFilm) throws InvalidFilmRemoveException {
-        filmService.remove(dtoFilm);
+    @DeleteMapping("/{id}")
+    public void remove(@PathVariable("id") Long filmId) throws FilmNotFoundException {
+        filmService.removeFilmById(filmId);
     }
 
     @GetMapping("/{id}")

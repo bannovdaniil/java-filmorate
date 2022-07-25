@@ -17,7 +17,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
+import java.util.*;
 
 @Slf4j
 @Repository
@@ -168,5 +168,25 @@ public class UserDaoStorageImpl implements UserStorage {
                 " );";
 
         return jdbcTemplate.query(sql, (rs, rowNum) -> makeUser(rs), userId, otherId);
+    }
+
+    @Override
+    public void removeUserById(Long userId) throws UserRemoveException {
+        if (isUserExist(userId)) {
+            int paramsCount = 7;
+            Long[] params = new Long[paramsCount];
+            Arrays.fill(params, userId);
+
+            String sql = "DELETE FROM friends WHERE user_id=?; " +
+                    "DELETE FROM friends WHERE friend_id=?; " +
+                    "DELETE FROM user_events WHERE user_id=?; " +
+                    "DELETE FROM reviews WHERE user_id=?; " +
+                    "DELETE FROM review_likes WHERE user_id=?; " +
+                    "DELETE FROM likes WHERE user_id=?; " +
+                    "DELETE FROM users WHERE user_id=?;";
+            jdbcTemplate.update(sql, params);
+        } else {
+            throw new UserRemoveException("User for delete not found.");
+        }
     }
 }
