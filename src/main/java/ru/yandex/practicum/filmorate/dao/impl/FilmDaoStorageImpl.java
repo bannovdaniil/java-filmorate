@@ -6,10 +6,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.dao.DirectorStorage;
-import ru.yandex.practicum.filmorate.dao.FilmStorage;
-import ru.yandex.practicum.filmorate.dao.GenreStorage;
-import ru.yandex.practicum.filmorate.dao.MpaStorage;
+import ru.yandex.practicum.filmorate.dao.*;
 import ru.yandex.practicum.filmorate.dto.DtoFilm;
 import ru.yandex.practicum.filmorate.exceptions.*;
 import ru.yandex.practicum.filmorate.mapper.DtoMapper;
@@ -35,6 +32,7 @@ public class FilmDaoStorageImpl implements FilmStorage {
     private final DtoMapper dtoMapper;
     private final MpaStorage mpaStorage;
     private final GenreStorage genreStorage;
+    private final UserStorage userStorage;
 
     private final DirectorStorage directorStorage;
 
@@ -304,5 +302,37 @@ public class FilmDaoStorageImpl implements FilmStorage {
             film.setGenres(genreStorage.getFilmGenres(film.getId()));
         }
         return films;
+    }
+
+    @Override
+    public List<Film> getCommonFilms(long userId, long friendId) throws MpaRatingNotFound, UserNotFoundException {
+        if (!userStorage.isUserExist(userId)) {
+            throw new UserNotFoundException(String.format("User not found by id = %d", userId));
+        }
+        if (!userStorage.isUserExist(friendId)) {
+            throw new UserNotFoundException(String.format("User not found by id = %d", friendId));
+        }
+
+        String sql = "SELECT * " +
+                "FROM FILMS " +
+                "WHERE FILM_ID IN (" +
+                "SELECT first_user_likes.FILM_ID " +
+                "FROM (" +
+                "SELECT FILM_ID " +
+                "FROM LIKES " +
+                "WHERE USER_ID = ?) AS first_user_likes " +
+                "JOIN (" +
+                "SELECT FILM_ID " +
+                "FROM LIKES " +
+                "WHERE USER_ID = ?) AS second_user_likes " +
+                "ON first_user_likes.FILM_ID = second_user_likes.FILM_ID) " +
+                "ORDER BY LIKES DESC";
+
+        List<Film> commonFilms = jdbcTemplate.query(sql, this::makeFilm, userId, friendId);
+        for (Film film : commonFilms) {
+            film.setMpa(mpaStorage.getRatingMpaById(film.getMpa().getId()));
+            film.setGenres(genreStorage.getFilmGenres(film.getId()));
+        }
+        return commonFilms;
     }
 }
