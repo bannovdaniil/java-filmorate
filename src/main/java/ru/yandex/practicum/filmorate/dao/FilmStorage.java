@@ -26,6 +26,8 @@ public interface FilmStorage {
 
     void removeLike(long filmId);
 
+    List<Film> getRecommendations(int userId) throws MpaRatingNotFound;
+
     List<Film> getFilmsByDirectorOrderByDate(int id) throws MpaRatingNotFound, DirectorNotFoundException;
 
     List<Film> getFilmsByDirectorOrderByLikes(int id) throws MpaRatingNotFound, DirectorNotFoundException;
