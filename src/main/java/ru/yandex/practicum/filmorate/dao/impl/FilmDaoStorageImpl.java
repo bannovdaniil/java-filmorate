@@ -10,7 +10,10 @@ import ru.yandex.practicum.filmorate.dao.*;
 import ru.yandex.practicum.filmorate.dto.DtoFilm;
 import ru.yandex.practicum.filmorate.exceptions.*;
 import ru.yandex.practicum.filmorate.mapper.DtoMapper;
-import ru.yandex.practicum.filmorate.model.*;
+import ru.yandex.practicum.filmorate.model.Director;
+import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.MpaRating;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -289,7 +292,7 @@ public class FilmDaoStorageImpl implements FilmStorage {
         directorStorage.validateDirector(id);
         String sql = "SELECT * FROM FILMS F WHERE F.FILM_ID IN " +
                 "(SELECT FD.FILM_ID FROM FILM_DIRECTORS FD WHERE FD.DIRECTOR_ID = ?) " +
-                "ORDER BY F.RELEASE_DATE ASC";
+                "ORDER BY F.RELEASE_DATE";
         List<Film> films = jdbcTemplate.query(sql, this::makeFilm, id);
         for (Film film : films) {
             film.setMpa(mpaStorage.getRatingMpaById(film.getMpa().getId()));
@@ -358,18 +361,18 @@ public class FilmDaoStorageImpl implements FilmStorage {
 
             String sql =
                     "DELETE FROM likes WHERE film_id=?; " +
-                    "DELETE FROM review_likes " +
+                            "DELETE FROM review_likes " +
                             "WHERE review_id IN (SELECT review_id FROM reviews WHERE film_id=?); " +
-                    "DELETE FROM reviews WHERE film_id=?; " +
-                    "DELETE FROM film_genres WHERE film_id=?; " +
-                    "DELETE FROM films WHERE film_id=?";
+                            "DELETE FROM reviews WHERE film_id=?; " +
+                            "DELETE FROM film_genres WHERE film_id=?; " +
+                            "DELETE FROM films WHERE film_id=?";
             jdbcTemplate.update(sql, params);
         } else {
             throw new FilmNotFoundException("Film ID not found.");
         }
-}
+    }
 
-private List<Film> searchFilmsByTitle(String query) {
+    private List<Film> searchFilmsByTitle(String query) {
         log.info(String.format("Search films by title = %s", query));
 
         String searchQuery = "SELECT * " +
