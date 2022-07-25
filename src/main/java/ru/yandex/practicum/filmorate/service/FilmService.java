@@ -70,5 +70,8 @@ public class FilmService {
 
     public List<Film> getCommonFilms(long userId, long friendId) throws UserNotFoundException, MpaRatingNotFound {
         return filmStorage.getCommonFilms(userId, friendId);
+}
+    public List<Film> searchFilms(String query, List<String> searchByParams) throws MpaRatingNotFound, RequestParamNotValid {
+        return filmStorage.searchFilms(query, searchByParams);
     }
 }

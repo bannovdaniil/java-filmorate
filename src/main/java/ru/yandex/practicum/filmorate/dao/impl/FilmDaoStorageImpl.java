@@ -334,5 +334,80 @@ public class FilmDaoStorageImpl implements FilmStorage {
             film.setGenres(genreStorage.getFilmGenres(film.getId()));
         }
         return commonFilms;
+
+      public List<Film> searchFilms(String query, List<String> searchByParams) throws MpaRatingNotFound {
+        List<Film> films;
+
+        if (searchByParams.contains("title") && searchByParams.contains("director")) {
+            films = searchFilmsByTitleAndDirector(query);
+        }
+        else if (searchByParams.contains("director")) {
+            films = searchFilmsByDirector(query);
+        }
+        else {
+            films = searchFilmsByTitle(query);
+        }
+
+        for (Film film : films) {
+            film.setMpa(mpaStorage.getRatingMpaById(film.getMpa().getId()));
+            film.setGenres(genreStorage.getFilmGenres(film.getId()));
+        }
+
+        return films;
+    }
+
+    private List<Film> searchFilmsByTitle(String query) {
+        log.info(String.format("Search films by title = %s", query));
+
+        String searchQuery = "SELECT * " +
+                "FROM FILMS " +
+                "WHERE NAME ILIKE ? " +
+                "ORDER BY LIKES DESC";
+
+        return jdbcTemplate.query(searchQuery, this::makeFilm, "%" + query + "%");
+    }
+
+    private List<Film> searchFilmsByDirector(String query) {
+        log.info(String.format("Search films by director = %s", query));
+
+        String searchQuery = "SELECT F.FILM_ID, " +
+                "   F.NAME, " +
+                "   F.DESCRIPTION," +
+                "   F.DURATION, " +
+                "   F.LIKES, " +
+                "   F.RATE, " +
+                "   F.RELEASE_DATE, " +
+                "   F.RATING_ID " +
+                "FROM FILMS F " +
+                "JOIN FILM_DIRECTORS  FD ON F.FILM_ID = FD.FILM_ID " +
+                "JOIN DIRECTORS D ON FD.DIRECTOR_ID = D.DIRECTOR_ID " +
+                "WHERE D.NAME ILIKE ? " +
+                "ORDER BY LIKES DESC";
+
+        return jdbcTemplate.query(searchQuery, this::makeFilm, "%" + query + "%");
+    }
+
+    private List<Film> searchFilmsByTitleAndDirector(String query) {
+        log.info(String.format("Search films by title = %s and director = %s", query, query));
+
+        String searchQuery = "SELECT * " +
+                "FROM FILMS F1 " +
+                "WHERE F1.NAME ILIKE ? " +
+                "UNION " +
+                "SELECT F2.FILM_ID, " +
+                "   F2.NAME, " +
+                "   F2.DESCRIPTION," +
+                "   F2.DURATION, " +
+                "   F2.LIKES, " +
+                "   F2.RATE, " +
+                "   F2.RELEASE_DATE, " +
+                "   F2.RATING_ID " +
+                "FROM FILMS F2 " +
+                "JOIN FILM_DIRECTORS  FD ON F2.FILM_ID = FD.FILM_ID " +
+                "JOIN DIRECTORS D ON FD.DIRECTOR_ID = D.DIRECTOR_ID " +
+                "WHERE D.NAME ILIKE ? " +
+                "ORDER BY LIKES DESC";
+
+        return jdbcTemplate.query(searchQuery, this::makeFilm, "%" + query + "%", "%" + query + "%");
     }
 }
