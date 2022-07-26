@@ -7,7 +7,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.dao.UserStorage;
-import ru.yandex.practicum.filmorate.dto.DtoUser;
+import ru.yandex.practicum.filmorate.dto.UserDto;
 import ru.yandex.practicum.filmorate.exceptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.UserRemoveException;
 import ru.yandex.practicum.filmorate.mapper.DtoMapper;
@@ -46,7 +46,7 @@ public class UserDaoStorageImpl implements UserStorage {
     }
 
     @Override
-    public User create(DtoUser dtoUser) {
+    public User create(UserDto userDto) {
         String sql = "INSERT INTO USERS (EMAIL, LOGIN, NAME, BIRTHDAY) " +
                 " VALUES(? , ? , ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -55,33 +55,33 @@ public class UserDaoStorageImpl implements UserStorage {
                     PreparedStatement prSt = connection.prepareStatement(
                             sql
                             , new String[]{"user_id"});
-                    prSt.setString(1, dtoUser.getEmail());
-                    prSt.setString(2, dtoUser.getLogin());
-                    prSt.setString(3, dtoUser.getName());
-                    prSt.setDate(4, Date.valueOf(dtoUser.getBirthday()));
+                    prSt.setString(1, userDto.getEmail());
+                    prSt.setString(2, userDto.getLogin());
+                    prSt.setString(3, userDto.getName());
+                    prSt.setDate(4, Date.valueOf(userDto.getBirthday()));
                     return prSt;
                 }
                 , keyHolder);
-        dtoUser.setId(Objects.requireNonNull(keyHolder.getKey()).longValue());
+        userDto.setId(Objects.requireNonNull(keyHolder.getKey()).longValue());
 
-        return dtoMapper.dtoToUser(dtoUser);
+        return dtoMapper.dtoToUser(userDto);
     }
 
     @Override
-    public User update(DtoUser dtoUser) throws UserNotFoundException {
-        if (isUserExist(dtoUser.getId())) {
+    public User update(UserDto userDto) throws UserNotFoundException {
+        if (isUserExist(userDto.getId())) {
             String sql = "UPDATE USERS SET EMAIL = ? , LOGIN = ? , NAME = ? , BIRTHDAY = ? " +
                     " WHERE USER_ID = ? ;";
 
             jdbcTemplate.update(sql
-                    , dtoUser.getEmail()
-                    , dtoUser.getLogin()
-                    , dtoUser.getName()
-                    , Date.valueOf(dtoUser.getBirthday())
-                    , dtoUser.getId()
+                    , userDto.getEmail()
+                    , userDto.getLogin()
+                    , userDto.getName()
+                    , Date.valueOf(userDto.getBirthday())
+                    , userDto.getId()
             );
 
-            return dtoMapper.dtoToUser(dtoUser);
+            return dtoMapper.dtoToUser(userDto);
         } else {
             throw new UserNotFoundException("Update failed, user not found.");
         }
@@ -96,10 +96,10 @@ public class UserDaoStorageImpl implements UserStorage {
     }
 
     @Override
-    public void remove(DtoUser dtoUser) throws UserRemoveException {
-        if (isUserExist(dtoUser.getId())) {
+    public void remove(UserDto userDto) throws UserRemoveException {
+        if (isUserExist(userDto.getId())) {
             String sql = "DELETE FROM users WHERE user_id = ?";
-            jdbcTemplate.update(sql, dtoUser.getId());
+            jdbcTemplate.update(sql, userDto.getId());
         } else {
             throw new UserRemoveException("User for delete not found.");
         }

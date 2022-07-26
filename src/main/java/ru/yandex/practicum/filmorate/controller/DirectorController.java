@@ -1,7 +1,7 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.dto.DtoDirector;
+import ru.yandex.practicum.filmorate.dto.DirectorDto;
 import ru.yandex.practicum.filmorate.exceptions.DirectorNotFoundException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.service.DirectorService;
@@ -30,13 +30,13 @@ public class DirectorController {
     }
 
     @PostMapping
-    public Director create(@Valid @RequestBody DtoDirector dtoDirector) throws DirectorNotFoundException {
-        return directorService.create(dtoDirector);
+    public Director create(@Valid @RequestBody DirectorDto directorDto) throws DirectorNotFoundException {
+        return directorService.create(directorDto);
     }
 
     @PutMapping
-    public Director update(@Valid @RequestBody DtoDirector dtoDirector) throws DirectorNotFoundException {
-        return directorService.update(dtoDirector);
+    public Director update(@Valid @RequestBody DirectorDto directorDto) throws DirectorNotFoundException {
+        return directorService.update(directorDto);
     }
 
     @DeleteMapping("/{id}")

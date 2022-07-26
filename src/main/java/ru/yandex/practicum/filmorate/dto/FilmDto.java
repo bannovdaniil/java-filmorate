@@ -16,7 +16,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class DtoFilm {
+public class FilmDto {
     private Long id;
     @NotBlank(message = "name should not be blank")
     private String name;

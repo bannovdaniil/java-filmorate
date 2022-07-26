@@ -12,22 +12,21 @@ import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
-class DtoFilmTest {
-    private DtoFilm dtoFilm;
+class FilmDtoTest {
+    private FilmDto filmDto;
     private final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
     private final Validator validator = factory.getValidator();
 
     @BeforeEach
     void beforeEach() {
-        dtoFilm = new DtoFilm();
-        dtoFilm.setId(1L);
-        dtoFilm.setName("Ivan");
-        dtoFilm.setDescription("Description");
-        dtoFilm.setReleaseDate(LocalDate.of(1977, 7, 10));
-        dtoFilm.setDuration(1L);
+        filmDto = new FilmDto();
+        filmDto.setId(1L);
+        filmDto.setName("Ivan");
+        filmDto.setDescription("Description");
+        filmDto.setReleaseDate(LocalDate.of(1977, 7, 10));
+        filmDto.setDuration(1L);
     }
 
     @DisplayName("Name validation")
@@ -41,8 +40,8 @@ class DtoFilmTest {
         if ("null".equals(testName)) {
             testName = null;
         }
-        dtoFilm.setName(testName);
-        List<String> violations = validator.validate(dtoFilm)
+        filmDto.setName(testName);
+        List<String> violations = validator.validate(filmDto)
                 .stream().map(ConstraintViolation::getMessage)
                 .filter(expectedErrorMessage::equals)
                 .collect(Collectors.toList());
@@ -64,8 +63,8 @@ class DtoFilmTest {
     void checkDescriptionValidation(int lengthDiscription, String expectedErrorMessage) {
         String testDiscription = "a".repeat(lengthDiscription);
 
-        dtoFilm.setDescription(testDiscription);
-        List<String> violations = validator.validate(dtoFilm)
+        filmDto.setDescription(testDiscription);
+        List<String> violations = validator.validate(filmDto)
                 .stream().map(ConstraintViolation::getMessage)
                 .filter(expectedErrorMessage::equals)
                 .collect(Collectors.toList());
@@ -85,8 +84,8 @@ class DtoFilmTest {
             "2021-12-29, OK",
     })
     void checkReleaseDateValidation(LocalDate releaseDate, String expectedErrorMessage) {
-        dtoFilm.setReleaseDate(releaseDate);
-        List<String> violations = validator.validate(dtoFilm)
+        filmDto.setReleaseDate(releaseDate);
+        List<String> violations = validator.validate(filmDto)
                 .stream().map(ConstraintViolation::getMessage)
                 .filter(expectedErrorMessage::equals)
                 .collect(Collectors.toList());

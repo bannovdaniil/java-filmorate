@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.dao;
 
-import ru.yandex.practicum.filmorate.dto.DtoFilm;
+import ru.yandex.practicum.filmorate.dto.FilmDto;
 import ru.yandex.practicum.filmorate.exceptions.*;
 import ru.yandex.practicum.filmorate.model.Film;
 
@@ -10,11 +10,11 @@ public interface FilmStorage {
 
     List<Film> findAll() throws MpaRatingNotFound;
 
-    Film create(DtoFilm dtoFilm) throws MpaRatingNotFound, GenreNotFound, DirectorNotFoundException;
+    Film create(FilmDto filmDto) throws MpaRatingNotFound, GenreNotFound, DirectorNotFoundException;
 
-    Film update(DtoFilm dtoFilm) throws FilmNotFoundException, MpaRatingNotFound, GenreNotFound, DirectorNotFoundException;
+    Film update(FilmDto filmDto) throws FilmNotFoundException, MpaRatingNotFound, GenreNotFound, DirectorNotFoundException;
 
-    void remove(DtoFilm dtoFilm) throws InvalidFilmRemoveException;
+    void remove(FilmDto filmDto) throws InvalidFilmRemoveException;
 
     Film getFilmById(Long filmId) throws FilmNotFoundException, MpaRatingNotFound;
 

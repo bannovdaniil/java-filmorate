@@ -7,7 +7,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import ru.yandex.practicum.filmorate.dao.UserStorage;
-import ru.yandex.practicum.filmorate.dto.DtoUser;
+import ru.yandex.practicum.filmorate.dto.UserDto;
 import ru.yandex.practicum.filmorate.exceptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.UserRemoveException;
 import ru.yandex.practicum.filmorate.mapper.DtoMapper;
@@ -27,8 +27,8 @@ class UserDaoStorageImplTest {
     private final DtoMapper dtoMapper;
     private final JdbcTemplate jdbcTemplate;
 
-    private DtoUser dtoUser1;
-    private DtoUser dtoUser2;
+    private UserDto userDto1;
+    private UserDto userDto2;
     private User user1;
     private User user2;
 
@@ -41,23 +41,23 @@ class UserDaoStorageImplTest {
     @BeforeEach
     void beforeEach() {
         clearDb();
-        dtoUser1 = new DtoUser();
-        dtoUser1.setId(1);
-        dtoUser1.setEmail("testemail1@mail.ru");
-        dtoUser1.setLogin("testlogin1");
-        dtoUser1.setName("testname1");
-        dtoUser1.setBirthday(LocalDate.of(1990, Month.FEBRUARY, 10));
+        userDto1 = new UserDto();
+        userDto1.setId(1);
+        userDto1.setEmail("testemail1@mail.ru");
+        userDto1.setLogin("testlogin1");
+        userDto1.setName("testname1");
+        userDto1.setBirthday(LocalDate.of(1990, Month.FEBRUARY, 10));
 
-        user1 = dtoMapper.dtoToUser(dtoUser1);
+        user1 = dtoMapper.dtoToUser(userDto1);
 
-        dtoUser2 = new DtoUser();
-        dtoUser2.setId(2);
-        dtoUser2.setEmail("testemail2@mail.ru");
-        dtoUser2.setLogin("testlogin2");
-        dtoUser2.setName("testname2");
-        dtoUser2.setBirthday(LocalDate.of(1991, Month.FEBRUARY, 10));
+        userDto2 = new UserDto();
+        userDto2.setId(2);
+        userDto2.setEmail("testemail2@mail.ru");
+        userDto2.setLogin("testlogin2");
+        userDto2.setName("testname2");
+        userDto2.setBirthday(LocalDate.of(1991, Month.FEBRUARY, 10));
 
-        user2 = dtoMapper.dtoToUser(dtoUser2);
+        user2 = dtoMapper.dtoToUser(userDto2);
     }
 
     @AfterEach
@@ -68,7 +68,7 @@ class UserDaoStorageImplTest {
     @DisplayName("Create User")
     @Test
     public void createUser() {
-        User userResult = userStorage.create(dtoUser1);
+        User userResult = userStorage.create(userDto1);
 
         assertThat(userResult).hasFieldOrPropertyWithValue("email", "testemail1@mail.ru");
     }
@@ -76,7 +76,7 @@ class UserDaoStorageImplTest {
     @DisplayName("Find User by Id")
     @Test
     public void testFindUserById() throws UserNotFoundException {
-        User user = userStorage.create(dtoUser1);
+        User user = userStorage.create(userDto1);
 
         long userId = user.getId();
 
@@ -90,13 +90,13 @@ class UserDaoStorageImplTest {
     @DisplayName("Update User")
     @Test
     public void updateUser() throws UserNotFoundException {
-        User userResult = userStorage.create(dtoUser1);
+        User userResult = userStorage.create(userDto1);
 
         long userId = userResult.getId();
-        dtoUser1.setId(userId);
-        dtoUser1.setEmail("editemail@mail.ru");
+        userDto1.setId(userId);
+        userDto1.setEmail("editemail@mail.ru");
 
-        userStorage.update(dtoUser1);
+        userStorage.update(userDto1);
 
         userResult = userStorage.getUserById(userId);
 
@@ -106,12 +106,12 @@ class UserDaoStorageImplTest {
     @DisplayName("Remove User")
     @Test
     public void removeUser() throws UserRemoveException {
-        User userResult = userStorage.create(dtoUser1);
+        User userResult = userStorage.create(userDto1);
 
         long userId = userResult.getId();
-        dtoUser1.setId(userId);
+        userDto1.setId(userId);
 
-        userStorage.remove(dtoUser1);
+        userStorage.remove(userDto1);
 
         UserNotFoundException exception = Assertions.assertThrows(UserNotFoundException.class,
                 () -> userStorage.getUserById(userId)
@@ -123,8 +123,8 @@ class UserDaoStorageImplTest {
     @DisplayName("Find All Users")
     @Test
     public void findAllUser() {
-        User userResult1 = userStorage.create(dtoUser1);
-        User userResult2 = userStorage.create(dtoUser2);
+        User userResult1 = userStorage.create(userDto1);
+        User userResult2 = userStorage.create(userDto2);
 
         List<User> userListExpected = List.of(user1, user2);
         List<User> userListResult = userStorage.findAll();

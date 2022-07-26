@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dao.DirectorStorage;
 import ru.yandex.practicum.filmorate.dao.FilmLikeStorage;
 import ru.yandex.practicum.filmorate.dao.FilmStorage;
-import ru.yandex.practicum.filmorate.dto.DtoFilm;
+import ru.yandex.practicum.filmorate.dto.FilmDto;
 import ru.yandex.practicum.filmorate.exceptions.*;
 import ru.yandex.practicum.filmorate.model.EventOperation;
 import ru.yandex.practicum.filmorate.model.EventType;
@@ -26,16 +26,16 @@ public class FilmService {
         return filmStorage.findAll();
     }
 
-    public Film create(DtoFilm dtoFilm) throws MpaRatingNotFound, GenreNotFound, DirectorNotFoundException {
-        return filmStorage.create(dtoFilm);
+    public Film create(FilmDto filmDto) throws MpaRatingNotFound, GenreNotFound, DirectorNotFoundException {
+        return filmStorage.create(filmDto);
     }
 
-    public Film update(DtoFilm dtoFilm) throws FilmNotFoundException, MpaRatingNotFound, GenreNotFound, DirectorNotFoundException {
-        return filmStorage.update(dtoFilm);
+    public Film update(FilmDto filmDto) throws FilmNotFoundException, MpaRatingNotFound, GenreNotFound, DirectorNotFoundException {
+        return filmStorage.update(filmDto);
     }
 
-    public void remove(DtoFilm dtoFilm) throws InvalidFilmRemoveException {
-        filmStorage.remove(dtoFilm);
+    public void remove(FilmDto filmDto) throws InvalidFilmRemoveException {
+        filmStorage.remove(filmDto);
 
     }
 

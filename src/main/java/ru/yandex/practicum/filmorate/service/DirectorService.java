@@ -3,7 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dao.DirectorStorage;
-import ru.yandex.practicum.filmorate.dto.DtoDirector;
+import ru.yandex.practicum.filmorate.dto.DirectorDto;
 import ru.yandex.practicum.filmorate.exceptions.DirectorNotFoundException;
 import ru.yandex.practicum.filmorate.model.Director;
 
@@ -18,12 +18,12 @@ public class DirectorService {
         return directorStorage.getAll();
     }
 
-    public Director create(DtoDirector dtoDirector) throws DirectorNotFoundException {
-        return directorStorage.create(dtoDirector);
+    public Director create(DirectorDto directorDto) throws DirectorNotFoundException {
+        return directorStorage.create(directorDto);
     }
 
-    public Director update(DtoDirector dtoDirector) throws DirectorNotFoundException {
-        return directorStorage.update(dtoDirector);
+    public Director update(DirectorDto directorDto) throws DirectorNotFoundException {
+        return directorStorage.update(directorDto);
     }
 
     public void delete(int id) throws DirectorNotFoundException {

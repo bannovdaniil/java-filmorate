@@ -8,7 +8,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.dao.DirectorStorage;
-import ru.yandex.practicum.filmorate.dto.DtoDirector;
+import ru.yandex.practicum.filmorate.dto.DirectorDto;
 import ru.yandex.practicum.filmorate.exceptions.DirectorNotFoundException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -25,7 +25,7 @@ public class DirectorDaoStorageImpl implements DirectorStorage {
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public Director create(DtoDirector dtoDirector) throws DirectorNotFoundException {
+    public Director create(DirectorDto directorDto) throws DirectorNotFoundException {
         String sql = "INSERT INTO `DIRECTORS` (NAME) VALUES (?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -34,22 +34,22 @@ public class DirectorDaoStorageImpl implements DirectorStorage {
             PreparedStatement ps = connection.prepareStatement(
                     sql, new String[]{"director_id"});
 
-            ps.setString(1, dtoDirector.getName());
+            ps.setString(1, directorDto.getName());
             return ps;
         }, keyHolder);
         return getById(Objects.requireNonNull(keyHolder.getKey()).intValue());
     }
 
     @Override
-    public Director update(DtoDirector dtoDirector) throws DirectorNotFoundException {
-        if (isExistsDirector(dtoDirector.getId())) {
+    public Director update(DirectorDto directorDto) throws DirectorNotFoundException {
+        if (isExistsDirector(directorDto.getId())) {
             String sql = "UPDATE `DIRECTORS` SET NAME = ? " +
                     " WHERE DIRECTOR_ID = ? ;";
-            jdbcTemplate.update(sql, dtoDirector.getName(), dtoDirector.getId());
+            jdbcTemplate.update(sql, directorDto.getName(), directorDto.getId());
         } else {
             throw new DirectorNotFoundException("Director ID not found.");
         }
-        return getById(dtoDirector.getId());
+        return getById(directorDto.getId());
     }
 
     @Override

@@ -7,7 +7,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.dao.*;
-import ru.yandex.practicum.filmorate.dto.DtoFilm;
+import ru.yandex.practicum.filmorate.dto.FilmDto;
 import ru.yandex.practicum.filmorate.exceptions.*;
 import ru.yandex.practicum.filmorate.mapper.DtoMapper;
 import ru.yandex.practicum.filmorate.model.Director;
@@ -60,7 +60,7 @@ public class FilmDaoStorageImpl implements FilmStorage {
     }
 
     @Override
-    public Film create(DtoFilm dtoFilm) throws MpaRatingNotFound, GenreNotFound, DirectorNotFoundException {
+    public Film create(FilmDto filmDto) throws MpaRatingNotFound, GenreNotFound, DirectorNotFoundException {
         String sql = "INSERT INTO FILMS (NAME, DESCRIPTION, DURATION, RELEASE_DATE, RATE, RATING_ID) " +
                 " VALUES(? , ? , ? , ? , ?, ?)";
 
@@ -70,20 +70,20 @@ public class FilmDaoStorageImpl implements FilmStorage {
                     PreparedStatement prSt = connection.prepareStatement(
                             sql
                             , new String[]{"film_id"});
-                    prSt.setString(1, dtoFilm.getName());
-                    prSt.setString(2, dtoFilm.getDescription());
-                    prSt.setLong(3, dtoFilm.getDuration());
-                    prSt.setDate(4, Date.valueOf(dtoFilm.getReleaseDate()));
-                    prSt.setLong(5, dtoFilm.getRate() == null ? 0 : dtoFilm.getRate());
-                    prSt.setLong(6, dtoFilm.getMpa().getId());
+                    prSt.setString(1, filmDto.getName());
+                    prSt.setString(2, filmDto.getDescription());
+                    prSt.setLong(3, filmDto.getDuration());
+                    prSt.setDate(4, Date.valueOf(filmDto.getReleaseDate()));
+                    prSt.setLong(5, filmDto.getRate() == null ? 0 : filmDto.getRate());
+                    prSt.setLong(6, filmDto.getMpa().getId());
                     return prSt;
                 }
                 , keyHolder);
 
-        updateMpaRating(dtoFilm);
-        updateGenresNameById(dtoFilm);
+        updateMpaRating(filmDto);
+        updateGenresNameById(filmDto);
 
-        Film film = dtoMapper.dtoToFilm(dtoFilm);
+        Film film = dtoMapper.dtoToFilm(filmDto);
         film.setId(keyHolder.getKey().longValue());
         saveGenreToDb(film);
 
@@ -110,28 +110,28 @@ public class FilmDaoStorageImpl implements FilmStorage {
     }
 
     @Override
-    public Film update(DtoFilm dtoFilm) throws FilmNotFoundException, MpaRatingNotFound, GenreNotFound, DirectorNotFoundException {
-        if (isFilmExist(dtoFilm.getId())) {
+    public Film update(FilmDto filmDto) throws FilmNotFoundException, MpaRatingNotFound, GenreNotFound, DirectorNotFoundException {
+        if (isFilmExist(filmDto.getId())) {
             String sql = "UPDATE FILMS SET NAME = ?, DESCRIPTION = ?, DURATION = ?, RELEASE_DATE = ?, RATING_ID = ? " +
                     " WHERE FILM_ID = ? ";
 
-            updateMpaRating(dtoFilm);
+            updateMpaRating(filmDto);
             jdbcTemplate.update(sql
-                    , dtoFilm.getName()
-                    , dtoFilm.getDescription()
-                    , dtoFilm.getDuration()
-                    , Date.valueOf(dtoFilm.getReleaseDate())
-                    , dtoFilm.getMpa().getId()
-                    , dtoFilm.getId()
+                    , filmDto.getName()
+                    , filmDto.getDescription()
+                    , filmDto.getDuration()
+                    , Date.valueOf(filmDto.getReleaseDate())
+                    , filmDto.getMpa().getId()
+                    , filmDto.getId()
             );
         } else {
             throw new FilmNotFoundException("Update failed, film not found.");
         }
 
-        updateMpaRating(dtoFilm);
-        updateGenresNameById(dtoFilm);
+        updateMpaRating(filmDto);
+        updateGenresNameById(filmDto);
 
-        Film film = dtoMapper.dtoToFilm(dtoFilm);
+        Film film = dtoMapper.dtoToFilm(filmDto);
         saveGenreToDb(film);
 
         List<Director> directors = directorStorage.updateDirectorsOfFilm(film);
@@ -141,18 +141,18 @@ public class FilmDaoStorageImpl implements FilmStorage {
     }
 
     @Override
-    public void remove(DtoFilm dtoFilm) throws InvalidFilmRemoveException {
-        if (isFilmExist(dtoFilm.getId())) {
+    public void remove(FilmDto filmDto) throws InvalidFilmRemoveException {
+        if (isFilmExist(filmDto.getId())) {
             String sql = "DELETE FROM FILM_GENRES WHERE FILM_ID = ? ;";
-            jdbcTemplate.update(sql, dtoFilm.getId());
+            jdbcTemplate.update(sql, filmDto.getId());
 
             sql = "DELETE FROM LIKES WHERE FILM_ID = ? ;";
-            jdbcTemplate.update(sql, dtoFilm.getId());
+            jdbcTemplate.update(sql, filmDto.getId());
 
             sql = "DELETE FROM FILMS WHERE FILM_ID = ? ;";
-            jdbcTemplate.update(sql, dtoFilm.getId());
+            jdbcTemplate.update(sql, filmDto.getId());
 
-            directorStorage.deleteDirectorsOfFilm(dtoFilm.getId());
+            directorStorage.deleteDirectorsOfFilm(filmDto.getId());
         } else {
             throw new InvalidFilmRemoveException("Film for delete not found.");
         }
@@ -218,23 +218,23 @@ public class FilmDaoStorageImpl implements FilmStorage {
         jdbcTemplate.update(sql, filmId);
     }
 
-    private void updateMpaRating(DtoFilm dtoFilm) throws MpaRatingNotFound {
-        dtoFilm.setMpa(mpaStorage.getRatingMpaById(dtoFilm.getMpa().getId()));
+    private void updateMpaRating(FilmDto filmDto) throws MpaRatingNotFound {
+        filmDto.setMpa(mpaStorage.getRatingMpaById(filmDto.getMpa().getId()));
     }
 
-    private void updateGenresNameById(DtoFilm dtoFilm) throws GenreNotFound {
-        if (dtoFilm.getGenres() == null) {
+    private void updateGenresNameById(FilmDto filmDto) throws GenreNotFound {
+        if (filmDto.getGenres() == null) {
             return;
         }
         List<Genre> genresWithName = new ArrayList<>();
         Set<Integer> doubleId = new HashSet<>();
-        for (Genre genre : dtoFilm.getGenres()) {
+        for (Genre genre : filmDto.getGenres()) {
             if (!doubleId.contains(genre.getId())) {
                 doubleId.add(genre.getId());
                 genresWithName.add(genreStorage.getGenreById(genre.getId()));
             }
         }
-        dtoFilm.setGenres(genresWithName);
+        filmDto.setGenres(genresWithName);
     }
 
     private List<Film> getTopFilmByCountGenreYear(Long count, Integer genreId, Integer year) {

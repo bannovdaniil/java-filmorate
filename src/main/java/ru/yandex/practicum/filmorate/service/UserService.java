@@ -3,7 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dao.UserStorage;
-import ru.yandex.practicum.filmorate.dto.DtoUser;
+import ru.yandex.practicum.filmorate.dto.UserDto;
 import ru.yandex.practicum.filmorate.exceptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.UserRemoveException;
 import ru.yandex.practicum.filmorate.model.EventOperation;
@@ -22,16 +22,16 @@ public class UserService {
         return userStorage.findAll();
     }
 
-    public User create(DtoUser dtoUser) {
-        return userStorage.create(dtoUser);
+    public User create(UserDto userDto) {
+        return userStorage.create(userDto);
     }
 
-    public User update(DtoUser dtoUser) throws UserNotFoundException {
-        return userStorage.update(dtoUser);
+    public User update(UserDto userDto) throws UserNotFoundException {
+        return userStorage.update(userDto);
     }
 
-    public void remove(DtoUser dtoUser) throws UserRemoveException {
-        userStorage.remove(dtoUser);
+    public void remove(UserDto userDto) throws UserRemoveException {
+        userStorage.remove(userDto);
     }
 
     public User getUserById(Long userId) throws UserNotFoundException {

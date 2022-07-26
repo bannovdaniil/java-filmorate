@@ -2,7 +2,7 @@ package ru.yandex.practicum.filmorate.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.dto.DtoUser;
+import ru.yandex.practicum.filmorate.dto.UserDto;
 import ru.yandex.practicum.filmorate.exceptions.MpaRatingNotFound;
 import ru.yandex.practicum.filmorate.exceptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.UserRemoveException;
@@ -30,13 +30,13 @@ public class UserController {
     }
 
     @PostMapping
-    public User createUser(@RequestBody @Valid DtoUser dtoUser) {
-        return userService.create(dtoUser);
+    public User createUser(@RequestBody @Valid UserDto userDto) {
+        return userService.create(userDto);
     }
 
     @PutMapping
-    public User updateUser(@RequestBody @Valid DtoUser dtoUser) throws UserNotFoundException {
-        return userService.update(dtoUser);
+    public User updateUser(@RequestBody @Valid UserDto userDto) throws UserNotFoundException {
+        return userService.update(userDto);
     }
 
     @DeleteMapping("/{id}")
