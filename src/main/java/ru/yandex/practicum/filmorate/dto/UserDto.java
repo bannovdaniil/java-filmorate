@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @Validated
-public class DtoUser {
+public class UserDto {
     private long id;
     @NotBlank(message = "Can not be blank")
     @Email(message = "Is not correct email")

@@ -1,10 +1,8 @@
 # # Групповой проект
 ## #1 Создал ветку develop
 
-## #1 Функциональность  «Отзывы»  (+)
-# схема DB для проекта включая Reviews
 # последняя актуальная схема DB для проекта
-![This is an image](src/main/resources/shema/filmorate-v7.png)
+![This is an image](src/main/resources/shema/filmorate-v8.png)
 
 # #11 Спринт Финальное задание
 ## #4 Тестирование

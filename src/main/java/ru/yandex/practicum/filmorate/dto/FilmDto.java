@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.dto;
 
 import lombok.Getter;
 import lombok.Setter;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.MpaRating;
 import ru.yandex.practicum.filmorate.validation.FilmDataChecker;
@@ -15,7 +16,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class DtoFilm {
+public class FilmDto {
     private Long id;
     @NotBlank(message = "name should not be blank")
     private String name;
@@ -29,4 +30,5 @@ public class DtoFilm {
     @NotNull(message = "Не задано значение MPA.")
     private MpaRating mpa;
     private List<Genre> genres;
+    private List<Director> directors;
 }

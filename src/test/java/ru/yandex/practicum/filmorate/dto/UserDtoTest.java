@@ -14,19 +14,19 @@ import javax.validation.ValidatorFactory;
 import java.time.LocalDate;
 import java.util.Set;
 
-class DtoUserTest {
-    private DtoUser dtoUser;
+class UserDtoTest {
+    private UserDto userDto;
     private final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
     private final Validator validator = factory.getValidator();
 
     @BeforeEach
     void beforeEach() {
-        dtoUser = new DtoUser();
-        dtoUser.setId(1);
-        dtoUser.setEmail("a@mail.ru");
-        dtoUser.setLogin("ivan1977");
-        dtoUser.setName("Ivan");
-        dtoUser.setBirthday(LocalDate.of(1977, 7, 10));
+        userDto = new UserDto();
+        userDto.setId(1);
+        userDto.setEmail("a@mail.ru");
+        userDto.setLogin("ivan1977");
+        userDto.setName("Ivan");
+        userDto.setBirthday(LocalDate.of(1977, 7, 10));
     }
 
     @DisplayName("Email validation")
@@ -44,8 +44,8 @@ class DtoUserTest {
         if ("null".equals(testEmail)) {
             testEmail = null;
         }
-        dtoUser.setEmail(testEmail);
-        Set<ConstraintViolation<DtoUser>> violations = validator.validate(dtoUser);
+        userDto.setEmail(testEmail);
+        Set<ConstraintViolation<UserDto>> violations = validator.validate(userDto);
 
         Assertions.assertEquals(expected, violations.iterator().next().getMessage());
     }
@@ -61,8 +61,8 @@ class DtoUserTest {
             "ivan, 0, OK",
     })
     void checkLoginValidation(String testLogin, int expectSize, String expected) {
-        dtoUser.setLogin(testLogin);
-        Set<ConstraintViolation<DtoUser>> violations = validator.validate(dtoUser);
+        userDto.setLogin(testLogin);
+        Set<ConstraintViolation<UserDto>> violations = validator.validate(userDto);
 
         Assertions.assertEquals(expectSize, violations.size());
         if (!violations.isEmpty()) {
@@ -74,8 +74,8 @@ class DtoUserTest {
     @Test
     void checkBirthdayValidation() {
         LocalDate nowDate = LocalDate.now().plusDays(1);
-        dtoUser.setBirthday(nowDate);
-        Set<ConstraintViolation<DtoUser>> violations = validator.validate(dtoUser);
+        userDto.setBirthday(nowDate);
+        Set<ConstraintViolation<UserDto>> violations = validator.validate(userDto);
 
         Assertions.assertEquals("Not yet born", violations.iterator().next().getMessage());
     }

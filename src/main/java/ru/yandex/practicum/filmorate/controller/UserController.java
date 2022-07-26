@@ -2,10 +2,15 @@ package ru.yandex.practicum.filmorate.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.dto.DtoUser;
+import ru.yandex.practicum.filmorate.dto.UserDto;
+import ru.yandex.practicum.filmorate.exceptions.MpaRatingNotFound;
 import ru.yandex.practicum.filmorate.exceptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.UserRemoveException;
+import ru.yandex.practicum.filmorate.model.Event;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.EventService;
+import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import javax.validation.Valid;
@@ -16,6 +21,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+    private final EventService eventService;
+    private final FilmService filmService;
 
     @GetMapping
     public List<User> getUsersList() {
@@ -23,18 +30,18 @@ public class UserController {
     }
 
     @PostMapping
-    public User createUser(@RequestBody @Valid DtoUser dtoUser) {
-        return userService.create(dtoUser);
+    public User createUser(@RequestBody @Valid UserDto userDto) {
+        return userService.create(userDto);
     }
 
     @PutMapping
-    public User updateUser(@RequestBody @Valid DtoUser dtoUser) throws UserNotFoundException {
-        return userService.update(dtoUser);
+    public User updateUser(@RequestBody @Valid UserDto userDto) throws UserNotFoundException {
+        return userService.update(userDto);
     }
 
-    @DeleteMapping
-    public void removeUser(@RequestBody @Valid DtoUser dtoUser) throws UserRemoveException {
-        userService.remove(dtoUser);
+    @DeleteMapping("/{id}")
+    public void removeUser(@PathVariable("id") Long userId) throws UserRemoveException {
+        userService.removeUserById(userId);
     }
 
     @GetMapping("/{id}")
@@ -67,6 +74,16 @@ public class UserController {
             @PathVariable("id") Long userId,
             @PathVariable("otherId") Long otherId) throws UserNotFoundException {
         return userService.getCrossFriendList(userId, otherId);
+    }
+
+    @GetMapping("{id}/feed")
+    public List<Event> getUserFeed(@PathVariable("id") Long userId) {
+        return eventService.findAllEventsByUserId(userId);
+    }
+
+    @GetMapping("{id}/recommendations")
+    public List<Film> getRecommendations(@PathVariable("id") int userId) throws MpaRatingNotFound {
+        return filmService.getRecommendations(userId);
     }
 }
 

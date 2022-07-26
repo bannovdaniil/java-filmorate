@@ -8,8 +8,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 public class FilmDataCheckerValidation implements ConstraintValidator<FilmDataChecker, LocalDate> {
-    private LocalDate startDate;
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(DateTimeFormatString.DATE_TIME_FORMATTER);
+    private LocalDate startDate;
 
     @Override
     public void initialize(FilmDataChecker filmDataChecker) {

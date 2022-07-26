@@ -2,7 +2,7 @@ package ru.yandex.practicum.filmorate.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.dto.DtoFilm;
+import ru.yandex.practicum.filmorate.dto.FilmDto;
 import ru.yandex.practicum.filmorate.exceptions.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
@@ -22,23 +22,23 @@ public class FilmController {
     }
 
     @PostMapping
-    public Film create(@Valid @RequestBody DtoFilm dtoFilm) throws MpaRatingNotFound
+    public Film create(@Valid @RequestBody FilmDto filmDto) throws MpaRatingNotFound
             , GenreNotFound
-            , MpaRatingNotValid {
-        return filmService.create(dtoFilm);
+            , MpaRatingNotValid, DirectorNotFoundException {
+        return filmService.create(filmDto);
     }
 
     @PutMapping
-    public Film update(@Valid @RequestBody DtoFilm dtoFilm) throws FilmNotFoundException
+    public Film update(@Valid @RequestBody FilmDto filmDto) throws FilmNotFoundException
             , MpaRatingNotFound
             , MpaRatingNotValid
-            , GenreNotFound {
-        return filmService.update(dtoFilm);
+            , GenreNotFound, DirectorNotFoundException {
+        return filmService.update(filmDto);
     }
 
-    @DeleteMapping
-    public void remove(@Valid @RequestBody DtoFilm dtoFilm) throws InvalidFilmRemoveException {
-        filmService.remove(dtoFilm);
+    @DeleteMapping("/{id}")
+    public void remove(@PathVariable("id") Long filmId) throws FilmNotFoundException {
+        filmService.removeFilmById(filmId);
     }
 
     @GetMapping("/{id}")
@@ -61,7 +61,30 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public List<Film> getFilmTop(@RequestParam(defaultValue = "10", required = false) Long count) throws MpaRatingNotFound {
-        return filmService.getFilmTop(count);
+    public List<Film> getFilmTop(
+            @RequestParam(defaultValue = "10", required = false) Long count,
+            @RequestParam(required = false) Integer genreId,
+            @RequestParam(required = false) Integer year) throws MpaRatingNotFound {
+        return filmService.getFilmTop(count, genreId, year);
+    }
+
+    @GetMapping("/director/{directorId}")
+    public List<Film> getFilmsByDirector(@PathVariable("directorId") Integer id, @RequestParam String sortBy)
+            throws MpaRatingNotFound, RequestParamNotValid, DirectorNotFoundException {
+        return filmService.getFilmsByDirectorsSorted(id, sortBy);
+    }
+
+    @GetMapping("/common")
+    public List<Film> getCommonFilms(
+            @RequestParam long userId,
+            @RequestParam long friendId
+    ) throws UserNotFoundException, MpaRatingNotFound {
+        return filmService.getCommonFilms(userId, friendId);
+    }
+
+    @GetMapping("/search")
+    public List<Film> searchFilms(@RequestParam String query,
+                                  @RequestParam(name = "by", defaultValue = "title") List<String> searchByParams) throws MpaRatingNotFound {
+        return filmService.searchFilms(query, searchByParams);
     }
 }
