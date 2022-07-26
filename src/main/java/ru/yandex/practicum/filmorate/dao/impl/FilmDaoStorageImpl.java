@@ -312,7 +312,6 @@ public class FilmDaoStorageImpl implements FilmStorage {
                 + "             WHERE FILM_ID IN ( "
                 + "                     SELECT FILM_ID FROM LIKES WHERE USER_ID = ? "
                 + "                ) AND USER_ID <> ? "
-                + "             GROUP BY USER_ID ORDER BY COUNT(*) DESC "
                 + "    ) AND FILM_ID NOT IN ( "
                 + "        SELECT FILM_ID FROM LIKES WHERE USER_ID = ? "
                 + "    )"
