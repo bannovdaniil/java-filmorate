@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.dao.DirectorStorage;
 import ru.yandex.practicum.filmorate.dao.FilmLikeStorage;
 import ru.yandex.practicum.filmorate.dao.FilmStorage;
 import ru.yandex.practicum.filmorate.dto.FilmDto;
@@ -19,8 +18,6 @@ public class FilmService {
     private final FilmStorage filmStorage;
     private final FilmLikeStorage filmLikeStorage;
     private final EventService eventService;
-
-    private final DirectorStorage directorStorage;
 
     public List<Film> findAll() throws MpaRatingNotFound {
         return filmStorage.findAll();
@@ -43,13 +40,33 @@ public class FilmService {
         return filmStorage.getFilmById(filmId);
     }
 
-    public void addLike(Long filmId, Long userId) throws FilmNotFoundException, UserNotFoundException {
-        filmLikeStorage.addLike(filmId, userId);
-        eventService.addEvent(userId, EventType.LIKE, EventOperation.ADD, filmId);
+    /**
+     * при добавлении лайка, надо проверить, нет ли его уже в базе (будет ошибка дубликата PK)
+     * если есть то делаем update
+     */
+    public void addLike(Long filmId, Long userId, Integer rate) throws FilmNotFoundException, UserNotFoundException, RequestParamNotValid {
+        if (rate < 1 || rate > 10) {
+            throw new RequestParamNotValid("rate mast be: from 1 to 10");
+        }
+        if (filmLikeStorage.getUserLikeCount(filmId, userId) == 0) {
+            filmLikeStorage.addLike(filmId, userId, rate);
+            filmStorage.addLikeRate(filmId, rate);
+            eventService.addEvent(userId, EventType.LIKE, EventOperation.ADD, filmId);
+        } else {
+            int oldRate = filmLikeStorage.getUserLikeRate(filmId, userId);
+            filmStorage.removeFilmLikeRate(filmId, oldRate);
+            filmLikeStorage.removeLike(filmId, userId);
+
+            filmLikeStorage.addLike(filmId, userId, rate);
+            filmStorage.addLikeRate(filmId, rate);
+        }
     }
 
     public void removeLike(Long filmId, Long userId) throws FilmNotFoundException, UserNotFoundException {
+        int rate = filmLikeStorage.getUserLikeRate(filmId, userId);
+        filmStorage.removeFilmLikeRate(filmId, rate);
         filmLikeStorage.removeLike(filmId, userId);
+
         eventService.addEvent(userId, EventType.LIKE, EventOperation.REMOVE, filmId);
     }
 
