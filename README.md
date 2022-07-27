@@ -1,8 +1,8 @@
 # # Групповой проект
 ## #1 Создал ветку develop
 
-# последняя актуальная схема DB для проекта
-![This is an image](src/main/resources/shema/filmorate-v8.png)
+# Актуальная схема DB для проекта
+![This is an image](src/main/resources/sсhema/filmorate-v9.png)
 
 # #11 Спринт Финальное задание
 ## #4 Тестирование
@@ -28,7 +28,7 @@
 # #7 Задание для взаимопроверки
 В этом задании вы будете проектировать базу данных для проекта, основываясь на уже существующей функциональности. Вносить какие-либо изменения в код не потребуется.
 
-![This is an image](src/main/resources/shema/filmorate-v4.png)
+![This is an image](src/main/resources/sсhema/filmorate-v4.png)
 
 # #4 Полный REST
 
