@@ -54,6 +54,7 @@ public class FilmDaoStorageImpl implements FilmStorage {
         film.setReleaseDate(rs.getDate("release_date").toLocalDate());
         film.setDuration(rs.getLong("duration"));
         film.setRate(rs.getLong("rate"));
+        film.setAverageRate(rs.getFloat("average_rate"));
         film.setMpa(new MpaRating(rs.getInt("rating_ID")));
         film.setDirectors(directorStorage.getDirectorsByFilm(film.getId()));
         return film;
@@ -206,17 +207,45 @@ public class FilmDaoStorageImpl implements FilmStorage {
         return filmCount > 0;
     }
 
-    @Override
-    public void addLike(long filmId) {
-        String sql = "UPDATE FILMS SET LIKES = LIKES + 1 WHERE FILM_ID = ?; ";
-        jdbcTemplate.update(sql, filmId);
+    public void addLikeRate(long filmId, int rate) {
+        int like_count = getFilmLikeCount(filmId) + 1;
+        int rate_score = getFilmLikeRate(filmId) + rate;
+        float average_rate = like_count == 0 ? 0 : 1.0F * rate_score / like_count;
+
+        String sql = "UPDATE FILMS " +
+                " SET LIKES = LIKES + 1 , " +
+                " RATE_SCORE = RATE_SCORE + ? ," +
+                " AVERAGE_RATE = ? " +
+                " WHERE FILM_ID = ?; ";
+
+        jdbcTemplate.update(sql, rate, average_rate, filmId);
+    }
+
+    private int getFilmLikeRate(long filmId) {
+        String sql = "SELECT RATE_SCORE FROM FILMS WHERE FILM_ID = ?;";
+        return jdbcTemplate.queryForObject(sql, Integer.class, filmId);
     }
 
     @Override
-    public void removeLike(long filmId) {
-        String sql = "UPDATE FILMS SET LIKES = LIKES - 1 WHERE FILM_ID = ?; ";
-        jdbcTemplate.update(sql, filmId);
+    public void removeFilmLikeRate(long filmId, int rate) {
+        int like_count = getFilmLikeCount(filmId) - 1;
+        int rate_score = getFilmLikeRate(filmId) - rate;
+        float average_rate = like_count == 0 ? 0 : 1.0F * rate_score / like_count;
+
+        String sql = "UPDATE FILMS " +
+                " SET LIKES = LIKES - 1 , " +
+                " RATE_SCORE = RATE_SCORE - ? ," +
+                " AVERAGE_RATE = ? " +
+                " WHERE FILM_ID = ?; ";
+
+        jdbcTemplate.update(sql, rate, average_rate, filmId);
     }
+
+    private int getFilmLikeCount(long filmId) {
+        String sql = "SELECT LIKES FROM FILMS WHERE FILM_ID = ? ;";
+        return jdbcTemplate.queryForObject(sql, Integer.class, filmId);
+    }
+
 
     private void updateMpaRating(FilmDto filmDto) throws MpaRatingNotFound {
         filmDto.setMpa(mpaStorage.getRatingMpaById(filmDto.getMpa().getId()));

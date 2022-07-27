@@ -22,10 +22,6 @@ public interface FilmStorage {
 
     boolean isFilmExist(long filmId);
 
-    void addLike(long filmId);
-
-    void removeLike(long filmId);
-
     List<Film> getRecommendations(int userId) throws MpaRatingNotFound;
 
     List<Film> getFilmsByDirectorOrderByDate(int id) throws MpaRatingNotFound, DirectorNotFoundException;
@@ -37,4 +33,8 @@ public interface FilmStorage {
     List<Film> getCommonFilms(long userId, long friendId) throws MpaRatingNotFound, UserNotFoundException;
 
     List<Film> searchFilms(String query, List<String> searchByParams) throws MpaRatingNotFound;
+
+    void removeFilmLikeRate(long filmId, int rate);
+
+    void addLikeRate(long filmId, int rate);
 }

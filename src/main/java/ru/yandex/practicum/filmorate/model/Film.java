@@ -31,6 +31,7 @@ public class Film {
     private List<Director> directors;
     @JsonIgnore
     private Long likes;
+    private Float averageRate;
 
     @Override
     public boolean equals(Object o) {

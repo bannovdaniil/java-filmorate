@@ -49,8 +49,10 @@ public class FilmController {
     @PutMapping("/{id}/like/{userId}")
     public void addLike(
             @PathVariable("id") Long filmId,
-            @PathVariable("userId") Long userId) throws FilmNotFoundException, UserNotFoundException {
-        filmService.addLike(filmId, userId);
+            @PathVariable("userId") Long userId,
+            @RequestParam(required = false, defaultValue = "10") Integer rate
+            ) throws FilmNotFoundException, UserNotFoundException, RequestParamNotValid {
+        filmService.addLike(filmId, userId, rate);
     }
 
     @DeleteMapping("/{id}/like/{userId}")
