@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.constant.FilmRate;
 import ru.yandex.practicum.filmorate.dao.FilmLikeStorage;
 import ru.yandex.practicum.filmorate.dao.FilmStorage;
 import ru.yandex.practicum.filmorate.dto.FilmDto;
@@ -45,8 +46,10 @@ public class FilmService {
      * если есть то делаем update
      */
     public void addLike(Long filmId, Long userId, Integer rate) throws FilmNotFoundException, UserNotFoundException, RequestParamNotValid {
-        if (rate < 1 || rate > 10) {
-            throw new RequestParamNotValid("rate mast be: from 1 to 10");
+        if (rate < FilmRate.FILM_RATE_LO || rate > FilmRate.FILM_RATE_HI) {
+            throw new RequestParamNotValid(String.format("rate mast be: from %d to %d."
+                    , FilmRate.FILM_RATE_LO
+                    , FilmRate.FILM_RATE_HI));
         }
         if (filmLikeStorage.getUserLikeCount(filmId, userId) == 0) {
             filmLikeStorage.addLike(filmId, userId, rate);

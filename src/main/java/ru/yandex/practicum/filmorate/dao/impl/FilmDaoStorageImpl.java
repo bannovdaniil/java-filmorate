@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.constant.FilmRate;
 import ru.yandex.practicum.filmorate.dao.*;
 import ru.yandex.practicum.filmorate.dto.FilmDto;
 import ru.yandex.practicum.filmorate.exceptions.*;
@@ -38,9 +39,7 @@ public class FilmDaoStorageImpl implements FilmStorage {
         String sql = "SELECT * FROM FILMS;";
         log.info("Get Film list from DB.");
 
-        List<Film> films = jdbcTemplate.query(sql, this::makeFilm);
-
-        return films;
+        return jdbcTemplate.query(sql, this::makeFilm);
     }
 
     private Film makeFilm(ResultSet rs, int rowNum) throws SQLException {
@@ -170,16 +169,15 @@ public class FilmDaoStorageImpl implements FilmStorage {
             String sql = "SELECT * FROM FILMS WHERE FILM_ID = ?;";
 
             List<Film> films = jdbcTemplate.query(sql, this::makeFilm, filmId);
-            Film film = films.get(0);
 
-            return film;
+            return films.get(0);
         } else {
             throw new FilmNotFoundException("Film ID not found.");
         }
     }
 
     @Override
-    public List<Film> getFilmTop(Long count, Integer genreId, Integer year) throws MpaRatingNotFound {
+    public List<Film> getFilmTop(Long count, Integer genreId, Integer year) {
         log.info("Get Top Film list from DB.");
 
         List<Film> films;
@@ -284,27 +282,23 @@ public class FilmDaoStorageImpl implements FilmStorage {
     }
 
     @Override
-    public List<Film> getFilmsByDirectorOrderByLikes(int id) throws MpaRatingNotFound, DirectorNotFoundException {
+    public List<Film> getFilmsByDirectorOrderByLikes(int id) throws DirectorNotFoundException {
         directorStorage.validateDirector(id);
         String sql = "SELECT * FROM FILMS F" +
                 " WHERE F.FILM_ID IN (SELECT FD.FILM_ID FROM FILM_DIRECTORS FD WHERE FD.DIRECTOR_ID = ?)" +
                 " ORDER BY F.LIKES DESC, F.FILM_ID";
 
-        List<Film> films = jdbcTemplate.query(sql, this::makeFilm, id);
-
-        return films;
+        return jdbcTemplate.query(sql, this::makeFilm, id);
     }
 
     @Override
-    public List<Film> getFilmsByDirectorOrderByDate(int id) throws MpaRatingNotFound, DirectorNotFoundException {
+    public List<Film> getFilmsByDirectorOrderByDate(int id) throws DirectorNotFoundException {
         directorStorage.validateDirector(id);
         String sql = "SELECT * FROM FILMS F WHERE F.FILM_ID IN " +
                 "(SELECT FD.FILM_ID FROM FILM_DIRECTORS FD WHERE FD.DIRECTOR_ID = ?) " +
                 "ORDER BY F.RELEASE_DATE";
 
-        List<Film> films = jdbcTemplate.query(sql, this::makeFilm, id);
-
-        return films;
+        return jdbcTemplate.query(sql, this::makeFilm, id);
     }
 
     /**
@@ -321,6 +315,7 @@ public class FilmDaoStorageImpl implements FilmStorage {
                     }
                     return result;
                 }, userId);
+
         return filmsRate;
     }
 
@@ -334,9 +329,7 @@ public class FilmDaoStorageImpl implements FilmStorage {
                 " );";
 
         List<Long> crossUserIdList = jdbcTemplate.query(sql,
-                (rs, rowNum) -> {
-                    return rs.getLong("USER_ID");
-                },
+                (rs, rowNum) -> rs.getLong("USER_ID"),
                 userId, userId);
 
         return crossUserIdList;
@@ -344,6 +337,7 @@ public class FilmDaoStorageImpl implements FilmStorage {
 
     /**
      * Ищем пересечения пользователей
+     * положительные рекомендации то что больше 5, значит все что меньше не рекомендуем
      */
     @Override
     public List<Film> getRecommendations(int userId) throws MpaRatingNotFound, FilmNotFoundException {
@@ -354,20 +348,21 @@ public class FilmDaoStorageImpl implements FilmStorage {
 
         for (Long crossUserId : crossFilmsUserFromLike) {
             Map<Long, Integer> crossFilmRate = getUserFilmsRateFromLikes(crossUserId);
+
             for (Map.Entry<Long, Integer> filmRate : crossFilmRate.entrySet()) {
                 long filmId = filmRate.getKey();
                 int rate = filmRate.getValue();
-                if (!(userFilmsRate.containsKey(filmId) && rate == userFilmsRate.get(filmId))) {
+
+                if (rate >= FilmRate.FILM_RATE_AV && !userFilmsRate.containsKey(filmId)) {
                     recommendationFilms.add(getFilmById(filmId));
                 }
             }
         }
-
         return recommendationFilms;
     }
 
     @Override
-    public List<Film> getCommonFilms(long userId, long friendId) throws MpaRatingNotFound, UserNotFoundException {
+    public List<Film> getCommonFilms(long userId, long friendId) throws UserNotFoundException {
         if (!userStorage.isUserExist(userId)) {
             throw new UserNotFoundException(String.format("User not found by id = %d", userId));
         }
@@ -395,7 +390,7 @@ public class FilmDaoStorageImpl implements FilmStorage {
         return commonFilms;
     }
 
-    public List<Film> searchFilms(String query, List<String> searchByParams) throws MpaRatingNotFound {
+    public List<Film> searchFilms(String query, List<String> searchByParams) {
         List<Film> films;
 
         if (searchByParams.contains("title") && searchByParams.contains("director")) {
