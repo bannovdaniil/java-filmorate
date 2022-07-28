@@ -85,7 +85,7 @@ public class FilmService {
         }
     }
 
-    public List<Film> getRecommendations(int userId) throws MpaRatingNotFound {
+    public List<Film> getRecommendations(int userId) throws MpaRatingNotFound, FilmNotFoundException {
         return filmStorage.getRecommendations(userId);
     }
 

@@ -22,7 +22,7 @@ public interface FilmStorage {
 
     boolean isFilmExist(long filmId);
 
-    List<Film> getRecommendations(int userId) throws MpaRatingNotFound;
+    List<Film> getRecommendations(int userId) throws MpaRatingNotFound, FilmNotFoundException;
 
     List<Film> getFilmsByDirectorOrderByDate(int id) throws MpaRatingNotFound, DirectorNotFoundException;
 

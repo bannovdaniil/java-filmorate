@@ -21,7 +21,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
-@SuppressWarnings("ALL")
 @Slf4j
 @Repository
 @RequiredArgsConstructor
@@ -40,9 +39,7 @@ public class FilmDaoStorageImpl implements FilmStorage {
         log.info("Get Film list from DB.");
 
         List<Film> films = jdbcTemplate.query(sql, this::makeFilm);
-        for (Film film : films) {
-            film.setMpa(mpaStorage.getRatingMpaById(film.getMpa().getId()));
-        }
+
         return films;
     }
 
@@ -58,6 +55,13 @@ public class FilmDaoStorageImpl implements FilmStorage {
         film.setMpa(new MpaRating(rs.getInt("rating_ID")));
         film.setLikes(rs.getLong("likes"));
         film.setDirectors(directorStorage.getDirectorsByFilm(film.getId()));
+        film.setGenres(genreStorage.getFilmGenres(film.getId()));
+        try {
+            film.setMpa(mpaStorage.getRatingMpaById(film.getMpa().getId()));
+        } catch (MpaRatingNotFound err) {
+            throw new SQLException("MPA Rating Index not found in makeFilm");
+        }
+
         return film;
     }
 
@@ -168,9 +172,6 @@ public class FilmDaoStorageImpl implements FilmStorage {
             List<Film> films = jdbcTemplate.query(sql, this::makeFilm, filmId);
             Film film = films.get(0);
 
-            film.setMpa(mpaStorage.getRatingMpaById(film.getMpa().getId()));
-            film.setGenres(genreStorage.getFilmGenres(film.getId()));
-
             return film;
         } else {
             throw new FilmNotFoundException("Film ID not found.");
@@ -190,11 +191,6 @@ public class FilmDaoStorageImpl implements FilmStorage {
             films = getTopFilmByCountGenre(count, genreId);
         } else {
             films = getTopFilmByCountGenreYear(count, genreId, year);
-        }
-
-        for (Film film : films) {
-            film.setMpa(mpaStorage.getRatingMpaById(film.getMpa().getId()));
-            film.setGenres(genreStorage.getFilmGenres(film.getId()));
         }
 
         return films;
@@ -218,14 +214,9 @@ public class FilmDaoStorageImpl implements FilmStorage {
         jdbcTemplate.update(sql, rate, rate, filmId);
     }
 
-    private int getFilmLikeRate(long filmId) {
-        String sql = "SELECT RATE_SCORE FROM FILMS WHERE FILM_ID = ?;";
-        return jdbcTemplate.queryForObject(sql, Integer.class, filmId);
-    }
-
     @Override
     public void removeFilmLikeRate(long filmId, int rate) {
-         String sql = "UPDATE FILMS " +
+        String sql = "UPDATE FILMS " +
                 " SET LIKES = LIKES - 1 , " +
                 " RATE_SCORE = RATE_SCORE - ? ," +
                 " AVERAGE_RATE = CASE " +
@@ -236,12 +227,6 @@ public class FilmDaoStorageImpl implements FilmStorage {
 
         jdbcTemplate.update(sql, rate, rate, filmId);
     }
-
-    private int getFilmLikeCount(long filmId) {
-        String sql = "SELECT LIKES FROM FILMS WHERE FILM_ID = ? ;";
-        return jdbcTemplate.queryForObject(sql, Integer.class, filmId);
-    }
-
 
     private void updateMpaRating(FilmDto filmDto) throws MpaRatingNotFound {
         filmDto.setMpa(mpaStorage.getRatingMpaById(filmDto.getMpa().getId()));
@@ -303,13 +288,10 @@ public class FilmDaoStorageImpl implements FilmStorage {
         directorStorage.validateDirector(id);
         String sql = "SELECT * FROM FILMS F" +
                 " WHERE F.FILM_ID IN (SELECT FD.FILM_ID FROM FILM_DIRECTORS FD WHERE FD.DIRECTOR_ID = ?)" +
-                " ORDER BY F.LIKES DESC, F.FILM_ID ASC";
+                " ORDER BY F.LIKES DESC, F.FILM_ID";
 
         List<Film> films = jdbcTemplate.query(sql, this::makeFilm, id);
-        for (Film film : films) {
-            film.setMpa(mpaStorage.getRatingMpaById(film.getMpa().getId()));
-            film.setGenres(genreStorage.getFilmGenres(film.getId()));
-        }
+
         return films;
     }
 
@@ -319,35 +301,69 @@ public class FilmDaoStorageImpl implements FilmStorage {
         String sql = "SELECT * FROM FILMS F WHERE F.FILM_ID IN " +
                 "(SELECT FD.FILM_ID FROM FILM_DIRECTORS FD WHERE FD.DIRECTOR_ID = ?) " +
                 "ORDER BY F.RELEASE_DATE";
+
         List<Film> films = jdbcTemplate.query(sql, this::makeFilm, id);
-        for (Film film : films) {
-            film.setMpa(mpaStorage.getRatingMpaById(film.getMpa().getId()));
-            film.setGenres(genreStorage.getFilmGenres(film.getId()));
-        }
+
         return films;
     }
 
-    @Override
-    public List<Film> getRecommendations(int userId) throws MpaRatingNotFound {
-        String sql = "SELECT * FROM FILMS "
-                + " WHERE FILM_ID IN ( "
-                + "     SELECT FILM_ID FROM LIKES "
-                + "     WHERE USER_ID IN ( "
-                + "             SELECT USER_ID FROM LIKES "
-                + "             WHERE FILM_ID IN ( "
-                + "                     SELECT FILM_ID FROM LIKES WHERE USER_ID = ? "
-                + "                ) AND USER_ID <> ? "
-                + "    ) AND FILM_ID NOT IN ( "
-                + "        SELECT FILM_ID FROM LIKES WHERE USER_ID = ? "
-                + "    )"
-                + " );";
+    /**
+     * Map of FilmId => Rate by user
+     */
+    private Map<Long, Integer> getUserFilmsRateFromLikes(long userId) {
+        String sql = "SELECT FILM_ID, RATE FROM LIKES WHERE USER_ID = ? ;";
 
-        List<Film> films = jdbcTemplate.query(sql, this::makeFilm, userId, userId, userId);
-        for (Film film : films) {
-            film.setMpa(mpaStorage.getRatingMpaById(film.getMpa().getId()));
-            film.setGenres(genreStorage.getFilmGenres(film.getId()));
+        Map<Long, Integer> filmsRate = jdbcTemplate.query(sql
+                , (rs) -> {
+                    Map<Long, Integer> result = new HashMap<>();
+                    while (rs.next()) {
+                        result.put(rs.getLong("FILM_ID"), rs.getInt("RATE"));
+                    }
+                    return result;
+                }, userId);
+        return filmsRate;
+    }
+
+    /**
+     * List of userId
+     */
+    private List<Long> getCrossFilmsUserFromLike(long userId) {
+        String sql = "SELECT USER_ID FROM LIKES WHERE USER_ID <> ? " +
+                " AND FILM_ID IN ( " +
+                "  SELECT FILM_ID FROM LIKES WHERE USER_ID = ? " +
+                " );";
+
+        List<Long> crossUserIdList = jdbcTemplate.query(sql,
+                (rs, rowNum) -> {
+                    return rs.getLong("USER_ID");
+                },
+                userId, userId);
+
+        return crossUserIdList;
+    }
+
+    /**
+     * Ищем пересечения пользователей
+     */
+    @Override
+    public List<Film> getRecommendations(int userId) throws MpaRatingNotFound, FilmNotFoundException {
+        Map<Long, Integer> userFilmsRate = getUserFilmsRateFromLikes(userId);
+        List<Long> crossFilmsUserFromLike = getCrossFilmsUserFromLike(userId);
+
+        List<Film> recommendationFilms = new ArrayList<>();
+
+        for (Long crossUserId : crossFilmsUserFromLike) {
+            Map<Long, Integer> crossFilmRate = getUserFilmsRateFromLikes(crossUserId);
+            for (Map.Entry<Long, Integer> filmRate : crossFilmRate.entrySet()) {
+                long filmId = filmRate.getKey();
+                int rate = filmRate.getValue();
+                if (!(userFilmsRate.containsKey(filmId) && rate == userFilmsRate.get(filmId))) {
+                    recommendationFilms.add(getFilmById(filmId));
+                }
+            }
         }
-        return films;
+
+        return recommendationFilms;
     }
 
     @Override
@@ -375,10 +391,7 @@ public class FilmDaoStorageImpl implements FilmStorage {
                 "ORDER BY LIKES DESC";
 
         List<Film> commonFilms = jdbcTemplate.query(sql, this::makeFilm, userId, friendId);
-        for (Film film : commonFilms) {
-            film.setMpa(mpaStorage.getRatingMpaById(film.getMpa().getId()));
-            film.setGenres(genreStorage.getFilmGenres(film.getId()));
-        }
+
         return commonFilms;
     }
 
@@ -391,11 +404,6 @@ public class FilmDaoStorageImpl implements FilmStorage {
             films = searchFilmsByDirector(query);
         } else {
             films = searchFilmsByTitle(query);
-        }
-
-        for (Film film : films) {
-            film.setMpa(mpaStorage.getRatingMpaById(film.getMpa().getId()));
-            film.setGenres(genreStorage.getFilmGenres(film.getId()));
         }
 
         return films;
