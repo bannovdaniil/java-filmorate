@@ -208,17 +208,13 @@ public class FilmDaoStorageImpl implements FilmStorage {
     }
 
     public void addLikeRate(long filmId, int rate) {
-        int like_count = getFilmLikeCount(filmId) + 1;
-        int rate_score = getFilmLikeRate(filmId) + rate;
-        float average_rate = like_count == 0 ? 0 : 1.0F * rate_score / like_count;
-
         String sql = "UPDATE FILMS " +
                 " SET LIKES = LIKES + 1 , " +
                 " RATE_SCORE = RATE_SCORE + ? ," +
-                " AVERAGE_RATE = ? " +
+                " AVERAGE_RATE = CAST(RATE_SCORE + ? AS FLOAT) / (LIKES + 1)" +
                 " WHERE FILM_ID = ?; ";
 
-        jdbcTemplate.update(sql, rate, average_rate, filmId);
+        jdbcTemplate.update(sql, rate, rate, filmId);
     }
 
     private int getFilmLikeRate(long filmId) {
