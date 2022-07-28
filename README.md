@@ -23,6 +23,9 @@
 - добавлена проверка на валидный rate От 1 до 10
 - добавлены тесты postman: postman\develop-add-mark-LikesRate.json
 
+### #1.2 Сделал Рекомендации
+### #1.3 Сделал сортировку по average_rate
+
 ## #1 Создал ветку develop
 
 

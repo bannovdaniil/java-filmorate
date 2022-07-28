@@ -24016,9 +24016,9 @@
 									"pm.test(\"Test popular film\", function () {\r",
 									"    var jsonData = pm.response.json();\r",
 									"    pm.expect(jsonData.length).to.eql(3);\r",
-									"    pm.expect(jsonData[0].id).to.eql(1);\r",
-									"    pm.expect(jsonData[1].id).to.eql(2);\r",
-									"    pm.expect(jsonData[2].id).to.eql(3);\r",
+									"    pm.expect(jsonData[0].id).to.eql(3);\r",
+									"    pm.expect(jsonData[1].id).to.eql(1);\r",
+									"    pm.expect(jsonData[2].id).to.eql(2);\r",
 									" });"
 								],
 								"type": "text/javascript"

@@ -338,6 +338,7 @@ public class FilmDaoStorageImpl implements FilmStorage {
     /**
      * Ищем пересечения пользователей
      * положительные рекомендации то что больше 5, значит все что меньше не рекомендуем
+
      */
     @Override
     public List<Film> getRecommendations(int userId) throws MpaRatingNotFound, FilmNotFoundException {
@@ -348,6 +349,9 @@ public class FilmDaoStorageImpl implements FilmStorage {
 
         for (Long crossUserId : crossFilmsUserFromLike) {
             Map<Long, Integer> crossFilmRate = getUserFilmsRateFromLikes(crossUserId);
+            if (countUserCrossFilm(crossFilmRate, userFilmsRate) == 0) {
+                continue;
+            }
 
             for (Map.Entry<Long, Integer> filmRate : crossFilmRate.entrySet()) {
                 long filmId = filmRate.getKey();
@@ -359,6 +363,29 @@ public class FilmDaoStorageImpl implements FilmStorage {
             }
         }
         return recommendationFilms;
+    }
+
+    /**
+     * считаем фильмы которые совпали по рейтингам
+     * 1-5 - не понравился
+     * 6-10 понравился
+     * и возможно delta... в следующей жизни. пока только да и нет
+     */
+    private int countUserCrossFilm(Map<Long, Integer> crossFilmRate, Map<Long, Integer> userFilmsRate) {
+        int countCrossFilm = 0;
+
+        for (Map.Entry<Long, Integer> filmRateEntry : userFilmsRate.entrySet()) {
+            long filmId = filmRateEntry.getKey();
+            if (crossFilmRate.containsKey(filmId)) {
+                int originRate = filmRateEntry.getValue();
+                int crossRate = crossFilmRate.get(filmId);
+                if ((crossRate < FilmRate.FILM_RATE_AV && originRate < FilmRate.FILM_RATE_AV)
+                        || (crossRate >= FilmRate.FILM_RATE_AV && originRate >= FilmRate.FILM_RATE_AV)) {
+                    countCrossFilm++;
+                }
+            }
+        }
+        return countCrossFilm;
     }
 
     @Override
