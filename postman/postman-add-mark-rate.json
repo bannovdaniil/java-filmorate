@@ -22065,7 +22065,7 @@
 					]
 				},
 				{
-					"name": "Film get average mast be 7",
+					"name": "Film get average must be 7",
 					"event": [
 						{
 							"listen": "test",
@@ -22456,7 +22456,7 @@
 					]
 				},
 				{
-					"name": "Film get average mast be 5",
+					"name": "Film get average must be 5",
 					"event": [
 						{
 							"listen": "test",
@@ -22847,7 +22847,7 @@
 					]
 				},
 				{
-					"name": "Film get average mast be 3.5",
+					"name": "Film get average must be 3.5",
 					"event": [
 						{
 							"listen": "test",
@@ -23232,7 +23232,7 @@
 					]
 				},
 				{
-					"name": "Film get average mast be 3",
+					"name": "Film get average must be 3",
 					"event": [
 						{
 							"listen": "test",
