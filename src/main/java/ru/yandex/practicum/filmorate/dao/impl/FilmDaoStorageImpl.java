@@ -249,7 +249,7 @@ public class FilmDaoStorageImpl implements FilmStorage {
         String sql = "SELECT * FROM FILMS WHERE " +
                 "FILM_ID IN (SELECT FILM_ID FROM FILM_GENRES WHERE GENRE_ID = ?) " +
                 "AND YEAR(RELEASE_DATE) = ? " +
-                "ORDER BY LIKES DESC " + "" +
+                "ORDER BY AVERAGE_RATE DESC " +
                 "LIMIT ?;";
 
         return jdbcTemplate.query(sql, this::makeFilm, genreId, year, count);
@@ -258,7 +258,7 @@ public class FilmDaoStorageImpl implements FilmStorage {
     private List<Film> getTopFilmByCountGenre(Long count, Integer genreId) {
         String sql = "SELECT * FROM FILMS WHERE " +
                 "FILM_ID IN (SELECT FILM_ID FROM FILM_GENRES WHERE GENRE_ID = ?) " +
-                "ORDER BY LIKES DESC " +
+                "ORDER BY AVERAGE_RATE DESC " +
                 "LIMIT ?;";
 
         return jdbcTemplate.query(sql, this::makeFilm, genreId, count);
@@ -267,7 +267,7 @@ public class FilmDaoStorageImpl implements FilmStorage {
     private List<Film> getTopFilmByCountYear(Long count, Integer year) {
         String sql = "SELECT * FROM FILMS WHERE " +
                 "YEAR(RELEASE_DATE) = ? " +
-                "ORDER BY LIKES DESC " +
+                "ORDER BY AVERAGE_RATE DESC " +
                 "LIMIT ?;";
 
         return jdbcTemplate.query(sql, this::makeFilm, year, count);
@@ -275,7 +275,7 @@ public class FilmDaoStorageImpl implements FilmStorage {
 
     private List<Film> getTopFilmByCount(Long count) {
         String sql = "SELECT * FROM FILMS " +
-                "ORDER BY LIKES DESC " +
+                "ORDER BY AVERAGE_RATE DESC " +
                 "LIMIT ?;";
 
         return jdbcTemplate.query(sql, this::makeFilm, count);
@@ -286,7 +286,7 @@ public class FilmDaoStorageImpl implements FilmStorage {
         directorStorage.validateDirector(id);
         String sql = "SELECT * FROM FILMS F" +
                 " WHERE F.FILM_ID IN (SELECT FD.FILM_ID FROM FILM_DIRECTORS FD WHERE FD.DIRECTOR_ID = ?)" +
-                " ORDER BY F.LIKES DESC, F.FILM_ID";
+                " ORDER BY F.AVERAGE_RATE DESC, F.FILM_ID";
 
         return jdbcTemplate.query(sql, this::makeFilm, id);
     }
@@ -383,7 +383,7 @@ public class FilmDaoStorageImpl implements FilmStorage {
                 "FROM LIKES " +
                 "WHERE USER_ID = ?) AS second_user_likes " +
                 "ON first_user_likes.FILM_ID = second_user_likes.FILM_ID) " +
-                "ORDER BY LIKES DESC";
+                "ORDER BY AVERAGE_RATE DESC";
 
         List<Film> commonFilms = jdbcTemplate.query(sql, this::makeFilm, userId, friendId);
 
@@ -430,7 +430,7 @@ public class FilmDaoStorageImpl implements FilmStorage {
         String searchQuery = "SELECT * " +
                 "FROM FILMS " +
                 "WHERE NAME ILIKE ? " +
-                "ORDER BY LIKES DESC";
+                "ORDER BY AVERAGE_RATE DESC";
 
         return jdbcTemplate.query(searchQuery, this::makeFilm, "%" + query + "%");
     }
@@ -450,7 +450,7 @@ public class FilmDaoStorageImpl implements FilmStorage {
                 "JOIN FILM_DIRECTORS  FD ON F.FILM_ID = FD.FILM_ID " +
                 "JOIN DIRECTORS D ON FD.DIRECTOR_ID = D.DIRECTOR_ID " +
                 "WHERE D.NAME ILIKE ? " +
-                "ORDER BY LIKES DESC";
+                "ORDER BY AVERAGE_RATE DESC";
 
         return jdbcTemplate.query(searchQuery, this::makeFilm, "%" + query + "%");
     }
@@ -474,7 +474,7 @@ public class FilmDaoStorageImpl implements FilmStorage {
                 "JOIN FILM_DIRECTORS  FD ON F2.FILM_ID = FD.FILM_ID " +
                 "JOIN DIRECTORS D ON FD.DIRECTOR_ID = D.DIRECTOR_ID " +
                 "WHERE D.NAME ILIKE ? " +
-                "ORDER BY LIKES DESC";
+                "ORDER BY AVERAGE_RATE DESC";
 
         return jdbcTemplate.query(searchQuery, this::makeFilm, "%" + query + "%", "%" + query + "%");
     }
