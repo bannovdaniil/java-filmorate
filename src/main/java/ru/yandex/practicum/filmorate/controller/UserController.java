@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.dto.UserDto;
+import ru.yandex.practicum.filmorate.exceptions.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.MpaRatingNotFound;
 import ru.yandex.practicum.filmorate.exceptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.UserRemoveException;
@@ -82,7 +83,7 @@ public class UserController {
     }
 
     @GetMapping("{id}/recommendations")
-    public List<Film> getRecommendations(@PathVariable("id") int userId) throws MpaRatingNotFound {
+    public List<Film> getRecommendations(@PathVariable("id") int userId) throws MpaRatingNotFound, FilmNotFoundException {
         return filmService.getRecommendations(userId);
     }
 }
