@@ -19,11 +19,10 @@ public class FilmLikeDaoStorageImpl implements FilmLikeStorage {
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public void addLike(final long filmId, final long userId) throws FilmNotFoundException, UserNotFoundException {
-        if (checkLike(filmId, userId) >= 0) {
-            String sql = "INSERT INTO LIKES (FILM_ID, USER_ID) VALUES (?, ?)";
-            jdbcTemplate.update(sql, filmId, userId);
-            filmStorage.addLike(filmId);
+    public void addLike(final long filmId, final long userId, final int rate) throws FilmNotFoundException, UserNotFoundException {
+        if (checkLike(filmId, userId) == 0) {
+            String sql = "INSERT INTO LIKES (FILM_ID, USER_ID, RATE) VALUES (?, ?, ?)";
+            jdbcTemplate.update(sql, filmId, userId, rate);
         }
     }
 
@@ -32,7 +31,6 @@ public class FilmLikeDaoStorageImpl implements FilmLikeStorage {
         if (checkLike(filmId, userId) > 0) {
             String sql = "DELETE FROM LIKES WHERE FILM_ID = ? AND USER_ID = ? ;";
             jdbcTemplate.update(sql, filmId, userId);
-            filmStorage.removeLike(filmId);
         }
     }
 
@@ -49,9 +47,16 @@ public class FilmLikeDaoStorageImpl implements FilmLikeStorage {
     }
 
     @Override
-    public long getLikeCount(final long filmId) {
-        String sql = "SELECT COUNT(*) FROM LIKES WHERE FILM_ID = ? ;";
+    public int getUserLikeRate(long filmId, long userId) throws FilmNotFoundException, UserNotFoundException {
+        if (checkLike(filmId, userId) > 0) {
+            String sql = "SELECT RATE FROM LIKES WHERE FILM_ID = ? AND USER_ID = ? ;";
+            return jdbcTemplate.queryForObject(sql, Integer.class, filmId, userId);
+        }
+        return 0;
+    }
 
-        return jdbcTemplate.queryForObject(sql, Integer.class, filmId);
+    @Override
+    public int getUserLikeCount(long filmId, long userId) throws FilmNotFoundException, UserNotFoundException {
+        return checkLike(filmId, userId);
     }
 }

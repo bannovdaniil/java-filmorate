@@ -1,8 +1,33 @@
 # # Групповой проект
+## #1 Создал ветку add-mark
+### 1.1 Создал ветку add-mark-likes-rate
+# Актуальная схема DB для проекта
+![This is an image](src/main/resources/sсhema/filmorate-v10.png)
+
+Добавлены поля в таблицу films 
+- rate_score INTEGER DEFAULT 0,
+- average_rate REAL,
+
+Добавлено поле в таблицу likes
+- rate INTEGER DEFAULT 10,
+
+Если Like приходит без rate => тогда выставляем максимум 10
+
+Операции 
+- Add - добавить
+- Remove - удалить
+- Update -> если при добавлении лайк уже стоит, тогда обновляем значение rate
+
+**Во время всех этих операций производится перерасчет полей в films**
+- 
+- добавлена проверка на валидный rate От 1 до 10
+- добавлены тесты postman: postman\develop-add-mark-LikesRate.json
+
+### #1.2 Сделал Рекомендации
+### #1.3 Сделал сортировку по average_rate
+
 ## #1 Создал ветку develop
 
-# последняя актуальная схема DB для проекта
-![This is an image](src/main/resources/shema/filmorate-v8.png)
 
 # #11 Спринт Финальное задание
 ## #4 Тестирование
@@ -28,7 +53,7 @@
 # #7 Задание для взаимопроверки
 В этом задании вы будете проектировать базу данных для проекта, основываясь на уже существующей функциональности. Вносить какие-либо изменения в код не потребуется.
 
-![This is an image](src/main/resources/shema/filmorate-v4.png)
+![This is an image](src/main/resources/sсhema/filmorate-v4.png)
 
 # #4 Полный REST
 
