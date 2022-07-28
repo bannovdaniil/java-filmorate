@@ -56,6 +56,7 @@ public class FilmDaoStorageImpl implements FilmStorage {
         film.setRate(rs.getLong("rate"));
         film.setAverageRate(rs.getFloat("average_rate"));
         film.setMpa(new MpaRating(rs.getInt("rating_ID")));
+        film.setLikes(rs.getLong("likes"));
         film.setDirectors(directorStorage.getDirectorsByFilm(film.getId()));
         return film;
     }
