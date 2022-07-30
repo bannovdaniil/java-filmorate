@@ -5,6 +5,7 @@ import ru.yandex.practicum.filmorate.exceptions.*;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.List;
+import java.util.Map;
 
 public interface FilmStorage {
 
@@ -22,8 +23,6 @@ public interface FilmStorage {
 
     boolean isFilmExist(long filmId);
 
-    List<Film> getRecommendations(int userId) throws MpaRatingNotFound, FilmNotFoundException;
-
     List<Film> getFilmsByDirectorOrderByDate(int id) throws MpaRatingNotFound, DirectorNotFoundException;
 
     List<Film> getFilmsByDirectorOrderByLikes(int id) throws MpaRatingNotFound, DirectorNotFoundException;
@@ -34,7 +33,12 @@ public interface FilmStorage {
 
     List<Film> searchFilms(String query, List<String> searchByParams) throws MpaRatingNotFound;
 
-    void removeFilmLikeRate(long filmId, int rate);
+    void reduceFilmLikeRate(long filmId, int rate);
 
     void addLikeRate(long filmId, int rate);
+
+    Map<Long, Integer> getUserFilmsRateFromLikes(long userId);
+
+    List<Long> getCrossFilmsUserFromLike(long userId);
+
 }

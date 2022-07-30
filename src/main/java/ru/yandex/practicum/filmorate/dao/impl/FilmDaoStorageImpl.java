@@ -6,7 +6,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.constant.FilmRate;
 import ru.yandex.practicum.filmorate.dao.*;
 import ru.yandex.practicum.filmorate.dto.FilmDto;
 import ru.yandex.practicum.filmorate.exceptions.*;
@@ -212,8 +211,7 @@ public class FilmDaoStorageImpl implements FilmStorage {
         jdbcTemplate.update(sql, rate, rate, filmId);
     }
 
-    @Override
-    public void removeFilmLikeRate(long filmId, int rate) {
+    public void reduceFilmLikeRate(long filmId, int rate) {
         String sql = "UPDATE FILMS " +
                 " SET LIKES = LIKES - 1 , " +
                 " RATE_SCORE = RATE_SCORE - ? ," +
@@ -304,7 +302,8 @@ public class FilmDaoStorageImpl implements FilmStorage {
     /**
      * Map of FilmId => Rate by user
      */
-    private Map<Long, Integer> getUserFilmsRateFromLikes(long userId) {
+    @Override
+    public Map<Long, Integer> getUserFilmsRateFromLikes(long userId) {
         String sql = "SELECT FILM_ID, RATE FROM LIKES WHERE USER_ID = ? ;";
 
         Map<Long, Integer> filmsRate = jdbcTemplate.query(sql
@@ -322,7 +321,8 @@ public class FilmDaoStorageImpl implements FilmStorage {
     /**
      * List of userId
      */
-    private List<Long> getCrossFilmsUserFromLike(long userId) {
+    @Override
+    public List<Long> getCrossFilmsUserFromLike(long userId) {
         String sql = "SELECT USER_ID FROM LIKES WHERE USER_ID <> ? " +
                 " AND FILM_ID IN ( " +
                 "  SELECT FILM_ID FROM LIKES WHERE USER_ID = ? " +
@@ -333,59 +333,6 @@ public class FilmDaoStorageImpl implements FilmStorage {
                 userId, userId);
 
         return crossUserIdList;
-    }
-
-    /**
-     * Ищем пересечения пользователей
-     * положительные рекомендации то что больше 5, значит все что меньше не рекомендуем
-
-     */
-    @Override
-    public List<Film> getRecommendations(int userId) throws MpaRatingNotFound, FilmNotFoundException {
-        Map<Long, Integer> userFilmsRate = getUserFilmsRateFromLikes(userId);
-        List<Long> crossFilmsUserFromLike = getCrossFilmsUserFromLike(userId);
-
-        List<Film> recommendationFilms = new ArrayList<>();
-
-        for (Long crossUserId : crossFilmsUserFromLike) {
-            Map<Long, Integer> crossFilmRate = getUserFilmsRateFromLikes(crossUserId);
-            if (countUserCrossFilm(crossFilmRate, userFilmsRate) == 0) {
-                continue;
-            }
-
-            for (Map.Entry<Long, Integer> filmRate : crossFilmRate.entrySet()) {
-                long filmId = filmRate.getKey();
-                int rate = filmRate.getValue();
-
-                if (rate >= FilmRate.FILM_RATE_AV && !userFilmsRate.containsKey(filmId)) {
-                    recommendationFilms.add(getFilmById(filmId));
-                }
-            }
-        }
-        return recommendationFilms;
-    }
-
-    /**
-     * считаем фильмы которые совпали по рейтингам
-     * 1-5 - не понравился
-     * 6-10 понравился
-     * и возможно delta... в следующей жизни. пока только да и нет
-     */
-    private int countUserCrossFilm(Map<Long, Integer> crossFilmRate, Map<Long, Integer> userFilmsRate) {
-        int countCrossFilm = 0;
-
-        for (Map.Entry<Long, Integer> filmRateEntry : userFilmsRate.entrySet()) {
-            long filmId = filmRateEntry.getKey();
-            if (crossFilmRate.containsKey(filmId)) {
-                int originRate = filmRateEntry.getValue();
-                int crossRate = crossFilmRate.get(filmId);
-                if ((crossRate < FilmRate.FILM_RATE_AV && originRate < FilmRate.FILM_RATE_AV)
-                        || (crossRate >= FilmRate.FILM_RATE_AV && originRate >= FilmRate.FILM_RATE_AV)) {
-                    countCrossFilm++;
-                }
-            }
-        }
-        return countCrossFilm;
     }
 
     @Override
