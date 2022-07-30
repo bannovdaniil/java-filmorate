@@ -2,7 +2,7 @@
 ## #1 Создал ветку add-mark
 ### 1.1 Создал ветку add-mark-likes-rate
 # Актуальная схема DB для проекта
-![This is an image](src/main/resources/sсhema/filmorate-v10.png)
+![This is an image](src/main/resources/sсhema/filmorate-v11.png)
 
 Добавлены поля в таблицу films 
 - rate_score INTEGER DEFAULT 0,
