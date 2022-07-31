@@ -1,7 +1,10 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.hibernate.validator.constraints.Range;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.constant.FilmRate;
 import ru.yandex.practicum.filmorate.dto.FilmDto;
 import ru.yandex.practicum.filmorate.exceptions.*;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -12,6 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/films")
+@Validated
 @RequiredArgsConstructor
 public class FilmController {
     private final FilmService filmService;
@@ -49,8 +53,14 @@ public class FilmController {
     @PutMapping("/{id}/like/{userId}")
     public void addLike(
             @PathVariable("id") Long filmId,
-            @PathVariable("userId") Long userId) throws FilmNotFoundException, UserNotFoundException {
-        filmService.addLike(filmId, userId);
+            @PathVariable("userId") Long userId,
+            @RequestParam(required = false, defaultValue = "10")
+            @Range(min = FilmRate.FILM_RATE_LO
+                    , max = FilmRate.FILM_RATE_HI
+                    , message = "Rate range not valid.")
+            Integer rate
+    ) throws FilmNotFoundException, UserNotFoundException, RequestParamNotValid {
+        filmService.addLike(filmId, userId, rate);
     }
 
     @DeleteMapping("/{id}/like/{userId}")
